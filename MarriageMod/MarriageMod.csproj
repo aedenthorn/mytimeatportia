@@ -1,0 +1,131 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{C6630DA0-412F-4156-A5BE-061903FF4526}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>MarriageMod</RootNamespace>
+    <AssemblyName>MarriageMod</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="0Harmony12, Version=1.2.0.1, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>G:\ga\My Time at Portia\Portia_Data\Managed\0Harmony12.dll</HintPath>
+    </Reference>
+    <Reference Include="Assembly-CSharp">
+      <HintPath>G:\ga\My Time at Portia\Portia_Data\Managed\Assembly-CSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="Assembly-CSharp-firstpass">
+      <HintPath>G:\ga\My Time at Portia\Portia_Data\Managed\Assembly-CSharp-firstpass.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="UnityEngine">
+      <HintPath>G:\ga\My Time at Portia\Portia_Data\Managed\UnityEngine.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.AnimationModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>G:\ga\My Time at Portia\Portia_Data\Managed\UnityEngine.AnimationModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.AudioModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null" />
+    <Reference Include="UnityEngine.CoreModule">
+      <HintPath>G:\ga\My Time at Portia\Portia_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.IMGUIModule">
+      <HintPath>G:\ga\My Time at Portia\Portia_Data\Managed\UnityEngine.IMGUIModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UI">
+      <HintPath>G:\ga\My Time at Portia\Portia_Data\Managed\UnityEngine.UI.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UnityWebRequestAudioModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>G:\ga\My Time at Portia\Portia_Data\Managed\UnityEngine.UnityWebRequestAudioModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UnityWebRequestModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null" />
+    <Reference Include="UnityModManager">
+      <HintPath>G:\ga\My Time at Portia\Portia_Data\Managed\UnityModManager\UnityModManager.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AnimController_SetBool_Patch.cs" />
+    <Compile Include="AudioPlayer_Patch.cs" />
+    <Compile Include="BedUnitMgr_Bind_Patch.cs" />
+    <Compile Include="BedUnitMgr_FreshList_Patch.cs" />
+    <Compile Include="CheckMarriage_Do_Patch.cs" />
+    <Compile Include="ChildrenModule_CanShowWantChildTips_Patch.cs" />
+    <Compile Include="ChildrenModule_IsOpenCondition_Patch.cs" />
+    <Compile Include="ChildrenModule_UpdateBaseData_Patch.cs" />
+    <Compile Include="ConversationManager_Talk2Npc_Patch.cs" />
+    <Compile Include="EGChangeRelationFlag_OnUpdate_Patch.cs" />
+    <Compile Include="EGDate_Cancel_Patch.cs" />
+    <Compile Include="EGGainFavor_OnUpdate_Patch.cs" />
+    <Compile Include="EGJealous_OnEnd_Patch.cs" />
+    <Compile Include="EGJealous_OnStart_Patch.cs" />
+    <Compile Include="EGJealous_OnUpdate_Patch.cs" />
+    <Compile Include="EGMgr_CancelEngagement_Patch.cs" />
+    <Compile Include="EGMgr_OnCancelEngagement_Patch.cs" />
+    <Compile Include="EGStopEngagement_OnStart_Patch.cs" />
+    <Compile Include="EGStopEngagement_OnUpdate_Patch.cs" />
+    <Compile Include="FavorManager_InitData_Patch.cs" />
+    <Compile Include="FavorRelationshipData_GetRefData_Patch.cs" />
+    <Compile Include="ITAnimation_OnStart_Patch.cs" />
+    <Compile Include="ITJealousStart_OnUpdate_Patch.cs" />
+    <Compile Include="ITJealous_OnStart_Patch.cs" />
+    <Compile Include="ITJealous_OnUpdate_Patch.cs" />
+    <Compile Include="ITStopEngagement_OnStart_Patch.cs" />
+    <Compile Include="ITStopEngagement_OnUpdate_Patch.cs" />
+    <Compile Include="Jealous_OnEnd_Patch.cs" />
+    <Compile Include="Jealous_OnStart_Patch.cs" />
+    <Compile Include="Jealous_OnUpdate_Patch.cs" />
+    <Compile Include="Main.cs" />
+    <Compile Include="MGMgr_CanFollow_Patch.cs" />
+    <Compile Include="MGMgr_IsMarriage2_Patch.cs" />
+    <Compile Include="MGMgr_IsMarriage_Patch.cs" />
+    <Compile Include="MGMgr_GetMarriageID_Patch.cs" />
+    <Compile Include="MGMgr_Marriage_Patch.cs" />
+    <Compile Include="NpcData_Parse_Patch.cs" />
+    <Compile Include="NpcRelationModule_AddFlag_Patch2.cs" />
+    <Compile Include="NpcRelationModule_ContainsFlag_Patch.cs" />
+    <Compile Include="MGMgr_BreakUpAllNpc_Patch.cs" />
+    <Compile Include="MGMgr_TryPropose_Patch.cs" />
+    <Compile Include="NpcRelationModule_AddFlag_Patch.cs" />
+    <Compile Include="Pathea_Player_CanExpressRuntime_Patch.cs" />
+    <Compile Include="Pathea_Player_CanInteractiveJealous_Patch.cs" />
+    <Compile Include="Pathea_Player_InteractiveJealousStart_Patch.cs" />
+    <Compile Include="Pathea_Player_InteractiveJealous_Patch.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Settings.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>copy "C:\Users\poiqwe\source\repos\PortiaMods\MarriageMod\bin\Debug\MarriageMod.dll" "G:\ga\My Time at Portia\Mods\MarriageMod\"</PostBuildEvent>
+  </PropertyGroup>
+</Project>
