@@ -52,20 +52,42 @@ namespace InstantActions
             settings.MoveWhileActing = GUILayout.Toggle(settings.MoveWhileActing, "Allow moving while acting (Drilling, etc.)", new GUILayoutOption[0]);
             settings.InstantText = GUILayout.Toggle(settings.InstantText, "Instant Dialog Text", new GUILayoutOption[0]);
 
-            GUILayout.Label(string.Format("Hug Speed Multiplier : <b>{0:F0}x</b>", settings.HugSpeed), new GUILayoutOption[0]);
-            settings.HugSpeed = (int)GUILayout.HorizontalSlider((float)Main.settings.HugSpeed, 1f, 10f, new GUILayoutOption[0]);
-            GUILayout.Label(string.Format("Kiss Speed Multiplier : <b>{0:F0}x</b>", settings.KissSpeed), new GUILayoutOption[0]);
-            settings.KissSpeed = (int)GUILayout.HorizontalSlider((float)Main.settings.KissSpeed, 1f, 6f, new GUILayoutOption[0]);
-            GUILayout.Label(string.Format("Massage Speed Multiplier : <b>{0:F0}x</b>", settings.MassageSpeed), new GUILayoutOption[0]);
-            settings.MassageSpeed = (int)GUILayout.HorizontalSlider((float)Main.settings.MassageSpeed, 1f, 10f, new GUILayoutOption[0]);
-            GUILayout.Label(string.Format("Horse Petting Speed Multiplier : <b>{0:F0}x</b>", settings.HorseTouchSpeed), new GUILayoutOption[0]);
-            settings.HorseTouchSpeed = (int)GUILayout.HorizontalSlider((float)Main.settings.HorseTouchSpeed, 1f, 10f, new GUILayoutOption[0]);
-            GUILayout.Label(string.Format("Pet Petting Speed Multiplier : <b>{0:F0}x</b>", settings.PetPetSpeed), new GUILayoutOption[0]);
-            settings.PetPetSpeed = (int)GUILayout.HorizontalSlider((float)Main.settings.PetPetSpeed, 1f, 10f, new GUILayoutOption[0]);
-            GUILayout.Label(string.Format("Pet Embracing Speed Multiplier : <b>{0:F0}x</b>", settings.PetHugSpeed), new GUILayoutOption[0]);
-            settings.PetHugSpeed = (int)GUILayout.HorizontalSlider((float)Main.settings.PetHugSpeed, 1f, 10f, new GUILayoutOption[0]);
+            GUILayout.Label(string.Format("Hug Speed Multiplier : <b>{0:F1}x</b>", settings.HugSpeed), new GUILayoutOption[0]);
+            settings.HugSpeed = GUILayout.HorizontalSlider((float)Main.settings.HugSpeed * 10f, 1f, 100f, new GUILayoutOption[0])/10f;
+
+            GUILayout.Space(20);
+            GUILayout.Label(string.Format("Kiss Speed Multiplier : <b>{0:F1}x</b>", settings.KissSpeed), new GUILayoutOption[0]);
+            settings.KissSpeed = GUILayout.HorizontalSlider((float)Main.settings.KissSpeed * 10f, 1f, 60f, new GUILayoutOption[0]) / 10f;
+            
+            GUILayout.Space(20);
+            GUILayout.Label(string.Format("Massage Speed Multiplier : <b>{0:F1}x</b>", settings.MassageSpeed), new GUILayoutOption[0]);
+            settings.MassageSpeed = GUILayout.HorizontalSlider((float)Main.settings.MassageSpeed * 10f, 1f, 100f, new GUILayoutOption[0]) / 10f;
+            
+            GUILayout.Space(20);
+            GUILayout.Label(string.Format("Horse Petting Speed Multiplier : <b>{0:F1}x</b>", settings.HorseTouchSpeed), new GUILayoutOption[0]);
+            settings.HorseTouchSpeed = GUILayout.HorizontalSlider((float)Main.settings.HorseTouchSpeed * 10f, 1f, 100f, new GUILayoutOption[0]) / 10f;
+            
+            GUILayout.Space(20);
+            GUILayout.Label(string.Format("Pet Petting Speed Multiplier : <b>{0:F1}x</b>", settings.PetPetSpeed), new GUILayoutOption[0]);
+            settings.PetPetSpeed = GUILayout.HorizontalSlider((float)Main.settings.PetPetSpeed * 10f, 1f, 100f, new GUILayoutOption[0]) / 10f;
+            
+            GUILayout.Space(20);
+            GUILayout.Label(string.Format("Pet Embracing Speed Multiplier : <b>{0:F1}x</b>", settings.PetHugSpeed), new GUILayoutOption[0]);
+            settings.PetHugSpeed = GUILayout.HorizontalSlider((float)Main.settings.PetHugSpeed * 10f, 1f, 100f, new GUILayoutOption[0]) / 10f;
+            
+            GUILayout.Space(20);
+            GUILayout.Label(string.Format("Sowing / Gathering Speed Multiplier: <b>{0:F1}x</b>", settings.SowGatherSpeed), new GUILayoutOption[0]);
+            settings.SowGatherSpeed = GUILayout.HorizontalSlider((float)Main.settings.SowGatherSpeed * 10f, 1f, 100f, new GUILayoutOption[0]) / 10f;
+
+            GUILayout.Space(20);
+            GUILayout.Label(string.Format("Mining Speed Multiplier: <b>{0:F1}x</b>", settings.PickAxeSpeed), new GUILayoutOption[0]);
+            settings.PickAxeSpeed = GUILayout.HorizontalSlider((float)Main.settings.PickAxeSpeed * 10f, 1f, 100f, new GUILayoutOption[0]) / 10f;
+
+            GUILayout.Space(20);
+            GUILayout.Label(string.Format("Axe Speed Multiplier: <b>{0:F1}x</b>", settings.AxeSpeed), new GUILayoutOption[0]);
+            settings.AxeSpeed = GUILayout.HorizontalSlider((float)Main.settings.AxeSpeed*10f, 1f, 100f, new GUILayoutOption[0]) / 10f;
             //GUILayout.Label(string.Format("Rock,Paper, Scissors Speed Multiplier : <b>{0:F0}x</b>", settings.RPCSpeed), new GUILayoutOption[0]);
-            //settings.RPCSpeed = (int)GUILayout.HorizontalSlider((float)Main.settings.RPCSpeed, 1f, 10f, new GUILayoutOption[0]);
+            //settings.RPCSpeed = (int)GUILayout.HorizontalSlider((float)Main.settings.RPCSpeed, 1f, 100f, new GUILayoutOption[0]);
 
             //settings.InstantWorkshopCollect = GUILayout.Toggle(settings.InstantWorkshopCollect, "Instant Product Collection", new GUILayoutOption[0]);
         }

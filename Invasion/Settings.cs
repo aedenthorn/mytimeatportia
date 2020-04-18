@@ -4,10 +4,14 @@ namespace Invasion
 {
     public class Settings : UnityModManager.ModSettings
     {
-        public int ChanceInvade { get; internal set; } = 30;
-        public bool AllowKnight { get; internal set; } = false;
-        public bool RelationChange { get; internal set; } = true;
-        public bool AllowRats { get; internal set; } = false;
+        public int ChanceInvade { get; set; } = 30;
+        public int ChanceGang { get; set; } = 0;
+        public int MinGang { get; set; } = 1;
+        public int MaxGang { get; set; } = 2;
+        //public bool AllowKnight { get; set; } = false;
+        public bool RelationChange { get; set; } = true;
+        public bool AllowRats { get; set; } = false;
+        public int RelationPointsPerMonsterTier { get; set; } = 5;
 
         public override void Save(UnityModManager.ModEntry modEntry)
         {

@@ -30,7 +30,6 @@ namespace InstantActions
                     //Brush
                     //Stone
                     //Cloth
-
                     switch (str)
                     {
                         case "Stone":
@@ -71,6 +70,11 @@ namespace InstantActions
                             break;
                         case "Interact_Massage":
                             ___animator.speed = val ? settings.MassageSpeed : 1f;
+                            if (!val)
+                                MessageManager.Instance.Dispatch("InteractAnimEnd");
+                            break;
+                        case "Sow":
+                            ___animator.speed = val ? settings.SowGatherSpeed : 1f;
                             if (!val)
                                 MessageManager.Instance.Dispatch("InteractAnimEnd");
                             break;

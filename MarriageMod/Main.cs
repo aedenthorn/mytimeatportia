@@ -50,32 +50,8 @@ namespace MarriageMod
             harmony.Patch(AccessTools.Method(typeof(MGMgr), nameof(MGMgr.CanMarriage)), new HarmonyMethod(typeof(Main).GetMethod("MGMgr_CanMarriage_Patch_Prefix")));
             harmony.Patch(AccessTools.Method(typeof(FavorUtility), nameof(FavorUtility.GetGiftGainInfo)),new HarmonyMethod(typeof(Main).GetMethod("FavorUtility_GetGiftGainInfo_Patch_Prefix")));
             harmony.Patch(AccessTools.Method(typeof(Player), nameof(Player.CanExpressRuntime)),new HarmonyMethod(typeof(Main).GetMethod("Pathea_Player_CanExpressRuntime_Patch_Prefix")));
-            /*
-            Type[] types = new Type[] { typeof(AppearUnit), typeof(AudioClip), typeof(ChildConfig), typeof(ColorConfig), typeof(CustomActorAppearUnitConfig), typeof(DetailAsset), typeof(DyBoneConfig), typeof(FestivalAsset), typeof(GameObject), typeof(KongfuConfig), typeof(Material), typeof(MatTexSeasonAsset), typeof(NpcAppearUnit), typeof(PaintTextureAsset), typeof(Sprite), typeof(StoreIdToMapIcon), typeof(Texture), typeof(Texture2D), typeof(UIKeyHintConfig), typeof(UIKeyHitAndInControlMapping), typeof(UnityEngine.Object) };
-
-            for (int i = 0; i < types.Length; i++)
-            {
-                MethodInfo mi =  AccessTools.Method(typeof(ResMgr), nameof(ResMgr.LoadSyncByType), new Type[] { typeof(AssetType), typeof(string), typeof(bool), typeof(bool) }, new Type[] { types[i] });
-
-                HarmonyMethod prefix = new HarmonyMethod();
-                prefix = new HarmonyMethod(typeof(Main).GetMethod("ResMgr_LoadSyncByType_AudioClip_Patch_Prefix"));
-
-                if (types[i] == typeof(AudioClip) || types[i] == typeof(GameObject))
-                {
-                    //prefix = new HarmonyMethod(typeof(Main).GetMethod("ResMgr_LoadSyncByType_AudioClip_Patch_Prefix"));
-                }
-                else
-                {
-                    //prefix = new HarmonyMethod(typeof(Main).GetMethod("ResMgr_LoadSyncByType_Generic_Patch"));
-                }
-                //harmony.Patch(mi, prefix);
-            }
-            */
-
-
 
             SceneManager.activeSceneChanged += ChangeScene;
-            MessageManager.Instance.Subscribe("InteractKissAnimEnd", ResetSpouseAnimations);
 
             return true;
         }
@@ -174,12 +150,18 @@ namespace MarriageMod
 
                 }
             }
+            GUILayout.Space(10f);
+            GUILayout.Label(string.Format("Number of wedding rings to sell per month: <b>{0}</b>", settings.RingsPerMonth), new GUILayoutOption[0]);
+            settings.RingsPerMonth = (int)GUILayout.HorizontalSlider((float)settings.RingsPerMonth, 1f, 30f, new GUILayoutOption[0]);
+            GUILayout.Space(10f);
             settings.SpousesKiss = GUILayout.Toggle(settings.SpousesKiss, "Allow spouses to kiss each other", new GUILayoutOption[0]);
+            settings.KissSound = GUILayout.Toggle(settings.KissSound, "Use more realistic kissing sound for kisses", new GUILayoutOption[0]);
+            GUILayout.Space(10f);
             GUILayout.Label(string.Format("Minimum seconds between spouse kissing: <b>{0:F0}</b>", settings.MinKissingInterval), new GUILayoutOption[0]);
             settings.MinKissingInterval = (int)GUILayout.HorizontalSlider((float)Main.settings.MinKissingInterval, 2f, 30f, new GUILayoutOption[0]);
-            settings.KissSound = GUILayout.Toggle(settings.KissSound, "Use more realistic kissing sound for kisses", new GUILayoutOption[0]);
+            GUILayout.Space(10f);
+            GUILayout.Label(string.Format("Max distance for spouses to kiss automatically: <b>{0:F0}</b>", settings.MaxKissingDistance), new GUILayoutOption[0]);
             settings.MaxKissingDistance = GUILayout.HorizontalSlider(settings.MaxKissingDistance, 1f, 20f, new GUILayoutOption[0]);
-            settings.KissSound = GUILayout.Toggle(settings.KissSound, "Use more realistic kissing sound for kisses", new GUILayoutOption[0]);
         }
 
 
@@ -300,8 +282,6 @@ namespace MarriageMod
             return;
         }
 
-        private static UnityWebRequest www;
-
         public static bool ResMgr_LoadSyncByType_AudioClip_Patch_Prefix(ref AudioClip __result, AssetType assetType, string path, bool tryLoad, bool cache)
         {
             Dbgl("checking asset: " + path);
@@ -415,7 +395,7 @@ namespace MarriageMod
 
         private static void AfterWakeUp() { 
 
-            ResetSpouseAnimations.Invoke(new object[0]);
+            EndAnimation.Invoke();
             timer = new Timer(TimerCallback, "KissingTimer", TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(1));
             rand = new System.Random(randSeed);
         }
@@ -539,15 +519,19 @@ namespace MarriageMod
                         Vector3 _sefRot = Quaternion.LookRotation(_tarPos - _sefPos, Vector3.up).eulerAngles;
                         Vector3 _tarRot = Quaternion.LookRotation(_sefPos - _tarPos, Vector3.up).eulerAngles;
                         Vector3 vector = (_sefPos + _tarPos) * 0.5f;
-                        if(a.TryDoAction(ACType.Transfer, ACTransferPara.Construct(string.Empty, _sefPos, _sefRot)))
+                        if (a.TryDoAction(ACType.Transfer, ACTransferPara.Construct(string.Empty, _sefPos, _sefRot)))
                         {
                             if (ao.TryDoAction(ACType.Transfer, ACTransferPara.Construct(string.Empty, _tarPos, _tarRot)))
                             {
+                                bool isTall = animName == "Interact_Kiss" && (Module<ActorMgr>.Self.GetActorInfo(a.TmpltId).modelType == "Npc_Tall" || Module<ActorMgr>.Self.GetActorInfo(ao.TmpltId).modelType == "Npc_Tall" || Module<ActorMgr>.Self.GetActorInfo(a.TmpltId).modelType == "Npc_Strong" || Module<ActorMgr>.Self.GetActorInfo(ao.TmpltId).modelType == "Npc_Strong");
+                                if (isTall)
+                                    animName += "_Tall";
                                 a.StopAction(ACType.Animation, false);
                                 if (a.TryDoAction(ACType.Animation, ACTAnimationPara.Construct(animName, null, null, true)))
                                 {
                                     ao.StopAction(ACType.Animation, false);
-                                    if (ao.TryDoAction(ACType.Animation, ACTAnimationPara.Construct(animName, null, null, true)))
+                                    string modelType2 = Module<ActorMgr>.Self.GetActorInfo(ao.TmpltId).modelType;
+                                    if (ao.TryDoAction(ACType.Animation, ACTAnimationPara.Construct(animName, null, EndAnimation, true)))
                                     {
                                         kissLocations.Add(ao.gamePos - a.gamePos); // add location for audio
 
@@ -584,10 +568,8 @@ namespace MarriageMod
                 }
             }
         }
-
-        public static Action<object[]> ResetSpouseAnimations = new Action<object[]>(delegate (object[] o)
+        public static Action EndAnimation = new Action(delegate ()
         {
-
             List<FavorObject> spouseList = GetSpouses();
             List<Actor> aSpouseList = new List<Actor>();
 

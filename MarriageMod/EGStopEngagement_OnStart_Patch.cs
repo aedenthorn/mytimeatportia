@@ -1,6 +1,8 @@
 ﻿using Harmony12;
 using Pathea.Behavior;
 using System;
+using Pathea.EG;
+using Pathea.ModuleNs;
 
 namespace MarriageMod
 {
@@ -16,6 +18,7 @@ namespace MarriageMod
                 if (!Main.enabled)
                     return true;
                 Dbgl("EGStopEngagement_OnStart_Patch");
+                Module<EGMgr>.Self.StopEngagement(EGStopType.Interrupt);
 
                 return false;
             }

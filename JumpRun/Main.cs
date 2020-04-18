@@ -3,9 +3,12 @@ using Pathea;
 using Pathea.ACT;
 using Pathea.ModuleNs;
 using System;
+using System.Collections.Generic;
 using System.Reflection;
+using Pathea.ActorNs;
 using UnityEngine;
 using UnityModManagerNet;
+using static Pathea.ActorMotor;
 
 namespace JumpRun
 {
@@ -13,6 +16,15 @@ namespace JumpRun
     {
         public static Settings settings { get; private set; }
         public static bool enabled;
+
+        private static readonly bool isDebug = false;
+
+        public static void Dbgl(string str = "", bool pref = true)
+        {
+            if (isDebug)
+                Debug.Log((pref ? "JumpRun " : "") + str);
+        }
+
         private static void Load(UnityModManager.ModEntry modEntry)
         {
             settings = Settings.Load<Settings>(modEntry);
@@ -39,11 +51,10 @@ namespace JumpRun
         private static void OnGUI(UnityModManager.ModEntry modEntry)
         {
             GUILayout.Label(string.Format("Jump height multiplier: <b>{0:F1}</b>", settings.JumpHeight), new GUILayoutOption[0]);
-            settings.JumpHeight = GUILayout.HorizontalSlider(settings.JumpHeight, 1f, 5f, new GUILayoutOption[0]);
-            settings.JumpHeight = (float)Math.Round((double)settings.JumpHeight, 1);
+            settings.JumpHeight = GUILayout.HorizontalSlider(settings.JumpHeight*10f, 10f, 50f, new GUILayoutOption[0]) / 10f;
             GUILayout.Label(string.Format("Movement Speed multiplier: <b>{0:F1}</b>", settings.MovementSpeed), new GUILayoutOption[0]);
-            settings.MovementSpeed = GUILayout.HorizontalSlider(settings.MovementSpeed, 1f, 5f, new GUILayoutOption[0]);
-            settings.MovementSpeed = (float)Math.Round((double)settings.MovementSpeed, 1);
+            settings.MovementSpeed = GUILayout.HorizontalSlider(settings.MovementSpeed * 10f, 10f, 50f, new GUILayoutOption[0]) / 10f;
+            settings.multiJump = GUILayout.Toggle(settings.multiJump, "Allow multi-jump", new GUILayoutOption[0]);
         }
         [HarmonyPatch(typeof(Player), "Move")]
         static class Pathea_Player_Move_Patch
@@ -57,28 +68,105 @@ namespace JumpRun
                 Module<Player>.Self.actor.FastRunSpeed = 16f*settings.MovementSpeed;
             }
         }
-        [HarmonyPatch(typeof(ACTJump), "CanDo")]
-        static class Pathea_ACTJump_CanDo_Patch
+
+        [HarmonyPatch(typeof(ActorMotor), "JumpStart")]
+        static class Pathea_ActorMotor_MoveReal_Patch
         {
-            static bool Prefix(ref bool __result)
-            {
-                if (!enabled)
-                    return true;
-                __result = true;
-                return false;
-            }
-        }
-        [HarmonyPatch(typeof(ActorMotor), "MoveReal")]
-        static class Pathea_ActorMotor_JumpStart_Patch
-        {
-            static void Prefix(ref ActorMotor.JumpActionParamer ___jumpParamer)
+            static void Prefix(ActorMotor __instance, ref ActorMotor.JumpActionParamer ___jumpParamer)
             {
                 if (!enabled)
                     return;
-                if (___jumpParamer != null)
+                ___jumpParamer.JumpInitSpeed = 27f * (float) Math.Sqrt(settings.JumpHeight);
+            }
+        }
+
+        private static int jumpsJumped = 0;
+
+        [HarmonyPatch(typeof(ActorMotor), "JumpStart")]
+        static class Pathea_ActorMotor_JumpStart_Patch
+        {
+            static bool Prefix(JumpActionParamer ___jumpParamer, BoolLogic ___motorFlag, bool ___onFly, ref float ___jumpTime, ref bool ___onJump, ref Vector3 ___jumpSpeed)
+            {
+                if (!enabled || !settings.multiJump)
+                    return true;
+                
+                Dbgl("Jump Start");
+                
+                if (!___motorFlag.Result)
                 {
-                    ___jumpParamer.Gravity = 80f / settings.JumpHeight;
+                    return false;
                 }
+                if (___onFly || ___jumpParamer == null)
+                {
+                    return false;
+                }
+                ___jumpTime = 0f;
+                ___onJump = true;
+                ___jumpSpeed = Vector3.up * ___jumpParamer.JumpInitSpeed * ___jumpParamer.Multiply;
+                return false;
+            }
+        }
+
+        [HarmonyPatch(typeof(ACTMgr), "CanDoAction", new Type[]{typeof(int)})]
+        static class CanDoAction_Patch
+        {
+            static bool Prefix(ref bool __result, ref ACTAction[] ____acts, int index)
+            {
+                if (!enabled || !settings.multiJump)
+                    return true;
+
+                if (____acts[index] is ACTJump)
+                {
+                    Dbgl("CanDoAction Jump");
+                    jumpsJumped++;
+                    __result = true;
+                    return false;
+                }
+
+                return true;
+            }
+        }
+ 
+        [HarmonyPatch(typeof(ACTMgr), "TryAddAction", new Type[]{typeof(int)})]
+        static class TryAddAction_Patch
+        {
+            static bool Prefix(ACTMgr __instance, ref bool __result, ref ACTAction[] ____acts, int index, List<int> ____runs)
+            {
+                if (!enabled || !settings.multiJump)
+                    return true;
+
+                if (index == (int)ACType.Jump)
+                {
+
+                    Dbgl("TryAddAction Jump");
+                    for (int i = ____runs.Count - 1; i >= 0; i--)
+                    {
+                        if (____acts[____runs[i]] is ACTJump)
+                        {
+                            Dbgl("TryAddAction Jump removing");
+                            ____acts[i].Reset();
+                            ____runs.Remove(i);
+                            __instance.StopAll(true);
+                            __result = true;
+                            return false;
+                        }
+                    }
+                }
+                return true;
+            }
+        }
+        [HarmonyPatch(typeof(ActorMotor), "JumpUpdate")]
+        static class JumpUpdate_Patch
+        {
+            static void Prefix(ActorMotor __instance, bool ___onJump, Actor ___actor)
+            {
+                if (!enabled || !settings.multiJump)
+                    return;
+                if (!___actor.IsAnimTag("Jump") &&!___actor.IsAnimTag("JumpEnd"))
+                {
+                    jumpsJumped = 0;
+                }
+
             }
         }
     }

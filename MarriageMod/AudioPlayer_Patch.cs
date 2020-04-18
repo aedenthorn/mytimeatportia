@@ -36,7 +36,7 @@ namespace MarriageMod
         {
             static bool Prefix(ref AudioClip clip, AudioMixerGroup output, AudioData ___tempData)
             {
-                if (!enabled || !settings.KissSound)
+                if (!enabled || !settings.KissSound || kissAudioClip == null || ___tempData == null || ___tempData.id == null)
                     return true;
                 if(___tempData.id == kissAudioId) {
 

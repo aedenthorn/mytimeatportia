@@ -9,7 +9,7 @@ namespace MarriageMod
 {
     public partial class Main
     {
-        [HarmonyPatch(typeof(AnimController), "SetBool", new Type[] { typeof(string), typeof(bool) })]
+        //[HarmonyPatch(typeof(AnimController), "SetBool", new Type[] { typeof(string), typeof(bool) })]
         static class AnimController_SetBool_Patch
         {
             static void Prefix(string str, bool val, ref Animator ___animator, AnimController __instance)
@@ -19,7 +19,7 @@ namespace MarriageMod
 
                 if (___animator.isInitialized)
                 {
-                    if(str == "Interact_Kiss" && !val)
+                    if((str == "Interact_Kiss" || str == "Interact_Kiss_Tall") && !val)
                         MessageManager.Instance.Dispatch("InteractKissAnimEnd");
                 }
             }

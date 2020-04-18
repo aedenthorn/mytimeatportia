@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>MarriageMod</RootNamespace>
     <AssemblyName>MarriageMod</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
   </PropertyGroup>
@@ -30,50 +30,6 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="0Harmony12, Version=1.2.0.1, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>G:\ga\My Time at Portia\Portia_Data\Managed\0Harmony12.dll</HintPath>
-    </Reference>
-    <Reference Include="Assembly-CSharp">
-      <HintPath>G:\ga\My Time at Portia\Portia_Data\Managed\Assembly-CSharp.dll</HintPath>
-    </Reference>
-    <Reference Include="Assembly-CSharp-firstpass">
-      <HintPath>G:\ga\My Time at Portia\Portia_Data\Managed\Assembly-CSharp-firstpass.dll</HintPath>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
-    <Reference Include="UnityEngine">
-      <HintPath>G:\ga\My Time at Portia\Portia_Data\Managed\UnityEngine.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.AnimationModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>G:\ga\My Time at Portia\Portia_Data\Managed\UnityEngine.AnimationModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.AudioModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null" />
-    <Reference Include="UnityEngine.CoreModule">
-      <HintPath>G:\ga\My Time at Portia\Portia_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.IMGUIModule">
-      <HintPath>G:\ga\My Time at Portia\Portia_Data\Managed\UnityEngine.IMGUIModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.UI">
-      <HintPath>G:\ga\My Time at Portia\Portia_Data\Managed\UnityEngine.UI.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.UnityWebRequestAudioModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>G:\ga\My Time at Portia\Portia_Data\Managed\UnityEngine.UnityWebRequestAudioModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.UnityWebRequestModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null" />
-    <Reference Include="UnityModManager">
-      <HintPath>G:\ga\My Time at Portia\Portia_Data\Managed\UnityModManager\UnityModManager.dll</HintPath>
-    </Reference>
-  </ItemGroup>
   <ItemGroup>
     <Compile Include="AnimController_SetBool_Patch.cs" />
     <Compile Include="AudioPlayer_Patch.cs" />
@@ -106,6 +62,7 @@
     <Compile Include="Jealous_OnStart_Patch.cs" />
     <Compile Include="Jealous_OnUpdate_Patch.cs" />
     <Compile Include="Main.cs" />
+    <Compile Include="StoreData_Init_Patch.cs" />
     <Compile Include="MGMgr_CanFollow_Patch.cs" />
     <Compile Include="MGMgr_IsMarriage2_Patch.cs" />
     <Compile Include="MGMgr_IsMarriage_Patch.cs" />
@@ -124,8 +81,62 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Settings.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <Reference Include="0Harmony12, Version=1.2.0.1, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>G:\ga\MTAP\Portia_Data\Managed\UnityModManager\0Harmony12.dll</HintPath>
+    </Reference>
+    <Reference Include="Assembly-CSharp">
+      <HintPath>G:\ga\MTAP\Portia_Data\Managed\Assembly-CSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="Assembly-CSharp-firstpass">
+      <HintPath>G:\ga\MTAP\Portia_Data\Managed\Assembly-CSharp-firstpass.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml" />
+    <Reference Include="UnityEngine">
+      <HintPath>G:\ga\MTAP\Portia_Data\Managed\UnityEngine.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.AnimationModule">
+      <HintPath>G:\ga\MTAP\Portia_Data\Managed\UnityEngine.AnimationModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.AudioModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>G:\ga\MTAP\Portia_Data\Managed\UnityEngine.AudioModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.CoreModule">
+      <HintPath>G:\ga\MTAP\Portia_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.IMGUIModule">
+      <HintPath>G:\ga\MTAP\Portia_Data\Managed\UnityEngine.IMGUIModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.ParticleSystemModule">
+      <HintPath>G:\ga\MTAP\Portia_Data\Managed\UnityEngine.ParticleSystemModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.TextRenderingModule">
+      <HintPath>G:\ga\MTAP\Portia_Data\Managed\UnityEngine.TextRenderingModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UI">
+      <HintPath>G:\ga\MTAP\Portia_Data\Managed\UnityEngine.UI.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UIModule">
+      <HintPath>G:\ga\MTAP\Portia_Data\Managed\UnityEngine.UIModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UnityWebRequestAudioModule">
+      <HintPath>G:\ga\MTAP\Portia_Data\Managed\UnityEngine.UnityWebRequestAudioModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UnityWebRequestModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>G:\ga\MTAP\Portia_Data\Managed\UnityEngine.UnityWebRequestModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UnityWebRequestWWWModule">
+      <HintPath>G:\ga\MTAP\Portia_Data\Managed\UnityEngine.UnityWebRequestWWWModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityModManager">
+      <HintPath>G:\ga\MTAP\Portia_Data\Managed\UnityModManager\UnityModManager.dll</HintPath>
+    </Reference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>copy "C:\Users\poiqwe\source\repos\PortiaMods\MarriageMod\bin\Debug\MarriageMod.dll" "G:\ga\My Time at Portia\Mods\MarriageMod\"</PostBuildEvent>
+    <PostBuildEvent>copy "C:\Users\poiqwe\source\repos\PortiaMods\MarriageMod\bin\Debug\MarriageMod.dll" "G:\ga\MTAP\Mods\MarriageMod\"</PostBuildEvent>
   </PropertyGroup>
 </Project>

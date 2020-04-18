@@ -29,8 +29,9 @@ namespace MarriageMod
                     if(___factionId < 1)
                         ___factionId = 12;
 
-                    ___interactStr += "Talk,SendGift,Play,CamCapture,Love,InvitePlay,InviteDate,Action,WantChildren";
+                    ___interactStr += ",Talk,SendGift,Play,CamCapture,Love,InvitePlay,InviteDate,Action,WantChildren";
                 }
+                Dbgl((___interactStr));
             }
             static void Postfix(int ___id, NpcData __instance)
             {

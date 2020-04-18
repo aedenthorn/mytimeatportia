@@ -1,13 +1,16 @@
 ﻿using Harmony12;
 using Pathea.Missions;
 using System;
+using System.Collections.Generic;
+using System.Reflection;
+using Pathea.ModuleNs;
 
 namespace MultipleCommerce
 {
     public static partial class Main
     {
         [HarmonyPatch(typeof(OrderMissionManager), "GetRandomOrderMission", new Type[] { typeof(System.Random), typeof(int),typeof(int) })]
-        static class OrderMissionManager_GetRandomOrderMission_Patch
+        static class OrderMissionManager_OrgBigOrderCount_Patch
         {
             static void Prefix(ref int count, ref IntR ___OrgBigOrderCount, ref IntR ___NpcSpecialOrderCount)
             {

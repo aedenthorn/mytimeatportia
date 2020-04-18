@@ -2,31 +2,23 @@
 using Pathea;
 using Pathea.ActorNs;
 using Pathea.AppearNs;
-using Pathea.Behavior;
-using Pathea.ConfigNs;
-using Pathea.Conversations;
-using Pathea.FavorSystemNs;
-using Pathea.Festival;
 using Pathea.HomeNs;
 using Pathea.HomeViewerNs;
 using Pathea.InputSolutionNs;
-using Pathea.ItemDropNs;
 using Pathea.ItemSystem;
-using Pathea.MailNs;
-using Pathea.MessageSystem;
 using Pathea.Missions;
 using Pathea.ModuleNs;
 using Pathea.OptionNs;
+using Pathea.ScenarioNs;
 using Pathea.StageNs;
 using Pathea.UISystemNs;
 using Pathea.UISystemNs.Grid;
 using Pathea.UISystemNs.MainMenu.MissionUI;
-using PatheaScriptExt;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using UnityEngine;
+using UnityEngine.UI;
 using static Harmony12.AccessTools;
 using static Pathea.UISystemNs.MainMenu.MissionUI.MissionUICtr;
 
@@ -37,7 +29,10 @@ namespace Cheats
         static FieldRef<MissionUICtr, MissionType> curShowTypeByRef = FieldRefAccess<MissionUICtr, MissionType>("curShowType");
         static FieldRef<MissionManager, List<Mission>> missions_EndTypeByRef = FieldRefAccess<MissionManager, List<Mission>>("m_missions_End");
 
-        [HarmonyPatch(typeof(MissionUICtr), "Start")]
+
+
+
+        //[HarmonyPatch(typeof(MissionUICtr), "Start")]
         static class MissionUICtr_Start_Patch
         {
             static void Postfix(MissionUICtr __instance, GridPage ___missionTitleGrid)
@@ -100,37 +95,37 @@ namespace Cheats
             }
         }
 
+        [HarmonyPatch(typeof(ScenarioModule), "PostLoad")]
+        static class ScenarioModule_PostLoad_Patch
+        {
+            static void Postfix()
+            {
+                OnLoadGame();
+            }
+        }
+        [HarmonyPatch(typeof(HomeBedGetupUI), "Update")]
+        static class HomeBedGetupUI_Patch
+        {
+            static void Prefix(HomeBedGetupUI __instance)
+            {
+                __instance.GetUp();
 
-        /*
-                [HarmonyPatch(typeof(ActorInfo), "Instantiate")]
-                static class ActorInfo_Instantiate_Patch
+            }
+        }
+
+        //[HarmonyPatch(typeof(ActorInfo), "Instantiate")]
+        static class ActorInfo_Instantiate_Patch
+        {
+            static void Prefix(ref string ___model)
+            {
+                if(___model == "Actor/Npc_Alice")
                 {
-                    static void Postfix(string ___model, GameObject __result)
-                    {
-                        if(___model == "Actor/Npc_Phyllis")
-                        {
-                            Mesh importedMesh = ObjImporter.ImportFile("G:/ga/My Time at Portia/modmanager/assets/Phyllis_LOD0.obj");
-                            SkinnedMeshRenderer meshRenderer = __result.GetComponent<Actor>();
-
-                            Texture2D texture = null;
-                            byte[] fileData;
-
-                            string filePath = "G:/ga/My Time at Portia/modmanager/assets/Phyllis2.png";
-
-                            if (File.Exists(filePath))
-                            {
-                                fileData = File.ReadAllBytes(filePath);
-                                texture = new Texture2D(1024, 1024);
-                                texture.LoadRawTextureData(fileData);
-                            }
-
-                            meshRenderer.material.mainTexture = texture;
-                    }
+                    ___model = "Actor/Npc_Phyllis";
                 }
             }
-          */
+        }
 
-        [HarmonyPatch(typeof(ActorEquip), "ApplyCloth")]
+        //[HarmonyPatch(typeof(ActorEquip), "ApplyCloth")]
         static class ActorEquip_ApplyCloth_Patch
         {
             static void Prefix(ActorEquip __instance, string[] ___nudeAppearUnits, string[] ___equipAppearUnits, GameObject clothRoot, bool showHat, AppearData ___appearData, string ___tattooPath)
@@ -176,7 +171,7 @@ namespace Cheats
             }
         }
 
-        [HarmonyPatch(typeof(Actor), "AddVisible")]
+        //[HarmonyPatch(typeof(Actor), "AddVisible")]
         static class Actor_Init_Patch
         {
             static void Postfix(Actor __instance, int ___instanceId, SkinnedMeshRenderer ___skinnedMeshRenderer)
@@ -191,7 +186,7 @@ namespace Cheats
             }
         }
         
-        [HarmonyPatch(typeof(ActorEquip), "ApplyCloth")]
+        //[HarmonyPatch(typeof(ActorEquip), "ApplyCloth")]
         static class AppearTarget_BuildMesh_Patch
         {
             static bool Prefix(GameObject clothRoot, bool showHat, string[] ___nudeAppearUnits, string[] ___equipAppearUnits, AppearData ___appearData, string ___tattooPath, ActorEquip __instance)
@@ -320,6 +315,99 @@ namespace Cheats
             }
 
         }
+
+        //[HarmonyPatch(typeof(PlayerItemBarCtr), "Update")]
+        static class ItemBar_Patch
+        {
+            static void Prefix(PlayerItemBarCtr __instance)
+            {
+                if (Input.GetKeyDown(KeyCode.Tab))
+                {
+                    for (int index = 0; index < 8; index++)
+                    {
+                        ItemObject itemObject = Module<Player>.Self.bag.itemBar.itemBarItems[index];
+                        ItemObject itemObj = Module<Player>.Self.bag.GetItems(0).GetItemObj(index);
+                        if (itemObject != null && itemObj != null && itemObject.ItemBase.ID == itemObj.ItemBase.ID && itemObj.RemainCapacity() != 0)
+                        {
+                            int num2 = itemObj.RemainCapacity();
+                            if (itemObject.Number <= num2)
+                            {
+                                itemObj.ChangeNumber(itemObject.Number);
+                                Module<Player>.Self.bag.itemBar.SetItemObject(null, index);
+                            }
+                            else
+                            {
+                                itemObj.ChangeNumber(num2);
+                                itemObject.ChangeNumber(-num2);
+                            }
+                        }
+                        else
+                        {
+                            Module<Player>.Self.bag.BagExchangeItemBar(index, index, 0);
+                        }
+                    }
+
+                    MethodInfo dynMethod = __instance.GetType().GetMethod("Unequip", BindingFlags.NonPublic | BindingFlags.Instance);
+                    dynMethod.Invoke(__instance, new object[] { });
+                }
+                else if (Input.GetKeyDown(KeyCode.O))
+                {
+                    StorageViewer sv = new StorageViewer();
+                    FieldRef<StorageViewer,StorageUnit> suRef = FieldRefAccess<StorageViewer, StorageUnit>("storageUnit");
+                    suRef(sv) = StorageUnit.GetStorageByGlobalIndex(0);
+
+                    MethodInfo dynMethod = sv.GetType().GetMethod("InteractStorage", BindingFlags.NonPublic | BindingFlags.Instance);
+                    dynMethod.Invoke(sv, new object[] { });
+                }
+            }
+        }
+        /*
+        [HarmonyPatch(typeof(PlayerInputCreator), "Init")]
+        static class PlayerInputCreator_Patch
+        {
+            static void Postfix()
+            {
+                Dbgl("overriding scanner input!");
+                Module<InputSolutionModule>.Self.Set(SolutionType.Releaver, new EnhancedScannerSolution());
+            }
+        }
+        
+        [HarmonyPatch(typeof(TreasureRevealer), "EnterAimMode")]
+        static class TreasureRevealer_Patch
+        {
+            static void Postfix()
+            {
+                Dbgl("overriding scanner input!");
+                CameraManager.Instance.PopStackActiveController(true, new object[0]);
+                CameraManager.Instance.PushStackActiveController("AcrossShoulderCamera", true, new object[] { });
+            }
+        }
+        */
+
+
+        //[HarmonyPatch(typeof(WholeMapViewer), "SetMarkIcon")]
+        static class SetMarkIcon_Patch
+        {
+            static bool Prefix(WholeMapViewer __instance, Image iconImage, Image ___NowPlayingMap, bool ___forceWorldMap)
+            {
+                if (Input.GetKey(KeyCode.LeftControl))
+                {
+                    Vector3 vector = ___NowPlayingMap.rectTransform.InverseTransformPoint(iconImage.rectTransform.position);
+                    MethodInfo dynMethod = __instance.GetType().GetMethod("ReverseConvertGamePosFromGameMap", BindingFlags.NonPublic | BindingFlags.Instance);
+                    Vector3 v3 = (Vector3)dynMethod.Invoke(__instance, new object[] { new Vector3(vector.x, vector.y, 0f) });
+                    v3.z = 100f;
+
+                    Module<Player>.Self.GamePos = v3;
+
+                    //Module<Player>.Self.actor.RequestForceMove(new Vector3(0,0,-1000f));
+
+                    return false;
+                }
+                return true;
+            }
+        }
+        
+
 
         //[HarmonyPatch(typeof(Stage), "InitStage", new Type[] { })]
         static class Stage_InitStage_Patch

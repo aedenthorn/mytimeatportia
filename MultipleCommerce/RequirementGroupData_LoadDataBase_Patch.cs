@@ -11,18 +11,17 @@ namespace MultipleCommerce
         {
             static void Postfix()
             {
-                RequirementGroupData r = RequirementGroupData.refDataDic[1002];
+                if (!enabled || !settings.AddFishSpecialOrders)
+                    return;
+                RequirementGroupData r = RequirementGroupData.refDataDic[FISH_GROUP_ID];
                 int[] fi = new int[FishInts.Length];
-                int index = 42000;
+                int index = FISH_BASE_ID;
                 for (int i = 0; i < FishInts.Length; i++)
                 {
                     fi[i] = index++;
                 }
 
-                var z = new int[r.requirementIdAry.Length + fi.Length];
-                r.requirementIdAry.CopyTo(z, 0);
-                fi.CopyTo(z, r.requirementIdAry.Length);
-                RequirementGroupData.refDataDic[1002].requirementIdAry = z;
+                RequirementGroupData.refDataDic[FISH_GROUP_ID].requirementIdAry = fi;
             }
         }
     }

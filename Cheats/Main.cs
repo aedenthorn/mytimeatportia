@@ -24,8 +24,17 @@ using Pathea.StageNs;
 using System.Linq;
 using PatheaScript;
 using Ccc;
+using Hont;
+using Pathea.AppearNs;
 using PatheaScriptExt;
 using Pathea.BlackBoardNs;
+using Pathea.NpcRepositoryNs;
+using Pathea.OptionNs;
+using Mission = Pathea.Missions.Mission;
+using System.IO;
+using Pathea.HomeViewerNs;
+using Pathea.NpcAppearNs;
+using Pathea.ScenarioNs;
 
 namespace Cheats
 {
@@ -53,69 +62,147 @@ namespace Cheats
             var harmony = HarmonyInstance.Create(modEntry.Info.Id);
             harmony.PatchAll(Assembly.GetExecutingAssembly());
 
-            MessageManager.Instance.Subscribe("WakeUpScreenEnd", new Action<object[]>(OnWakeUp));
-            
+            //Module<ScenarioModule>.Self.EndLoadEventor += OnLoadGame;
 
-            SceneManager.activeSceneChanged += ChangeScene;
+            //SceneManager.activeSceneChanged += ChangeScene;
+            /*
             assetBundle = AssetBundle.LoadFromFile(Application.streamingAssetsPath + "/untitled");
             if (assetBundle != null)
             {
-                customTextures["Nora"] = assetBundle.LoadAsset<Texture>("Nora.png");
-                customTextures["Phyllis"] = assetBundle.LoadAsset<Texture>("Phyllis.png");
-                customTextures["Penny"] = assetBundle.LoadAsset<Texture>("Penny.png");
-                customTextures["Ginger"] = assetBundle.LoadAsset<Texture>("Ginger.png");
-                customTextures["Sonia"] = assetBundle.LoadAsset<Texture>("Sonia.png");
-                customTextures["Linda_Pants018"] = assetBundle.LoadAsset<Texture>("Linda_Pants018.png");
             }
+            */
 
+            //string[] names = { "Emily", "Nora", "Phyllis", "Ginger", "Sonia", };
+            string[] names = { "Phyllis" };
+
+            foreach (string name in names)
+            {
+                string path = $"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}/assets/{name}.png";
+                if (!File.Exists(path))
+                {
+                    Dbgl($"file not found for: {name}");
+                    break;
+                }
+                Texture2D tex = new Texture2D(2, 2);
+                byte[] imageData = File.ReadAllBytes(path);
+                tex.LoadImage(imageData);
+                customTextures.Add(name,tex);
+            }
 
         }
 
-        private static void OnWakeUp(object[] obj)
+        private static void OnLoadGame()
         {
+            if (!Module<FarmBuildingModeModule>.Self.IsBuildingActive(FarmBuildingEnum.Factory))
+            {
+
+                Module<FarmBuildingModeModule>.Self.SetBuildingActive(FarmBuildingEnum.Factory, true);
+
+            }
             //DumpStuff();
         }
 
-        private static string GetModDir(string name = "")
-        {
-            string file = Application.dataPath;
-            if (Application.platform == RuntimePlatform.OSXPlayer)
-            {
-                file += "/../../";
-            }
-            else if (Application.platform == RuntimePlatform.WindowsPlayer)
-            {
-                file += "/../";
 
-            }
-
-            string uri = "file:///" + file + "Mods/MarriageMod/" + name;
-            return uri;
-        }
 
         private static AssetBundle assetBundle = null;
         private static Dictionary<string, Texture> customTextures = new Dictionary<string, Texture>();
+        private static Dictionary<string, Texture> customClothes = new Dictionary<string, Texture>();
         private static int[] textureActors = new int[] { 4000035, 4000141, 4000006, 4000093, 4000033};
 
         private static void ChangeScene(Scene oldScene, Scene newScene)
         {
             Dbgl("new scene: " + newScene.name);
 
-            FieldRef<Actor, SkinnedMeshRenderer> rendererByRef = FieldRefAccess<Actor, SkinnedMeshRenderer>("skinnedMeshRenderer");
+            FieldRef<Actor, SkinnedMeshRenderer> rendererByRef =
+                FieldRefAccess<Actor, SkinnedMeshRenderer>("skinnedMeshRenderer");
             SkinnedMeshRenderer skinnedMeshRenderer = null;
 
             Dictionary<int, Actor> textureActors = new Dictionary<int, Actor>();
 
 
-            for(int i = 0; i < Main.textureActors.Length; i++)
+            for (int i = 0; i < Main.textureActors.Length; i++)
             {
+
                 Actor a = Module<ActorMgr>.Self.Get(Main.textureActors[i]);
-                if(a != null && a.InActiveScene && customTextures.ContainsKey(a.ActorName) && customTextures[a.ActorName] != null)
+                if (a != null && a.InActiveScene && customTextures.ContainsKey(a.ActorName) &&
+                    customTextures[a.ActorName] != null)
                 {
                     skinnedMeshRenderer = rendererByRef(a);
                     if (skinnedMeshRenderer != null)
-                        skinnedMeshRenderer.material.SetTexture("_MainTex", customTextures[a.ActorName]);
+                        skinnedMeshRenderer.material.mainTexture = customTextures[a.ActorName];
                 }
+            }
+        }
+
+
+        //[HarmonyPatch(typeof(ActorEquip), "ApplyCloth")]
+        static class ActorEquip_Patch
+        {
+            static bool Prefix(ref SkinnedMeshRenderer __result, ref ActorEquip __instance, string[] ___nudeAppearUnits,
+                string[] ___equipAppearUnits, ref AppearData ___appearData, ref string ___tattooPath,
+                GameObject clothRoot = null, bool showHat = true)
+            {
+                List<AppearUnit> list = new List<AppearUnit>();
+                AppearUnit tattooTarget = null;
+                for (int i = 0; i < 5; i++)
+                {
+                    if (___nudeAppearUnits.Length > i && ___nudeAppearUnits[i] != null)
+                    {
+                        AppearUnit appearUnit = null;
+                        if (i < ___equipAppearUnits.Length && !string.IsNullOrEmpty(___equipAppearUnits[i]) &&
+                            ((showHat && Singleton<OptionsMgr>.Self.ShowHat) || i != 1))
+                        {
+                            AppearUnit appearUnit2 =
+                                Singleton<ResMgr>.Instance.LoadSyncByType<AppearUnit>(AssetType.Appear,
+                                    ___equipAppearUnits[i]);
+                            if (appearUnit2 != null)
+                            {
+                                Dbgl("ActorEquip path: " + ___equipAppearUnits[i]);
+                                foreach (string key in customClothes.Keys)
+                                {
+                                    if (___equipAppearUnits[i].EndsWith(key))
+                                    {
+                                        appearUnit2.Smr.material.SetTexture("_MainTex", customClothes[key]);
+                                    }
+
+                                }
+
+                                appearUnit = appearUnit2;
+                            }
+                        }
+                        else
+                        {
+                            appearUnit =
+                                Singleton<ResMgr>.Instance.LoadSyncByType<AppearUnit>(AssetType.Appear,
+                                    ___nudeAppearUnits[i]);
+                        }
+
+                        if (appearUnit != null)
+                        {
+                            list.Add(appearUnit);
+                            if (i == 0)
+                            {
+                                tattooTarget = appearUnit;
+                            }
+                        }
+                    }
+                }
+
+                if (clothRoot == null)
+                {
+                    clothRoot = __instance.ClothRoot;
+                }
+
+                AppearTarget.Instance.SetRoot(clothRoot);
+                SkinnedMeshRenderer result =
+                    AppearTarget.Instance.BuildMesh(list, ___appearData, tattooTarget, ___tattooPath);
+
+                MethodInfo dynMethod = __instance.GetType()
+                    .GetMethod("ApplyDyboneConfigs", BindingFlags.NonPublic | BindingFlags.Instance);
+                dynMethod.Invoke(__instance, new object[] {AppearTarget.Instance.BoneDic});
+
+                __result = result;
+                return false;
             }
         }
 
@@ -127,11 +214,45 @@ namespace Cheats
 
         private static void OnGUI(UnityModManager.ModEntry modEntry)
         {
+
+            UnityEngine.Event e = UnityEngine.Event.current;
+
+
             if (GUILayout.Button("New Game+", new GUILayoutOption[]{
                         GUILayout.Width(150f)
                     }))
             {
                 NewGamePlus();
+            }
+
+            if (GUILayout.Button("Relationship++", new GUILayoutOption[]
+            {
+                GUILayout.Width(150f)
+            }))
+            {
+                FavorObject[] fa = FavorManager.Self.GetAllFavorObjects();
+                foreach (FavorObject f in fa)
+                {
+                    if (!f.IsDebut || f.RelationshipType == FavorRelationshipType.Couple)
+                    {
+                        FavorManager.Self.GainFavorValue(f.ID, -1, 100);
+                    }
+                }
+            }
+
+            if (GUILayout.Button("Time--", new GUILayoutOption[]{
+                        GUILayout.Width(150f)
+                    }))
+            {
+                GameDateTime dt = TimeManager.Self.DateTime.AddSeconds(-60 * 60);
+                GameTimeSpan t = dt - TimeManager.Self.DateTime;
+                TimeManager.Self.SetDateTime(dt, true, TimeManager.JumpingType.Max);
+            }
+            if (GUILayout.Button("Time++", new GUILayoutOption[]{
+                        GUILayout.Width(150f)
+                    }))
+            {
+                TimeManager.Self.JumpTimeByGameTime(60 * 60);
             }
         }
 
@@ -198,7 +319,7 @@ namespace Cheats
             }
         }
         */
-        [HarmonyPatch(typeof(PackageUIBase), "BagClick", new Type[] { typeof(int) })]
+        //[HarmonyPatch(typeof(PackageUIBase), "BagClick", new Type[] { typeof(int) })]
         static class PackageUIBase_BagSelect
         {
             static bool Prefix(PackageUIBase __instance, int obj, bool ___IsSplitMode, int ___bagIndex)
@@ -237,6 +358,8 @@ namespace Cheats
         {
             static void Postfix()
             {
+                Dbgl("new Vector3" + Module<Player>.Self.actor.gamePos.ToString() + ",");
+                return;
                 //Module<Player>.Self.AddExp(400000, true);
                 //Module<Player>.Self.bag.ChangeMoney(1000000, true, 0);
                 //Object here is necessary.
@@ -244,7 +367,6 @@ namespace Cheats
 
                 //Dbgl("OtherConfig: " + string.Format(str));
 
-                //Debug.Log("new Vector3" + Module<Player>.Self.actor.gamePos.ToString() + ",");
                 //Module<Player>.Self.bag.AddItem(ItemObject.CreateItem(1001402,1), true);
 
 
@@ -277,7 +399,7 @@ namespace Cheats
                 //FavorObject ff = FavorManager.Self.GetFavorObject(-1);
                 //bool test = ff.IsDebut;
 
-                if (false)
+                if (true)
                 {
                     FavorObject[] fa = FavorManager.Self.GetAllFavorObjects();
 
@@ -296,7 +418,7 @@ namespace Cheats
                             }
                         }
                     }
-                    if (true)
+                    if (false)
                     {
                         Module<Player>.Self.bag.AddItem(ItemObject.CreateItem(7000041, 100), true);
                         Module<Player>.Self.bag.AddItem(ItemObject.CreateItem(8000019, 100), true);
@@ -306,7 +428,7 @@ namespace Cheats
                 }
             }
         }
-        [HarmonyPatch(typeof(Player), "Roll", new Type[] { })]
+        //[HarmonyPatch(typeof(Player), "Roll", new Type[] { })]
         static class Player_Roll_Patch
         {
             static void Postfix()
@@ -363,6 +485,27 @@ namespace Cheats
                 }
             }
         }
+
+
+
+
+
+        //[HarmonyPatch(typeof(SceneItemMissionBoard), "InitFromData")]
+        static class SceneItemMissionBoardData_Patch
+        {
+            static void Prefix(ref SceneItemData data)
+            {
+            }
+            static void Postfix(SceneItemData data)
+            {
+                Dbgl("SIMB InitFromData zyx");
+                foreach (BoardItemSeat bis in ((SceneItemMissionBoardData)data).allBoardItemSeat)
+                {
+                    Dbgl(bis.modelPath+" "+bis.pos.x+" "+bis.pos.y+" "+bis.pos.z+" "+bis.missionId);
+                }
+            }
+        }        
+        
         //[HarmonyPatch(typeof(FarmUpgradeMgr), "GetUpgradeMoneyCost", new Type[] { typeof(FarmBuildingEnum), typeof(int)})]
         static class FarmUpgradeMgr_GetUpgradeMoneyCost_Patch
         {
@@ -372,13 +515,62 @@ namespace Cheats
             }
         }
 
+        //[HarmonyPatch(typeof(RequirementData), "LoadDataBase", new Type[] { })]
+        static class RequirementData_LoadDataBase_Patch
+        {
+            static void Postfix()
+            {
+                List<string> data = new List<string>();
+                foreach(KeyValuePair<int,RequirementData> kvp in RequirementData.refDataDic)
+                {
+                    string a = $"{kvp.Key} {kvp.Value.itemId}  {Module<ItemDataMgr>.Self.GetItemName(kvp.Value.itemId)} Level: {kvp.Value.level}";
+                    data.Add(a);
+                }
+                Dbgl(string.Join("\r\n", data.ToArray()));
+            }
+        }
+
         private static void DumpStuff()
         {
+            var dbgs = "";
+            foreach(KeyValuePair<int,RequirementGroupData> kvp in RequirementGroupData.refDataDic)
+            {
+                dbgs += $"\r\n{kvp.Key}\r\n\r\n";
+                foreach(int i in kvp.Value.requirementIdAry)
+                {
+                    int item = RequirementData.refDataDic[i].itemId;
+                    dbgs += $"{item} {ItemDataMgr.Self.GetItemName(item)}\r\n";
+                }
+            }
+            Dbgl(dbgs, false);
 
             /*
-            SqliteDataReader sqliteDataReader = LocalDb.cur.ReadFullTable("Fish_Food");
+            List<ItemBaseConfData> lista = DbReader.Read<ItemBaseConfData>(LocalDb.cur.ReadFullTable("Props_total_table"), 20);
+            string dbgstr = "";
 
-            List<String> list = new List<String>();
+            foreach (ItemBaseConfData ai in lista)
+            {
+                dbgstr += ai.ID + ": " + TextMgr.GetStr(ai.NameID, -1) + "\r\n";
+            }
+
+            Dbgl(dbgstr);
+
+            */
+            /*
+            List<NpcData> lista = DbReader.Read<NpcData>(LocalDb.cur.ReadFullTable("NpcRepository"), 20);
+            string dbgstr = "";
+
+            FieldRef<NpcData, string> interactStrRef = FieldRefAccess<NpcData, string>("interactStr");
+            //List<FishFeedItem> list = datas(new FishFeedItem());
+
+            foreach (NpcData ai in lista)
+            {
+                dbgstr += ai.id + ": " + ai.Name +" " + interactStrRef (ai)+ "\r\n";
+            }
+
+            Dbgl(dbgstr);
+            */
+            /*
             while (sqliteDataReader.Read())
             {
                 List<int> ints = new List<int>();
@@ -395,26 +587,26 @@ namespace Cheats
             Dbgl(string.Format(string.Join("\r\n",list.ToArray())));
             */
 
-            MethodInfo dynMethod = (new FishFeedItem()).GetType().GetMethod("LoadData", BindingFlags.Static | BindingFlags.NonPublic);
-            List<FishFeedItem> list = (List<FishFeedItem>)dynMethod.Invoke(new FishFeedItem(), new object[] { });
+            //MethodInfo dynMethod = (new FishFeedItem()).GetType().GetMethod("LoadData", BindingFlags.Static | BindingFlags.NonPublic);
+            //List<FishFeedItem> list = (List<FishFeedItem>)dynMethod.Invoke(new FishFeedItem(), new object[] { });
 
             //FieldRef<FishFeedItem, List<FishFeedItem>> datas = FieldRefAccess<FishFeedItem, List<FishFeedItem>>("datas");
             //List<FishFeedItem> list = datas(new FishFeedItem());
 
-            string str = DumpList(list);
+            //string str = DumpList(list);
 
-            Dbgl(string.Format(str));
+            //Dbgl(string.Format(str));
 
             //FieldRef<FishData, List<FishData>> datas2 = FieldRefAccess<FishData, List<FishData>>("datas");
             //List<FishData> list2 = datas2(new FishData());
 
-            MethodInfo dynMethod2 = (new FishData()).GetType().GetMethod("LoadData", BindingFlags.Static | BindingFlags.NonPublic);
-            List<FishData> list2 = (List<FishData>)dynMethod2.Invoke(new FishData(), new object[] { });
+            //MethodInfo dynMethod2 = (new FishData()).GetType().GetMethod("LoadData", BindingFlags.Static | BindingFlags.NonPublic);
+            //List<FishData> list2 = (List<FishData>)dynMethod2.Invoke(new FishData(), new object[] { });
 
-            string str2 = DumpList(list2);
+            //string str2 = DumpList(list2);
 
-            Dbgl(string.Format(str2));
-            
+            //Dbgl(string.Format(str2));
+
         }
 
         private static string DumpList<T>(List<T> obj)

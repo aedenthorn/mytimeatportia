@@ -106,14 +106,21 @@ namespace PennyComeBack
             if (!enabled)
                 return;
 
-            if (newScene.name == "Main" && Module<GlobleBlackBoard>.Self != null && Module<GlobleBlackBoard>.Self.HasInfo("pennyleave"))
+            if (newScene.name == "Main" && settings.ReplaceMusic)
             {
-                Actor actor = StoryHelper.GetActor(4000141, string.Empty);
-                if (actor == null)
-                    return;
 
-                GameObject gameObject = actor.gameObject;
-                audio = gameObject.AddComponent<AudioSource>();
+                if (Module<GlobleBlackBoard>.Self != null && Module<GlobleBlackBoard>.Self.HasInfo("pennyleave"))
+                {
+                    Actor actor = StoryHelper.GetActor(4000141, string.Empty);
+                    if (actor == null)
+                        return;
+                    GameObject gameObject = actor.gameObject;
+                    audio = actor.gameObject.AddComponent<AudioSource>();
+                }
+                else
+                {
+                    audio = Player.Self.actor.gameObject.AddComponent<AudioSource>();
+                }
                 audio.dopplerLevel = 0;
                 audio.volume = settings.MusicVolume;
                 audio.maxDistance = settings.MusicDistance;
@@ -139,14 +146,14 @@ namespace PennyComeBack
 
         public static bool AudioPlayer_ResumeBGM_Patch_Prefix()
         {
-            if (!enabled || Player.Self == null || GlobleBlackBoard.Self == null)
+            if (!enabled || Player.Self == null)
                 return true;
 
-            if (Module<ScenarioModule>.Self.CurrentScenarioName == "Main" && GlobleBlackBoard.Self.HasInfo("pennyleave") && settings.ReplaceMusic)
+            if (Module<ScenarioModule>.Self.CurrentScenarioName == "Main" && settings.ReplaceMusic)
                 return false;
             return true;
         }
-        private static bool isDebug = true;
+        private static bool isDebug = false;
 
         public static void Dbgl(string str = "", bool pref = true)
         {

@@ -11,7 +11,7 @@ namespace ChineseVoice
 {
     public class Main
     {
-        public static Settings settings { get; private set; }
+        public static Settings settings { get; private set; } 
 
         public class Item
         {

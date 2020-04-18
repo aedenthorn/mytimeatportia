@@ -70,6 +70,26 @@ namespace MoreResourceDeliveries
                 {
                     ___infoList.Add(rpd.value);
                 }
+                for (int i = 0; i < ___infoList.Count; i++)
+                {
+                    if (___infoList[i].level == 0)
+                        continue;
+
+                    var productsId = FieldRefAccess<ResPointInfo, string>(___infoList[i], "productsId");
+                    var extraOutput = FieldRefAccess<ResPointInfo, string>(___infoList[i], "extraOutput");
+                    if (___infoList[i].id == 1) // add apples and aroma apples
+                    {
+                        productsId = "4000047;"+productsId;
+                        FieldRefAccess<ResPointInfo, string>(___infoList[i], "productsId") = productsId;
+                        extraOutput += ",4000014_" + i;
+                        FieldRefAccess<ResPointInfo, string>(___infoList[i], "extraOutput") = extraOutput;
+                    }
+                    else if (___infoList[i].id == 2) // add blood stone and marble
+                    {
+                        productsId += ";4000079;4000121"; 
+                        FieldRefAccess<ResPointInfo, string>(___infoList[i], "productsId") = productsId;
+                    }
+                }
                 foreach (ResPointInfo resPointInfo in ___infoList)
                 {
                     resPointInfo.InitialOutPorts();
@@ -86,14 +106,24 @@ namespace MoreResourceDeliveries
                 value.upgradeLevelCost = upgradeLevelCost;
                 value.priceLimit = priceLimit;
 
-                FieldRef<ResPointInfo, string> pid = FieldRefAccess<ResPointInfo, string>("productsId");
-                pid(value) = productsId;
-
-                FieldRef<ResPointInfo, string> eo = FieldRefAccess<ResPointInfo, string>("extraOutput");
-                eo(value) = extraOutput;
+                FieldRefAccess<ResPointInfo, string>(value, "productsId") = productsId;
+                FieldRefAccess<ResPointInfo, string>(value, "extraOutput") = extraOutput;
 
                 value.capacity = capacity;
                 value.mailId = mailId;
+            }
+            public ResPointData(ResPointInfo rpi)
+            {
+                value.id = rpi.id;
+                value.level = rpi.level;
+                value.upgradeLevelCost = rpi.upgradeLevelCost;
+                value.priceLimit = rpi.priceLimit;
+
+                FieldRefAccess<ResPointInfo, string>(value, "productsId") = FieldRefAccess<ResPointInfo, string>(rpi, "productsId");
+                FieldRefAccess<ResPointInfo, string>(value,"extraOutput") = FieldRefAccess<ResPointInfo, string>(rpi, "extraOutput");
+
+                value.capacity = rpi.capacity;
+                value.mailId = rpi.mailId;
             }
             public ResPointInfo value = new ResPointInfo();
 
@@ -106,10 +136,10 @@ namespace MoreResourceDeliveries
         };
 
         private static ResPointData[] MineResData = {
-            new ResPointData(2,5,160000,8000,"4000013;4000139;4000035;4000119;4000118;4000283;4000284;4000162","0.5;2060001_5,4000285_6,4000274_1",16000,3602),
+            new ResPointData(2,5,160000,8000,"4000013;4000139;4000035;4000119;4000118;4000283;4000284;4000162;","0.5;2060001_5,4000285_6,4000274_1",16000,3602), 
             new ResPointData(2,6,320000,16000,"4000013;4000139;4000035;4000119;4000118;4000283;4000284;4000162;4000147;4000017;4000120","0.5;2060001_10,4000285_8,4000274_2,4000148_1",32000,3602), // topaz, rock salt, crystal, chance sapphire
-            new ResPointData(2,7,640000,32000,"4000013;4000139;4000035;4000119;4000118;4000283;4000284;4000162;4000147;4000017;4000120;4000148;4000038;4000299;4000045","0.5;2060001_20,4000285_10,4000274_3,4000063_1",64000,3602), // sapphire, zeolite, sulfate, chance ruby
-            new ResPointData(2,8,-1,64000,"4000013;4000139;4000035;4000119;4000118;4000283;4000284;4000162;4000147;4000017;4000120;4000148;4000038;4000299;4000045;4000297;4000079;4000063","0.5;2060001_30,4000285_12,4000274_4,4000171_1",128000,3602), // ruby, igneous rock, blood stone, chance diamond
+            new ResPointData(2,7,640000,32000,"4000013;4000139;4000035;4000119;4000118;4000283;4000284;4000162;4000147;4000017;4000120;4000148;4000038;4000045","0.5;2060001_20,4000285_10,4000274_3,4000063_1",64000,3602), // sapphire, nitre, sulfate, chance ruby
+            new ResPointData(2,8,-1,64000,"4000013;4000139;4000035;4000119;4000118;4000283;4000284;4000162;4000147;4000017;4000120;4000148;4000038;4000299;4000045;4000297;4000063","0.5;2060001_30,4000285_12,4000274_4,4000171_1",128000,3602), // ruby, zeolite, igneous rock, chance diamond
         };
 
         private static bool isDebug = false;
