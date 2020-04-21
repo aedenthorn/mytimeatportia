@@ -103,7 +103,7 @@ namespace Cheats
                 OnLoadGame();
             }
         }
-        [HarmonyPatch(typeof(HomeBedGetupUI), "Update")]
+        //[HarmonyPatch(typeof(HomeBedGetupUI), "Update")]
         static class HomeBedGetupUI_Patch
         {
             static void Prefix(HomeBedGetupUI __instance)

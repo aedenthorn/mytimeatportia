@@ -1,17 +1,28 @@
-﻿using Ccc;
+﻿using BehaviorDesigner.Runtime;
+using Ccc;
 using Harmony12;
 using Hont;
 using Pathea;
+using Pathea.ActorNs;
 using Pathea.ArchiveNs;
+using Pathea.Behavior;
+using Pathea.DLCRewards;
+using Pathea.EG;
 using Pathea.GameFlagNs;
 using Pathea.InputSolutionNs;
+using Pathea.MessageSystem;
 using Pathea.ModuleNs;
+using Pathea.NpcRepositoryNs;
+using Pathea.PlayerMissionNs;
 using Pathea.ScenarioNs;
 using Pathea.ScreenMaskNs;
+using Pathea.StageNs;
 using Pathea.SummaryNs;
 using Pathea.Times;
+using Pathea.TipsNs;
 using Pathea.UISystemNs;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -24,7 +35,7 @@ namespace SaveAnyTime
 {
     public class Main
     {
-        private static bool isDebug = false;
+        private static bool isDebug = true;
 
         private static List<CustomSaveFile> saveFiles = new List<CustomSaveFile>();
 
@@ -44,7 +55,7 @@ namespace SaveAnyTime
             modEntry.OnGUI = OnGUI;
             modEntry.OnSaveGUI = OnSaveGUI;
             modEntry.OnShowGUI = OnShowGUI;
-            
+
             var harmony = HarmonyInstance.Create(modEntry.Info.Id);
             harmony.PatchAll(Assembly.GetExecutingAssembly());
             return true;
@@ -57,30 +68,47 @@ namespace SaveAnyTime
 
         private static void OnGUI(UnityModManager.ModEntry modEntry)
         {
-            if (Player.Self != null && Module<Player>.Self != null  && Module<Player>.Self.actor != null )
+            GUILayout.Label("Quick Save Key:", new GUILayoutOption[0]);
+            settings.QuickSaveKey = GUILayout.TextField(settings.QuickSaveKey, new GUILayoutOption[0]);
+
+            if (Player.Self != null && Module<Player>.Self != null && Module<Player>.Self.actor != null)
             {
+                GUILayout.Space(20f);
                 if (GUILayout.Button("Save Now", new GUILayoutOption[]{
                         GUILayout.Width(150f)
                     }))
                 {
                     DoSaveFile();
                 }
-                if (saveFiles.Count > 0)
-                {
-                    GUILayout.Space(20f);
-                }
             }
+
             if (saveFiles.Count > 0)
             {
+                GUILayout.Space(20f);
                 GUILayout.Label("Load Game", new GUILayoutOption[0]);
-                foreach (CustomSaveFile csf in saveFiles)
+                try
                 {
-                    if (GUILayout.Button(csf.GetSaveTitle(), new GUILayoutOption[]{
-                    }))
+                    foreach (CustomSaveFile csf in saveFiles)
                     {
-                        LoadGameFromArchive(csf.fileName);
-                        UnityModManager.UI.Instance.ToggleWindow();
+                        GUILayout.BeginHorizontal(new GUILayoutOption[0]);
+                        if (GUILayout.Button(csf.GetSaveTitle(), new GUILayoutOption[]{
+                    }))
+                        {
+                            Singleton<TaskRunner>.Self.StartCoroutine(LoadGameFromArchive(csf.fileName));
+                            UnityModManager.UI.Instance.ToggleWindow();
+                        }
+                        if (GUILayout.Button("X", new GUILayoutOption[]{
+                        GUILayout.Width(50f)
+                    }))
+                        {
+                            DeleteSaveGame(csf.fileName);
+                        }
+                        GUILayout.EndHorizontal();
                     }
+                }
+                catch
+                {
+
                 }
             }
         }
@@ -97,8 +125,36 @@ namespace SaveAnyTime
             return true; // Permit or not.
         }
 
+
+        [HarmonyPatch(typeof(GamingSolution), "Update")]
+        static class GamingSolution_Update_Patch
+        {
+            static void Postfix()
+            {
+                if (!enabled)
+                    return;
+
+                if (Input.GetKeyDown(settings.QuickSaveKey))
+                {
+                    DoSaveFile();
+                }
+            }
+        }
+        private static void DeleteSaveGame(string fileName)
+        {
+            string filePath = Path.Combine(GetSavesPath(), fileName);
+            if (File.Exists(filePath))
+            {
+                File.Delete(filePath);
+                DoBuildSaveList();
+            }
+        }
+
+
         private static void DoSaveFile()
         {
+            if (Player.Self == null || Module<Player>.Self == null || Module<Player>.Self.actor == null)
+                return;
 
             string path = GetSavesPath();
 
@@ -136,6 +192,32 @@ namespace SaveAnyTime
             Dbgl(filePath);
             Singleton<Archive>.Instance.SaveArchive(filePath);
 
+            List<NPCMeta> npcs = new List<NPCMeta>();
+            foreach(NpcData data in Module<NpcRepository>.Self.NpcInstanceDatas)
+            {
+                int instanceId = data.id;
+                Actor actor = Module<ActorMgr>.Self.Get(instanceId);
+                if (actor == null)
+                    continue;
+                string scene = actor.SceneName;
+                string pos = actor.gamePos.ToString().Trim(new char[] { '(', ')' });
+                NPCMeta npc = new NPCMeta();
+                npc.id = instanceId;
+                npc.scene = scene;
+                npc.pos = pos;
+                npcs.Add(npc);
+            }
+            SaveMeta save = new SaveMeta();
+            save.NPClist = npcs;
+
+            System.Xml.Serialization.XmlSerializer writer =
+                new System.Xml.Serialization.XmlSerializer(typeof(SaveMeta));
+
+            var path2 = Path.Combine(GetSavesPath(),$"{fileName}.xml");
+            System.IO.FileStream file = System.IO.File.Create(path2);
+            writer.Serialize(file, save);
+            file.Close();
+
             DoBuildSaveList();
         }
 
@@ -157,6 +239,8 @@ namespace SaveAnyTime
             }
             foreach (string file in Directory.GetFiles(path))
             {
+                if (file.EndsWith(".xml"))
+                    continue;
                 CustomSaveFile csf = new CustomSaveFile(Path.GetFileName(file));
                 if (csf.isValid())
                 {
@@ -170,73 +254,149 @@ namespace SaveAnyTime
             return "Mods\\SaveAnyTime\\saves";
         }
 
-        private static bool LoadGameFromArchive(string fileName)
+        private static IEnumerator LoadGameFromArchive(string fileName)
         {
             string filePath = Path.Combine(GetSavesPath(), fileName);
             CustomSaveFile csf = new CustomSaveFile(fileName);
             if (!csf.isValid())
             {
                 Dbgl("invalid save name:" + filePath);
-                return false;
+                yield break;
             }
             if (!File.Exists(filePath))
             {
                 Dbgl("file does not exist:" + filePath);
-                return false;
+                yield break;
             }
+
+            Module<GameConfigModule>.Self.IgnoreCloseDoorAudio = true;
+
             Singleton<GameRunner>.Instance.Rest();
             Singleton<LoadingMask.Mgr>.Instance.Begin(null);
+            yield return null;
 
             Singleton<SleepTipMgr>.Self.SleepState(true);
 
             Dbgl("Checking if in game");
-            try
+            int state = (int)typeof(GameMgr).GetField("state", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(Module<GameMgr>.Self);
+            Dbgl("state: " + state);
+            if (state != (int)typeof(GameMgr).GetNestedType("State", BindingFlags.NonPublic | BindingFlags.Instance).GetField("Max", BindingFlags.Static | BindingFlags.Public).GetValue(Module<GameMgr>.Self))
             {
-                int state = (int)(AccessTools.FieldRefAccess<GameMgr, object>(Module<GameMgr>.Self, "state"));
-                if (state != (int)typeof(GameMgr).GetNestedType("State", BindingFlags.NonPublic | BindingFlags.Instance).GetField("Max", BindingFlags.Static | BindingFlags.Public).GetValue(Module<GameMgr>.Self))
-                {
-                    Dbgl("state: " + state);
-                    Dbgl("Terminating");
-                    Singleton<ModuleMgr>.Instance.Terminate();
-                }
+                Dbgl("Terminating");
+                Singleton<ModuleMgr>.Instance.Terminate();
             }
-            catch
+            else
             {
                 Dbgl("not in game");
-                UIStateMgr.Instance.PopState(false);
             }
+
+            UIStateMgr.Instance.PopState(false);
 
             Dbgl("Initializing modules");
             Singleton<ModuleMgr>.Instance.Init();
 
             Dbgl("Setting state");
             AccessTools.FieldRefAccess<GameMgr, object>(Module<GameMgr>.Self, "state") = typeof(GameMgr).GetNestedType("State", BindingFlags.NonPublic | BindingFlags.Instance).GetField("LoadGame", BindingFlags.Static | BindingFlags.Public).GetValue(Module<GameMgr>.Self);
+            Dbgl("state: " + AccessTools.FieldRefAccess<GameMgr, object>(Module<GameMgr>.Self, "state"));
 
+            lastLoadedSave = csf;
+            Module<ScenarioModule>.Self.EndLoadEventor += OnSceneLoaded;
+
+            Dbgl("Loading Archive");
             if (!Singleton<Archive>.Instance.LoadArchive(filePath))
             {
                 Dbgl("Load archive failed:" + filePath);
-                return false;
+                yield break;
             }
 
+            Dbgl("Starting story");
             Module<Story>.Self.Start();
-            lastLoadedPos = VectorFromString(csf.position);
-            Module<ScenarioModule>.Self.TransferToScenario(csf.sceneName);
-            Module<ScenarioModule>.Self.EndLoadEventor += OnSceneLoaded;
-            int year = int.Parse(csf.date.Split('Y')[0]);
-            int month = int.Parse(csf.date.Split('Y')[1].Split('M')[0]);
-            int day = int.Parse(csf.date.Split('Y')[1].Split('M')[1].Split('D')[0]);
-            Module<TimeManager>.Self.SetDateTime(new GameDateTime(year, month, day, csf.hour, csf.minute, 0), false, TimeManager.JumpingType.System);
 
-            return true;
+            System.Xml.Serialization.XmlSerializer reader = new System.Xml.Serialization.XmlSerializer(typeof(SaveMeta));
+            System.IO.StreamReader file = new System.IO.StreamReader($"{filePath}.xml");
+            if (file == null)
+            {
+                Dbgl("No meta file");
+                yield break;
+            }
+
+            SaveMeta save = (SaveMeta)reader.Deserialize(file);
+            file.Close();
+
+            foreach(NPCMeta npc in save.NPClist)
+            {
+                Actor actor = Module<ActorMgr>.Self.Get(npc.id);
+                Module<ActorMgr>.Self.MoveToScenario(actor, npc.scene, VectorFromString(npc.pos));
+            }
+
+            yield break;
         }
 
-        public static Vector3 lastLoadedPos;
+        private static CustomSaveFile lastLoadedSave;
 
         private static void OnSceneLoaded(ScenarioModule.Arg arg)
         {
             Module<ScenarioModule>.Self.EndLoadEventor -= OnSceneLoaded;
-            Module<Player>.Self.GamePos = lastLoadedPos;
+            Module<Player>.Self.GamePos = VectorFromString(lastLoadedSave.position);
+
+            Module<SleepModule>.Self.GetType().GetMethod("PlayerWakeUpAfterArchive", BindingFlags.NonPublic | BindingFlags.Instance).Invoke(Module<SleepModule>.Self, new object[] { });
+
+            //Module<SleepModule>.Self.GetType().GetMethod("ShowSleepMask", BindingFlags.NonPublic | BindingFlags.Instance).Invoke(Module<SleepModule>.Self, new object[] { false });
+
+            Module<SleepModule>.Self.WakeUpScreenMaskFinishedEvent?.Invoke();
+
+            Singleton<SleepTipMgr>.Self.SleepState(false);
+
+            GameDLCRewardsModule.Self.GetType().GetMethod("CheckAndOpenAllDlc", BindingFlags.NonPublic | BindingFlags.Instance).Invoke(Module<GameDLCRewardsModule>.Self, new object[] { });
+
+            if (Module<EGMgr>.Self.IsEngagement())
+            {
+                Dbgl("Engagement is active");
+                EGDate date = AccessTools.FieldRefAccess<EGMgr, EGDate>(Module<EGMgr>.Self, "mDate");
+                GameDateTime dateBegin = AccessTools.FieldRefAccess<EGDate, GameDateTime>(date, "mBeginTimer");
+                if(Module<TimeManager>.Self.DateTime > dateBegin)
+                {
+                    date.Start();
+                }
+                else if(Module<TimeManager>.Self.DateTime > dateBegin - EGConst.Spawn_Hour_1)
+                {
+                    Singleton<TipsMgr>.Instance.SendSystemTip(string.Format(TextMgr.GetStr(100507, -1), TextMgr.GetStr(AccessTools.FieldRefAccess<EGDate, int>(date, "mTipTypeID"), -1)), SystemTipType.warning);
+                }
+                else if (Module<TimeManager>.Self.DateTime > dateBegin - EGConst.Spawn_Hour_2)
+                {
+                    date.GetType().GetMethod("InitProjectMap", BindingFlags.NonPublic | BindingFlags.Instance).Invoke(date, new object[] { });
+                    Actor mActor = AccessTools.FieldRefAccess<EGDate, Actor>(date, "mActor");
+                    AccessTools.FieldRefAccess<EGDate, Actor>(date, "mActor").SetBehaviorValue("EGActor", Module<Player>.Self.actor);
+                    AccessTools.FieldRefAccess<EGDate, Actor>(date, "mActor").SetBehaviorValue("EGDate", EGData.GetDatePlace(AccessTools.FieldRefAccess<EGDate, int>(date, "mDateID")));
+                    AccessTools.FieldRefAccess<EGDate, SharedInt>(date, "mForceValue") = mActor.GetBehaviorVariable<SharedInt>("EGForce");
+                    AccessTools.FieldRefAccess<EGDate, SharedInt>(date, "mMoodValue") = mActor.GetBehaviorVariable<SharedInt>("EGMood");
+                    AccessTools.FieldRefAccess<EGDate, SharedIntList>(date, "mEventCount") = mActor.GetBehaviorVariable<SharedIntList>("EGEventIDs");
+                    AccessTools.FieldRefAccess<EGDate, List<EGRoot>>(date, "mRoots") = mActor.behavior.FindTasks<EGRoot>();
+                    Singleton<TipsMgr>.Instance.SendSystemTip(string.Format(TextMgr.GetStr(100506, -1), TextMgr.GetStr(AccessTools.FieldRefAccess<EGDate, int>(date, "mTipTypeID"), -1)), SystemTipType.warning);
+                }
+            }
+
+
+            System.Xml.Serialization.XmlSerializer reader = new System.Xml.Serialization.XmlSerializer(typeof(SaveMeta));
+            string path = Path.Combine(GetSavesPath(), $"{lastLoadedSave.fileName}.xml");
+            System.IO.StreamReader file = new System.IO.StreamReader(path);
+            if (file == null)
+            {
+                Dbgl("No meta file");
+                return;
+            }
+
+            SaveMeta save = (SaveMeta)reader.Deserialize(file);
+            file.Close();
+
+            foreach (NPCMeta npc in save.NPClist)
+            {
+                Actor actor = Module<ActorMgr>.Self.Get(npc.id);
+                Module<ActorMgr>.Self.MoveToScenario(actor, npc.scene, VectorFromString(npc.pos));
+            }
         }
+
+
 
         private static Vector3 VectorFromString(string input)
         {
@@ -258,6 +418,15 @@ namespace SaveAnyTime
             }
             else
                 throw new ArgumentException();
+        }
+
+        [HarmonyPatch(typeof(PlayerMissionMgr), "FreshMissionState")]
+        static class ScenarioModule_PostLoad_Patch
+        {
+            static void Prefix(PlayerMissionMgr __instance)
+            {
+                Dbgl("PlayerMissionMgr FreshState" + __instance.PublishedMission.Count);
+            }
         }
     }
 }

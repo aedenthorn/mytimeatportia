@@ -1,18 +1,9 @@
 ﻿using Harmony12;
-using Pathea.AudioNs;
-using Pathea.ModuleNs;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Reflection;
 using Hont.ExMethod.Collection;
-using Pathea;
-using Pathea.HomeNs;
-using Pathea.InputSolutionNs;
+using Pathea.AudioNs;
+using System;
+using System.Reflection;
 using UnityEngine;
-using UnityEngine.Audio;
-using UnityEngine.Networking;
-using static Harmony12.AccessTools;
 
 namespace MusicBox
 {
@@ -21,79 +12,40 @@ namespace MusicBox
 
 
         private static int[] MusicBoxAudioIDs = {1028,1029};
-        /*
-        //[HarmonyPatch(typeof(RecordCtr), "Toggle")]
-        static class RecordCtr_Toggle_Patch
-        {
-            static bool Prefix(ref bool ___isPlaying, PlayerTargetMultiAction ___playerTarget, Transform ___MusicTrans, int ___AudioID)
-            {
-                if (!enabled)
-                    return true;
+        
 
-                ___isPlaying = !___isPlaying;
-                if (___isPlaying)
-                {
-                    ___playerTarget.SetAction(ActionType.ActionInteract, 100024, ActionTriggerMode.Normal);
-                    pa.Start(___MusicTrans.transform.position);
-                }
-                else
-                {
-                    ___playerTarget.SetAction(ActionType.ActionInteract, 100023, ActionTriggerMode.Normal);
-                    pa.StopMusic();
-                }
-
-                return false;
-            }
-        }
-        */
-
-        //[HarmonyPatch(typeof(AudioPlayer), "StopEffect3D")]
-        static class AudioPlayer_StopEffect3D_Patch
-        {
-            static void Prefix(int id, Vector3 pos)
-            {
-                if (!enabled)
-                    return;
-                if (MusicBoxAudioIDs.Contains(id))
-                {
-                    StopMusic(pos);
-                    Dbgl("3d audio");
-                }
-            }
-        }
-        [HarmonyPatch(typeof(AudioPlayer), "PlayEffect3D", new Type[] { typeof(AudioClip), typeof(Vector3), typeof(AudioMixerGroup), typeof(bool), typeof(float) })]
-        static class AudioPlayer_PlayEffect3D_Patch
-        {
-            static void Prefix(ref AudioClip clip, Vector3 pos, ref bool loop, AudioData ___tempData)
-            {
-                if (!enabled)
-                    return;
-                if (MusicBoxAudioIDs.Contains(___tempData.id))
-                {
-                    Dbgl("3d audio");
-                    loop = false;
-                    clip = mPa.GetRandomAudio();
-                    
-                }
-            }
-        }
-        /*
-        //[HarmonyPatch(typeof(AudioPlayer), "PlayEffect2d", new Type[] { typeof(AudioClip), typeof(AudioMixerGroup), typeof(bool) })]
+        [HarmonyPatch(typeof(AudioPlayer), "PlayEffect2D", new Type[] { typeof(int), typeof(bool), typeof(bool), typeof(bool) })]
         static class AudioPlayer_PlayEffect2D_Patch
         {
-            static bool Prefix(ref AudioClip clip, AudioMixerGroup output, AudioData ___tempData)
+            static bool Prefix(int id)
             {
-                if (!enabled || ___tempData == null || ___tempData.id == null)
+                if (!enabled || !settings.SilenceAlarm)
                     return true;
-                if (MusicBoxAudioIDs.Contains(___tempData.id))
+                return id != 62;
+            }
+        }
+
+        [HarmonyPatch(typeof(AudioPlayer), "PlayEffect3DInternal", new Type[] { typeof(int), typeof(Vector3), typeof(bool), typeof(int), typeof(float) })]
+        static class AudioPlayer_PlayEffect3DInternal_Patch
+        {
+            static bool Prefix(AudioPlayer __instance, int id, Vector3 pos, ref AudioData ___tempData, int hashCode)
+            {
+                if (!enabled)
+                    return true;
+                if (MusicBoxAudioIDs.Contains(id))
                 {
-                    //SetAudioClip();
-                    Dbgl("2d audio");
-                    clip = mAudioClip;
+                    AudioSource audioSource = (AudioSource)(__instance.GetType().GetMethod("PlayEffect3D", BindingFlags.NonPublic | BindingFlags.Instance).Invoke(__instance, new object[] { GetAudioToPlay(), pos, AudioPlayer.GetOutPut(id), settings.LoopAudio, 0f }));
+                    audioSource.gameObject.name = id.ToString() + "-" + hashCode;
+                    audioSource.dopplerLevel = 0;
+                    audioSource.minDistance = settings.MinDistance;
+                    audioSource.maxDistance = settings.MaxDistance;
+                    audioSource.rolloffMode = AudioRolloffMode.Logarithmic;
+                    audioSource.volume = 100f;
+                    //WaitForSound(audioSource.clip.length, pos);
+                    return false;
                 }
                 return true;
             }
         }
-        */
     }
 }
