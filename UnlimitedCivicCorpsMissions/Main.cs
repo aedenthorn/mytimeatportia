@@ -46,8 +46,8 @@ namespace UnlimitedCivicCorpsMissions
 
         private static void OnGUI(UnityModManager.ModEntry modEntry)
         {
-            GUILayout.Label(string.Format("Max numer of missions : <b>{0:F1}</b>", settings.MaxMissions), new GUILayoutOption[0]);
-            settings.MaxMissions = (int)GUILayout.HorizontalSlider((float)settings.MaxMissions, 1f, 10f, new GUILayoutOption[0]);
+            GUILayout.Label(string.Format("Max numer of missions : <b>{0:F0}</b>", settings.MaxMissions), new GUILayoutOption[0]);
+            settings.MaxMissions = (int)GUILayout.HorizontalSlider((float)settings.MaxMissions, 3f, 1000f, new GUILayoutOption[0]);
         }
 
         // Called when the mod is turned to on/off.
@@ -60,6 +60,12 @@ namespace UnlimitedCivicCorpsMissions
         [HarmonyPatch(typeof(PlayerMissionUICtr), "FreshBtnState")]
         static class PlayerMissionUICtr_FreshBtnState_Patch
         {
+            static void Prefix(PlayerMissionUICtr __instance)
+            {
+                FieldRef<OtherConfig, int> playerMissionMaxCount = FieldRefAccess<OtherConfig, int>("playerMissionMaxCount");
+                playerMissionMaxCount(OtherConfig.Self) = settings.MaxMissions;
+                __instance.GetType().GetMethod("FreshNumAccept", BindingFlags.NonPublic | BindingFlags.Instance).Invoke(__instance, new object[] { });
+            }
             static void Postfix(PlayerMissionUICtr __instance, MissionData ___curMissionData,
                 ref GameObject ___submitMissionBtn, ref TextMeshProUGUI ___canotSubmitText)
             {
@@ -97,8 +103,6 @@ namespace UnlimitedCivicCorpsMissions
                 if (!enabled)
                     return;
 
-                FieldRef<OtherConfig,int> playerMissionMaxCount = FieldRefAccess<OtherConfig, int>("playerMissionMaxCount");
-                playerMissionMaxCount(OtherConfig.Self) = settings.MaxMissions;
             }
         }
 

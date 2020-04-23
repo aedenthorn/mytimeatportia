@@ -9,6 +9,7 @@ using Pathea.ItemSystem;
 using Pathea.Missions;
 using Pathea.ModuleNs;
 using Pathea.OptionNs;
+using Pathea.RiderNs;
 using Pathea.ScenarioNs;
 using Pathea.StageNs;
 using Pathea.UISystemNs;
@@ -92,6 +93,35 @@ namespace Cheats
                     }
                 }
                 ___missionTitleGrid.OnMiddleClick += RestartMission;
+            }
+        }
+
+        //[HarmonyPatch(typeof(RidableModuleManager), "AddRidable")]
+        static class RidableModuleManager_Patch
+        {
+            static void Postfix(RidableModuleManager __instance)
+            {
+                System.Diagnostics.StackTrace t = new System.Diagnostics.StackTrace();
+                Dbgl(t.ToString());
+                
+            }
+        }
+
+        [HarmonyPatch(typeof(RidableTamingUnitViewer), "CreateRidable")]
+        static class RidableTransactionSaveData_Patch
+        {
+            static void Prefix(int uid, RidableTamingUnit ___thisUnit )
+            {
+                Dbgl("ridable state? " + RideUtils.CreateRidable(uid).GetRidableState());
+                System.Diagnostics.StackTrace t = new System.Diagnostics.StackTrace();
+                Dbgl(___thisUnit.GetAllRidable().Length + " " + t.ToString());
+            }
+            static void Postfix(int uid, RidableTamingUnit ___thisUnit)
+            {
+                IRidable rideable = RideUtils.CreateRidable(uid);
+                rideable.RenderVisible(true);
+                Dbgl("ridable pos " + rideable.GetActor().gamePos+ " " + Player.Self.GamePos);
+                
             }
         }
 

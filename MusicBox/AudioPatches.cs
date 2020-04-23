@@ -34,14 +34,14 @@ namespace MusicBox
                     return true;
                 if (MusicBoxAudioIDs.Contains(id))
                 {
-                    AudioSource audioSource = (AudioSource)(__instance.GetType().GetMethod("PlayEffect3D", BindingFlags.NonPublic | BindingFlags.Instance).Invoke(__instance, new object[] { GetAudioToPlay(), pos, AudioPlayer.GetOutPut(id), settings.LoopAudio, 0f }));
+                    AudioSource audioSource = (AudioSource)__instance.GetType().GetMethod("PlayEffect3D", BindingFlags.NonPublic | BindingFlags.Instance).Invoke(__instance, new object[] { GetAudioToPlay(), pos, AudioPlayer.GetOutPut(id), settings.LoopAudio, 0f });
                     audioSource.gameObject.name = id.ToString() + "-" + hashCode;
                     audioSource.dopplerLevel = 0;
                     audioSource.minDistance = settings.MinDistance;
                     audioSource.maxDistance = settings.MaxDistance;
+                    audioSource.spatialBlend = settings.Spatiality;
                     audioSource.rolloffMode = AudioRolloffMode.Logarithmic;
-                    audioSource.volume = 100f;
-                    //WaitForSound(audioSource.clip.length, pos);
+                    audioSource.volume = settings.MusicVolume;
                     return false;
                 }
                 return true;

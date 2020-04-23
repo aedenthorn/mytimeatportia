@@ -9,11 +9,13 @@ using Pathea.Behavior;
 using Pathea.DLCRewards;
 using Pathea.EG;
 using Pathea.GameFlagNs;
+using Pathea.HomeNs;
 using Pathea.InputSolutionNs;
 using Pathea.MessageSystem;
 using Pathea.ModuleNs;
 using Pathea.NpcRepositoryNs;
 using Pathea.PlayerMissionNs;
+using Pathea.RiderNs;
 using Pathea.ScenarioNs;
 using Pathea.ScreenMaskNs;
 using Pathea.StageNs;
@@ -146,6 +148,10 @@ namespace SaveAnyTime
             if (File.Exists(filePath))
             {
                 File.Delete(filePath);
+                if (File.Exists($"{filePath}.xml"))
+                {
+                    File.Delete($"{filePath}.xml");
+                }
                 DoBuildSaveList();
             }
         }
@@ -207,8 +213,22 @@ namespace SaveAnyTime
                 npc.pos = pos;
                 npcs.Add(npc);
             }
+            List<RideableMeta> rideables = new List<RideableMeta>();
+            foreach(int uid in Module<RidableModuleManager>.Self.GetAllRidableUid())
+            {
+                IRidable r = Module<RidableModuleManager>.Self.GetRidable(uid);
+
+                if (r == null)
+                    continue;
+                string pos = r.GetPos().ToString().Trim(new char[] { '(', ')' });
+                RideableMeta rideable = new RideableMeta();
+                rideable.id = uid;
+                rideable.pos = pos;
+                rideables.Add(rideable);
+            }
             SaveMeta save = new SaveMeta();
             save.NPClist = npcs;
+            save.RideableList = rideables;
 
             System.Xml.Serialization.XmlSerializer writer =
                 new System.Xml.Serialization.XmlSerializer(typeof(SaveMeta));
@@ -289,8 +309,8 @@ namespace SaveAnyTime
             {
                 Dbgl("not in game");
             }
+            UIStateMgr.Instance.PopToState(UIStateMgr.StateType.Play, true);
 
-            UIStateMgr.Instance.PopState(false);
 
             Dbgl("Initializing modules");
             Singleton<ModuleMgr>.Instance.Init();
@@ -311,23 +331,6 @@ namespace SaveAnyTime
 
             Dbgl("Starting story");
             Module<Story>.Self.Start();
-
-            System.Xml.Serialization.XmlSerializer reader = new System.Xml.Serialization.XmlSerializer(typeof(SaveMeta));
-            System.IO.StreamReader file = new System.IO.StreamReader($"{filePath}.xml");
-            if (file == null)
-            {
-                Dbgl("No meta file");
-                yield break;
-            }
-
-            SaveMeta save = (SaveMeta)reader.Deserialize(file);
-            file.Close();
-
-            foreach(NPCMeta npc in save.NPClist)
-            {
-                Actor actor = Module<ActorMgr>.Self.Get(npc.id);
-                Module<ActorMgr>.Self.MoveToScenario(actor, npc.scene, VectorFromString(npc.pos));
-            }
 
             yield break;
         }
@@ -377,22 +380,45 @@ namespace SaveAnyTime
             }
 
 
-            System.Xml.Serialization.XmlSerializer reader = new System.Xml.Serialization.XmlSerializer(typeof(SaveMeta));
-            string path = Path.Combine(GetSavesPath(), $"{lastLoadedSave.fileName}.xml");
-            System.IO.StreamReader file = new System.IO.StreamReader(path);
-            if (file == null)
+            
+            string filePath = Path.Combine(GetSavesPath(), $"{lastLoadedSave.fileName}.xml");
+            try
             {
-                Dbgl("No meta file");
-                return;
+                System.Xml.Serialization.XmlSerializer reader = new System.Xml.Serialization.XmlSerializer(typeof(SaveMeta));
+                StreamReader file = new StreamReader($"{filePath}");
+                SaveMeta save = (SaveMeta)reader.Deserialize(file);
+                file.Close();
+
+                foreach (NPCMeta npc in save.NPClist)
+                {
+                    Actor actor = Module<ActorMgr>.Self.Get(npc.id);
+                    if (actor != null)
+                    {
+                        Module<ActorMgr>.Self.MoveToScenario(actor, npc.scene, VectorFromString(npc.pos));
+                    }
+                }
+                if(save.RideableList != null)
+                {
+                    foreach (RideableMeta r in save.RideableList)
+                    {
+                        IRidable rideable = Module<RidableModuleManager>.Self.GetRidable(r.id);
+
+                        if (rideable == null)
+                            continue;
+                        Dbgl("got rideable "+r.id);
+                        Actor actor = rideable.GetActor();
+                        if(actor != null)
+                        {
+                            Dbgl("got rideable actor " + actor.ActorName);
+                            actor.gamePos = VectorFromString(r.pos);
+                            actor.RefreshPos();
+                        }
+                    }
+                }
             }
-
-            SaveMeta save = (SaveMeta)reader.Deserialize(file);
-            file.Close();
-
-            foreach (NPCMeta npc in save.NPClist)
+            catch(Exception ex)
             {
-                Actor actor = Module<ActorMgr>.Self.Get(npc.id);
-                Module<ActorMgr>.Self.MoveToScenario(actor, npc.scene, VectorFromString(npc.pos));
+                Dbgl("Problem with meta file: "+ex);
             }
         }
 

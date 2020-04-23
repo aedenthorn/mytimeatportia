@@ -62,18 +62,12 @@ namespace MusicBox
 
         private static void OnGUI(UnityModManager.ModEntry modEntry)
         {
-            GUILayout.Label(string.Format("Audio Volume: <b>{0:F1}</b>", settings.MusicVolume), new GUILayoutOption[0]);
-            settings.MusicVolume = GUILayout.HorizontalSlider(settings.MusicVolume*10f, 1f, 10f, new GUILayoutOption[0])/10f;
-
+            settings.ShuffleOrder = GUILayout.Toggle(settings.ShuffleOrder, "Shuffle tracks every time", new GUILayoutOption[0]);
+            settings.PlayAll = GUILayout.Toggle(settings.PlayAll, "Play all tracks", new GUILayoutOption[0]);
+            settings.LoopAudio = GUILayout.Toggle(settings.LoopAudio, "Loop audio", new GUILayoutOption[0]);
+            settings.SilenceAlarm = GUILayout.Toggle(settings.SilenceAlarm, "Silence wake up alarm (in case you keep your music box running in your bedroom)", new GUILayoutOption[0]);
             GUILayout.Space(10f);
-
-            if (GUILayout.Button("Reload Files", new GUILayoutOption[]{
-                        GUILayout.Width(150f)
-                    }))
-            {
-                PreloadAudioClips();
-            }
-            if (GUILayout.Button("Shuffle Tracks", new GUILayoutOption[]{
+            if (GUILayout.Button("Shuffle tracks now", new GUILayoutOption[]{
                         GUILayout.Width(150f)
                     }))
             {
@@ -81,10 +75,25 @@ namespace MusicBox
                 audioClips.Shuffle();
             }
             GUILayout.Space(10f);
-            settings.ShuffleOrder = GUILayout.Toggle(settings.ShuffleOrder, "Shuffle tracks every time", new GUILayoutOption[0]);
-            settings.PlayAll = GUILayout.Toggle(settings.PlayAll, "Play all tracks", new GUILayoutOption[0]);
-            settings.LoopAudio = GUILayout.Toggle(settings.LoopAudio, "Loop audio", new GUILayoutOption[0]);
-            settings.SilenceAlarm = GUILayout.Toggle(settings.SilenceAlarm, "Silence wake up alarm (in case you keep your music box running in your bedroom)", new GUILayoutOption[0]);
+            GUILayout.Label(string.Format("Audio Volume: <b>{0:F1}</b>", settings.MusicVolume), new GUILayoutOption[0]);
+            settings.MusicVolume = GUILayout.HorizontalSlider(settings.MusicVolume * 10f, 1f, 10f, new GUILayoutOption[0]) / 10f;
+
+            GUILayout.Space(10f);
+
+            GUILayout.Label(string.Format("Min Attenuation Distance: <b>{0:F0}</b>", settings.MinDistance), new GUILayoutOption[0]);
+            settings.MinDistance = GUILayout.HorizontalSlider(settings.MinDistance, 1f, 1000f, new GUILayoutOption[0]);
+
+            GUILayout.Space(10f);
+
+            GUILayout.Label(string.Format("Max Attenuation Distance: <b>{0:F0}</b>", settings.MaxDistance), new GUILayoutOption[0]);
+            settings.MaxDistance = GUILayout.HorizontalSlider(settings.MaxDistance, 1f, 1000f, new GUILayoutOption[0]);
+
+            GUILayout.Space(10f);
+
+            GUILayout.Label(string.Format("Audio Spatiality: <b>{0:F1}</b>", settings.Spatiality), new GUILayoutOption[0]);
+            settings.Spatiality = GUILayout.HorizontalSlider(settings.Spatiality * 10f, 0f, 10f, new GUILayoutOption[0]) / 10f;
+            GUILayout.Space(10f);
+            settings.UseUncompressedWAVFiles = GUILayout.Toggle(settings.UseUncompressedWAVFiles, "Use uncompressed audio (Requires restart and you must have downloaded and unpacked the the optional zip file into MusicBox\\wav\\)", new GUILayoutOption[0]);
         }
 
         // Called when the mod is turned to on/off.
@@ -101,9 +110,45 @@ namespace MusicBox
         private static AudioClip combinedAudio = null;
         private static void PreloadAudioClips()
         {
-            string path = $"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\\assets\\";
-            audioFiles = Directory.GetFiles(path, "*.ogg");
-            PreloadClips();
+            string path;
+            if (settings.UseUncompressedWAVFiles)
+            {
+                path = $"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\\wav\\";
+                if (Directory.Exists(path))
+                {
+                    audioFiles = Directory.GetFiles(path, "*.wav");
+                    PreloadClips();
+                }
+                else
+                {
+                    Dbgl("wav file directory not found at Mods\\MusicBox\\wav\\" );
+                    path = $"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\\assets\\";
+                    if (Directory.Exists(path))
+                    {
+                        audioFiles = Directory.GetFiles(path, "*.ogg");
+                        PreloadClips();
+                    }
+                    else
+                    {
+                        Dbgl("asset file directory not found at Mods\\MusicBox\\assets\\");
+                        audioFiles = new string[] { };
+                    }
+                }
+            }
+            else
+            {
+                path = $"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\\assets\\";
+                if (Directory.Exists(path))
+                {
+                    audioFiles = Directory.GetFiles(path, "*.ogg");
+                    PreloadClips();
+                }
+                else
+                {
+                    Dbgl("asset file directory not found at Mods\\MusicBox\\assets\\");
+                    audioFiles = new string[] { };
+                }
+            }
         }
 
         private static AudioClip GetAudioToPlay()
@@ -157,46 +202,47 @@ namespace MusicBox
 
             }
         }
+
         public static IEnumerator Coroutine(string filename)
         {
-            var uri = new System.Uri(filename);
+            filename = "file:///" + filename.Replace("\\","/");
 
-            //Dbgl(uri.AbsolutePath);
+            //Dbgl($"filename: {filename}");
 
-            using (UnityWebRequest www = UnityWebRequestMultimedia.GetAudioClip(uri.AbsolutePath, AudioType.OGGVORBIS))
+            using (UnityWebRequest www = UnityWebRequestMultimedia.GetAudioClip(filename, settings.UseUncompressedWAVFiles ? AudioType.WAV : AudioType.OGGVORBIS))
             {
+
                 www.SendWebRequest();
-                yield return www;
+                yield return null;
+                //Dbgl($"checking downloaded {filename}");
                 if (www != null)
                 {
-                    audioClips.Add(((DownloadHandlerAudioClip)www.downloadHandler).audioClip);
+                    //Dbgl("www not null. errors: " + www.error);
+                    DownloadHandlerAudioClip dac = ((DownloadHandlerAudioClip)www.downloadHandler);
+                    if (dac != null )
+                    {
+                        AudioClip ac = dac.audioClip;
+                        if(ac != null)
+                        {
+                            //Dbgl("audio clip is not null. samples: " + ac.samples);
+                            audioClips.Add(ac);
+                        }
+                        else
+                        {
+                            Dbgl("audio clip is null. data: " + dac.text);
+                        }
+                    }
+                    else
+                    {
+                        Dbgl("DownloadHandler is null. bytes downloaded: " + www.downloadedBytes);
+                    }
                 }
-            }
-        }
-
-        public class StaticCoroutine
-        {
-            private static StaticCoroutineRunner runner;
-
-            public static Coroutine Start(IEnumerator coroutine)
-            {
-                EnsureRunner();
-                return runner.StartCoroutine(coroutine);
-            }
-
-            private static void EnsureRunner()
-            {
-                if (runner == null)
+                else
                 {
-                    runner = new GameObject("[Static Coroutine Runner]").AddComponent<StaticCoroutineRunner>();
-                    UnityEngine.Object.DontDestroyOnLoad(runner.gameObject);
+                    Dbgl("www is null " + www.url);
                 }
             }
-
-            private class StaticCoroutineRunner : MonoBehaviour { }
         }
-
-
 
         public static AudioClip CombineAudioClips(List<AudioClip> clips)
         {
