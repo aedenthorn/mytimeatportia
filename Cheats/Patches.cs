@@ -96,31 +96,46 @@ namespace Cheats
             }
         }
 
-        //[HarmonyPatch(typeof(RidableModuleManager), "AddRidable")]
-        static class RidableModuleManager_Patch
+        [HarmonyPatch(typeof(RidableTamingUnit), "DayChange")]
+        static class RidableTamingUnit_Patch
         {
-            static void Postfix(RidableModuleManager __instance)
+            static void Postfix(RidableTamingUnit __instance)
             {
+                Dbgl("unit poops: " + __instance.ShitCount);
+                System.Diagnostics.StackTrace t = new System.Diagnostics.StackTrace();
+                Dbgl(__instance.ShitCount+ " " + t.ToString());
+                
+            }
+        }
+        [HarmonyPatch(typeof(RidableTamingUnitViewer), "CreateShit")]
+        static class CreateShit_Patch
+        {
+            static void Prefix(BoxCollider ___shitPlace, RidableTamingUnit ___thisUnit)
+            {
+                if (___shitPlace == null)
+                {
+                    Dbgl("poop place is null");
+                }
+                Dbgl("unit poops: "+___thisUnit.ShitCount);
+
                 System.Diagnostics.StackTrace t = new System.Diagnostics.StackTrace();
                 Dbgl(t.ToString());
                 
             }
         }
 
-        [HarmonyPatch(typeof(RidableTamingUnitViewer), "CreateRidable")]
+        //[HarmonyPatch(typeof(RidableTamingUnitViewer), "CreateRidable")]
         static class RidableTransactionSaveData_Patch
         {
             static void Prefix(int uid, RidableTamingUnit ___thisUnit )
             {
-                Dbgl("ridable state? " + RideUtils.CreateRidable(uid).GetRidableState());
                 System.Diagnostics.StackTrace t = new System.Diagnostics.StackTrace();
                 Dbgl(___thisUnit.GetAllRidable().Length + " " + t.ToString());
             }
             static void Postfix(int uid, RidableTamingUnit ___thisUnit)
             {
                 IRidable rideable = RideUtils.CreateRidable(uid);
-                rideable.RenderVisible(true);
-                Dbgl("ridable pos " + rideable.GetActor().gamePos+ " " + Player.Self.GamePos);
+                Dbgl("ridable visible? " + rideable.GetActor().Visible);
                 
             }
         }

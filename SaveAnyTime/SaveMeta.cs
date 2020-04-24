@@ -17,5 +17,6 @@ namespace SaveAnyTime
     {
         public int id;
         public string pos;
+        public string state;
     }
 }

@@ -1,0 +1,10 @@
+﻿{
+  "Id": "SaveAnyTime",
+  "DisplayName": "Save Anytime",
+  "Author": "aedenthorn",
+  "Version": "0.6.0",
+  "AssemblyName": "SaveAnyTime.dll",
+  "EntryMethod": "SaveAnyTime.Main.Load",
+  "HomePage": "https://www.nexusmods.com/mytimeatportia/mods/49",
+  "Repository": "https://raw.githubusercontent.com/aedenthorn/mytimeatportia/master/SaveAnyTime/Repository.json"
+}

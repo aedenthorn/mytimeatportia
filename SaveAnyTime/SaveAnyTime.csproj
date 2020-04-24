@@ -96,6 +96,10 @@
     <Compile Include="SaveMeta.cs" />
     <Compile Include="Settings.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Info.json" />
+    <None Include="Repository.json" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>copy "C:\Users\poiqwe\source\repos\PortiaMods\SaveAnyTime\bin\Debug\SaveAnyTime.dll" "G:\ga\MTAP\Mods\SaveAnyTime\"</PostBuildEvent>

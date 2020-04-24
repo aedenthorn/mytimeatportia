@@ -10,11 +10,13 @@ using Pathea.DLCRewards;
 using Pathea.EG;
 using Pathea.GameFlagNs;
 using Pathea.HomeNs;
+using Pathea.HomeViewerNs;
 using Pathea.InputSolutionNs;
 using Pathea.MessageSystem;
 using Pathea.ModuleNs;
 using Pathea.NpcRepositoryNs;
 using Pathea.PlayerMissionNs;
+using Pathea.RiderAdapterNs;
 using Pathea.RiderNs;
 using Pathea.ScenarioNs;
 using Pathea.ScreenMaskNs;
@@ -221,9 +223,12 @@ namespace SaveAnyTime
                 if (r == null)
                     continue;
                 string pos = r.GetPos().ToString().Trim(new char[] { '(', ')' });
-                RideableMeta rideable = new RideableMeta();
-                rideable.id = uid;
-                rideable.pos = pos;
+                RideableMeta rideable = new RideableMeta
+                {
+                    id = uid,
+                    pos = pos,
+                    state = r.GetRidableState().ToString()
+                };
                 rideables.Add(rideable);
             }
             SaveMeta save = new SaveMeta();
@@ -379,8 +384,28 @@ namespace SaveAnyTime
                 }
             }
 
+            if (arg.IsMain)
+            {
+                Module<FarmModule>.Self.ForeachUnit(delegate (Unit unit, bool isFloor)
+                {
+                    if (unit is RidableTamingUnit)
+                    {
+                        RidableTamingUnit ru = unit as RidableTamingUnit;
+                        GameObject unitGameObjectByUnit = Module<FarmModule>.Self.GetUnitGameObjectByUnit(unit);
+                        RidableTamingUnitViewer uv = (RidableTamingUnitViewer) unitGameObjectByUnit.GetComponentInChildren<UnitViewer>();
 
-            
+                        AccessTools.FieldRefAccess<RidableTamingUnitViewer, List<IRidable>>(uv, "ridableList").Clear();
+
+                        typeof(RidableTamingUnitViewer).GetMethod("CreateShit", BindingFlags.NonPublic | BindingFlags.Instance).Invoke(uv, new object[] { });
+                        typeof(RidableTamingUnitViewer).GetMethod("CreateAllWorkableRidable", BindingFlags.NonPublic | BindingFlags.Instance).Invoke(uv as RidableTamingUnitViewer, new object[] { });
+                        typeof(RidableTamingUnitViewer).GetMethod("UpdateAllRidableInfo", BindingFlags.NonPublic | BindingFlags.Instance).Invoke(uv as RidableTamingUnitViewer, new object[] { });
+
+                    }
+                });
+
+            }
+
+
             string filePath = Path.Combine(GetSavesPath(), $"{lastLoadedSave.fileName}.xml");
             try
             {
@@ -412,6 +437,30 @@ namespace SaveAnyTime
                             Dbgl("got rideable actor " + actor.ActorName);
                             actor.gamePos = VectorFromString(r.pos);
                             actor.RefreshPos();
+                        }
+                        switch (r.state)
+                        {
+                            case "None":
+                                rideable.SetRidableState(RidableState.None);
+                                break;
+                            case "Idle":
+                                rideable.SetRidableState(RidableState.Idle);
+                                break;
+                            case "Ride":
+                                int otherNPCID = Module<EGMgr>.Self.GetEngagementStartNpcID();
+                                if (RideUtils.TestRideWithNpcID > 0)
+                                {
+                                    otherNPCID = RideUtils.TestRideWithNpcID;
+                                    RideUtils.TestRideWithNpcID = -1;
+                                }
+                                Module<Player>.Self.RideRidable(rideable, otherNPCID);
+                                break;
+                            case "Follow":
+                                rideable.SetRidableState(RidableState.Follow);
+                                break;
+                            case "Stay":
+                                rideable.SetRidableState(RidableState.Stay);
+                                break;
                         }
                     }
                 }
