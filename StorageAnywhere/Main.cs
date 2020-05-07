@@ -66,6 +66,12 @@ namespace StorageAnywhere
             GUILayout.Space(20);
             GUILayout.Label(string.Format("Open Factory Storage Key:"), new GUILayoutOption[0]);
             settings.OpenFactoryKey = GUILayout.TextField(settings.OpenFactoryKey, new GUILayoutOption[0]);
+            GUILayout.Space(20);
+            GUILayout.Label(string.Format("Switch to Prev Storage Key:"), new GUILayoutOption[0]);
+            settings.PrevStorageKey = GUILayout.TextField(settings.PrevStorageKey, new GUILayoutOption[0]);
+            GUILayout.Space(20);
+            GUILayout.Label(string.Format("Switch to Next Storage Key:"), new GUILayoutOption[0]);
+            settings.NextStorageKey = GUILayout.TextField(settings.NextStorageKey, new GUILayoutOption[0]);
 
         }
 
@@ -140,6 +146,27 @@ namespace StorageAnywhere
 
             }
         }
+
+        [HarmonyPatch(typeof(StoreageUICtr), "Update")]
+        static class StoreageUICtr_Update_Patch
+        {
+            static void Postfix(StoreageUICtr __instance)
+            {
+                if (!enabled || UIStateMgr.Instance.currentState.type != UIStateMgr.StateType.Storeage)
+                    return;
+
+                if (Input.GetKeyDown(settings.PrevStorageKey))
+                {
+                    __instance.SwitchStorage(false);
+                }
+                else if (Input.GetKeyDown(settings.NextStorageKey))
+                {
+                    __instance.SwitchStorage(true);
+                }
+
+            }
+        }
+
 
     }
 }

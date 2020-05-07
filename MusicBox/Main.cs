@@ -40,20 +40,6 @@ namespace MusicBox
             //MessageManager.Instance.Subscribe("WakeUpScreenEnd", new Action<object[]>(OnWakeUp));
 
         }
-        private static void OnWakeUp(object[] obj)
-        {
-            AudioSource[] ass = AccessTools.FieldRefAccess<AudioPlayer, AudioSource[]>(Module<AudioPlayer>.Self, "effects3D");
-            for(int i = 0; i < ass.Length; i++) 
-            {
-                AudioSource aas = ass[i];
-                if(aas.gameObject.name.Contains(MusicBoxAudioIDs[0].ToString()) || aas.gameObject.name.Contains(MusicBoxAudioIDs[1].ToString()))
-                {
-                    AccessTools.FieldRefAccess<AudioPlayer, AudioSource[]>(Module<AudioPlayer>.Self, "effects3D")[i].Stop();
-                    AccessTools.FieldRefAccess<AudioPlayer, AudioSource[]>(Module<AudioPlayer>.Self, "effects3D")[i].clip = GetAudioToPlay();
-                    AccessTools.FieldRefAccess<AudioPlayer, AudioSource[]>(Module<AudioPlayer>.Self, "effects3D")[i].Play();
-                }
-            }
-        }
 
         private static void OnSaveGUI(UnityModManager.ModEntry modEntry)
         {
@@ -151,8 +137,10 @@ namespace MusicBox
             }
         }
 
-        private static AudioClip GetAudioToPlay()
+        private static IEnumerator PlayAudioCoroutine(AudioPlayer instance, Vector3 pos, int id, int hashCode)
         {
+            AudioClip audioClip;
+
             if (settings.ShuffleOrder)
             {
                 combinedAudio = null;
@@ -161,36 +149,27 @@ namespace MusicBox
             if (settings.PlayAll)
             {
                 if (combinedAudio == null)
-                    combinedAudio = CombineAudioClips(audioClips);
-
-                return combinedAudio;
-            }
-            nextIndex %= audioClips.Count;
-            return audioClips[nextIndex++];
-        }
-
-        public static IEnumerator WaitForSound(float wait, Vector3 pos)
-        {
-            yield return new WaitForSeconds(wait);
-            if (IsPlayingEffect3D(MusicBoxAudioIDs[0]) || IsPlayingEffect3D(MusicBoxAudioIDs[1]))
-            {
-                Module<AudioPlayer>.Self.StopEffect3D(MusicBoxAudioIDs[0], pos, 0);
-                Module<AudioPlayer>.Self.StopEffect3D(MusicBoxAudioIDs[1], pos, 0);
-                Module<AudioPlayer>.Self.PlayEffect3D(MusicBoxAudioIDs[0], pos, false, 0);
-            }
-        }
-
-        public static bool IsPlayingEffect3D(int id)
-        {
-            foreach (AudioSource audioSource in AccessTools.FieldRefAccess<AudioPlayer, AudioSource[]>(Module<AudioPlayer>.Self, "effects3D"))
-            {
-                AudioClip audio = AudioPlayer.GetAudio(id);
-                if (audio != null && audioSource.clip != null && audioSource.clip.name == audio.name)
                 {
-                    return true;
+                    combinedAudio = CombineAudioClips(audioClips);
+                    yield return null;
                 }
+                audioClip = combinedAudio;
             }
-            return false;
+            else
+            {
+                nextIndex %= audioClips.Count;
+                audioClip = audioClips[nextIndex++];
+            }
+
+            AudioSource audioSource = (AudioSource)instance.GetType().GetMethod("PlayEffect3D", BindingFlags.NonPublic | BindingFlags.Instance).Invoke(instance, new object[] { audioClip, pos, AudioPlayer.GetOutPut(id), settings.LoopAudio, 0f });
+            audioSource.gameObject.name = id.ToString() + "-" + hashCode;
+            audioSource.dopplerLevel = 0;
+            audioSource.minDistance = settings.MinDistance;
+            audioSource.maxDistance = settings.MaxDistance;
+            audioSource.spatialBlend = settings.Spatiality;
+            audioSource.rolloffMode = AudioRolloffMode.Logarithmic;
+            audioSource.volume = settings.MusicVolume;
+            yield break;
         }
 
         public static void PreloadClips()
@@ -198,12 +177,12 @@ namespace MusicBox
             audioClips.Clear();
             foreach (string file in audioFiles)
             {
-                Singleton<TaskRunner>.Self.StartCoroutine(Coroutine(file));
+                Singleton<TaskRunner>.Self.StartCoroutine(PreloadClipCoroutine(file));
 
             }
         }
 
-        public static IEnumerator Coroutine(string filename)
+        public static IEnumerator PreloadClipCoroutine(string filename)
         {
             filename = "file:///" + filename.Replace("\\","/");
 

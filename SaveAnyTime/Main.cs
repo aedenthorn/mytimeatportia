@@ -8,6 +8,7 @@ using Pathea.ArchiveNs;
 using Pathea.Behavior;
 using Pathea.DLCRewards;
 using Pathea.EG;
+using Pathea.FavorSystemNs;
 using Pathea.GameFlagNs;
 using Pathea.HomeNs;
 using Pathea.HomeViewerNs;
@@ -21,10 +22,13 @@ using Pathea.RiderNs;
 using Pathea.ScenarioNs;
 using Pathea.ScreenMaskNs;
 using Pathea.StageNs;
+using Pathea.StoreNs;
 using Pathea.SummaryNs;
 using Pathea.Times;
 using Pathea.TipsNs;
 using Pathea.UISystemNs;
+using Pathea.WeatherNs;
+using PatheaScriptExt;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -33,6 +37,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityModManagerNet;
 
 namespace SaveAnyTime
@@ -62,6 +67,7 @@ namespace SaveAnyTime
 
             var harmony = HarmonyInstance.Create(modEntry.Info.Id);
             harmony.PatchAll(Assembly.GetExecutingAssembly());
+            DoBuildSaveList();
             return true;
         }
 
@@ -74,6 +80,8 @@ namespace SaveAnyTime
         {
             GUILayout.Label("Quick Save Key:", new GUILayoutOption[0]);
             settings.QuickSaveKey = GUILayout.TextField(settings.QuickSaveKey, new GUILayoutOption[0]);
+            GUILayout.Label("Quick Load Key:", new GUILayoutOption[0]);
+            settings.QuickLoadKey = GUILayout.TextField(settings.QuickLoadKey, new GUILayoutOption[0]);
 
             if (Player.Self != null && Module<Player>.Self != null && Module<Player>.Self.actor != null)
             {
@@ -95,7 +103,7 @@ namespace SaveAnyTime
                     foreach (CustomSaveFile csf in saveFiles)
                     {
                         GUILayout.BeginHorizontal(new GUILayoutOption[0]);
-                        if (GUILayout.Button(csf.GetSaveTitle(), new GUILayoutOption[]{
+                        if (GUILayout.Button(csf.saveTitle, new GUILayoutOption[]{
                     }))
                         {
                             Singleton<TaskRunner>.Self.StartCoroutine(LoadGameFromArchive(csf.fileName));
@@ -130,6 +138,33 @@ namespace SaveAnyTime
         }
 
 
+        [HarmonyPatch(typeof(UIBaseSolution), "Update")]
+        static class UIBaseSolution_Update_Patch
+        {
+            static void Postfix()
+            {
+                if (!enabled)
+                    return;
+
+                if (Input.GetKeyDown(settings.QuickLoadKey) && saveFiles.Count > 0)
+                {
+                    List<string> files = new List<string>();
+                    foreach (CustomSaveFile csf in saveFiles)
+                    {
+                        files.Add(csf.fileName);
+                    }
+                    files.Sort(delegate (string x, string y)
+                    {
+                        string datex = x.Split('_')[2];
+                        string datey = y.Split('_')[2];
+                        return datex.CompareTo(datey);
+                    });
+                    string fileName = files[files.Count - 1];
+                    Dbgl($"Quick load {fileName}");
+                    Singleton<TaskRunner>.Self.StartCoroutine(LoadGameFromArchive(fileName));
+                }
+            }
+        }
         [HarmonyPatch(typeof(GamingSolution), "Update")]
         static class GamingSolution_Update_Patch
         {
@@ -157,8 +192,6 @@ namespace SaveAnyTime
                 DoBuildSaveList();
             }
         }
-
-
         private static void DoSaveFile()
         {
             if (Player.Self == null || Module<Player>.Self == null || Module<Player>.Self.actor == null)
@@ -200,6 +233,8 @@ namespace SaveAnyTime
             Dbgl(filePath);
             Singleton<Archive>.Instance.SaveArchive(filePath);
 
+            // meta file
+
             List<NPCMeta> npcs = new List<NPCMeta>();
             foreach(NpcData data in Module<NpcRepository>.Self.NpcInstanceDatas)
             {
@@ -231,12 +266,28 @@ namespace SaveAnyTime
                 };
                 rideables.Add(rideable);
             }
+
+            List<StoreMeta> stores = new List<StoreMeta>();
+            foreach (Store store in AccessTools.FieldRefAccess<StoreManagerV40, List<Store>>(Module<StoreManagerV40>.Self, "storeList"))
+            {
+                stores.Add(new StoreMeta()
+                {
+                    id = store.id,
+                    money = store.ownMoney,
+                    recycleCount = store.recycleCount
+                });
+            }
+
+
             SaveMeta save = new SaveMeta();
             save.NPClist = npcs;
             save.RideableList = rideables;
+            save.StoreList = stores;
+            save.FishBowlConsumeHour = (int)typeof(FishBowl).GetField("consumeHour", BindingFlags.NonPublic | BindingFlags.Static).GetValue(Module<FishBowl>.Self);
+            save.WeatherState = (int)Module<WeatherModule>.Self.CurWeatherState;
+            save.CurPriceIndex = Module<StoreManagerV40>.Self.CurPriceIndex;
 
-            System.Xml.Serialization.XmlSerializer writer =
-                new System.Xml.Serialization.XmlSerializer(typeof(SaveMeta));
+            System.Xml.Serialization.XmlSerializer writer = new System.Xml.Serialization.XmlSerializer(typeof(SaveMeta));
 
             var path2 = Path.Combine(GetSavesPath(),$"{fileName}.xml");
             System.IO.FileStream file = System.IO.File.Create(path2);
@@ -294,12 +345,14 @@ namespace SaveAnyTime
                 yield break;
             }
 
+            Dbgl("file exists " + filePath);
             Module<GameConfigModule>.Self.IgnoreCloseDoorAudio = true;
 
             Singleton<GameRunner>.Instance.Rest();
             Singleton<LoadingMask.Mgr>.Instance.Begin(null);
             yield return null;
 
+            Dbgl("starting load routine");
             Singleton<SleepTipMgr>.Self.SleepState(true);
 
             Dbgl("Checking if in game");
@@ -347,13 +400,17 @@ namespace SaveAnyTime
             Module<ScenarioModule>.Self.EndLoadEventor -= OnSceneLoaded;
             Module<Player>.Self.GamePos = VectorFromString(lastLoadedSave.position);
 
-            Module<SleepModule>.Self.GetType().GetMethod("PlayerWakeUpAfterArchive", BindingFlags.NonPublic | BindingFlags.Instance).Invoke(Module<SleepModule>.Self, new object[] { });
+            //Module<SleepModule>.Self.GetType().GetMethod("PlayerWakeUpAfterArchive", BindingFlags.NonPublic | BindingFlags.Instance).Invoke(Module<SleepModule>.Self, new object[] { });
 
             //Module<SleepModule>.Self.GetType().GetMethod("ShowSleepMask", BindingFlags.NonPublic | BindingFlags.Instance).Invoke(Module<SleepModule>.Self, new object[] { false });
+            //MessageManager.Instance.Dispatch("WakeUpScreen", null, DispatchType.IMME, 2f);
 
-            Module<SleepModule>.Self.WakeUpScreenMaskFinishedEvent?.Invoke();
+            //Module<SleepModule>.Self.WakeUpScreenMaskFinishedEvent?.Invoke();
 
             Singleton<SleepTipMgr>.Self.SleepState(false);
+
+
+            // stuff that needs to be recreated after save
 
             GameDLCRewardsModule.Self.GetType().GetMethod("CheckAndOpenAllDlc", BindingFlags.NonPublic | BindingFlags.Instance).Invoke(Module<GameDLCRewardsModule>.Self, new object[] { });
 
@@ -364,14 +421,33 @@ namespace SaveAnyTime
                 GameDateTime dateBegin = AccessTools.FieldRefAccess<EGDate, GameDateTime>(date, "mBeginTimer");
                 if(Module<TimeManager>.Self.DateTime > dateBegin)
                 {
+                    date.GetType().GetMethod("InitProjectMap", BindingFlags.NonPublic | BindingFlags.Instance).Invoke(date, new object[] { });
+                    Actor mActor = AccessTools.FieldRefAccess<EGDate, Actor>(date, "mActor");
+                    AccessTools.FieldRefAccess<EGDate, Actor>(date, "mActor").SetBehaviorValue("EGActor", Module<Player>.Self.actor);
+                    AccessTools.FieldRefAccess<EGDate, Actor>(date, "mActor").SetBehaviorValue("EGDate", EGData.GetDatePlace(AccessTools.FieldRefAccess<EGDate, int>(date, "mDateID")));
+                    AccessTools.FieldRefAccess<EGDate, SharedInt>(date, "mForceValue") = mActor.GetBehaviorVariable<SharedInt>("EGForce");
+                    AccessTools.FieldRefAccess<EGDate, SharedInt>(date, "mMoodValue") = mActor.GetBehaviorVariable<SharedInt>("EGMood");
+                    AccessTools.FieldRefAccess<EGDate, SharedIntList>(date, "mEventCount") = mActor.GetBehaviorVariable<SharedIntList>("EGEventIDs");
+                    AccessTools.FieldRefAccess<EGDate, List<EGRoot>>(date, "mRoots") = mActor.behavior.FindTasks<EGRoot>();
                     date.Start();
+                    Dbgl("Engagement starts with "+mActor.ActorName);
                 }
                 else if(Module<TimeManager>.Self.DateTime > dateBegin - EGConst.Spawn_Hour_1)
                 {
+                    Dbgl("Less than one hour before engagement starts!");
+                    date.GetType().GetMethod("InitProjectMap", BindingFlags.NonPublic | BindingFlags.Instance).Invoke(date, new object[] { });
+                    Actor mActor = AccessTools.FieldRefAccess<EGDate, Actor>(date, "mActor");
+                    AccessTools.FieldRefAccess<EGDate, Actor>(date, "mActor").SetBehaviorValue("EGActor", Module<Player>.Self.actor);
+                    AccessTools.FieldRefAccess<EGDate, Actor>(date, "mActor").SetBehaviorValue("EGDate", EGData.GetDatePlace(AccessTools.FieldRefAccess<EGDate, int>(date, "mDateID")));
+                    AccessTools.FieldRefAccess<EGDate, SharedInt>(date, "mForceValue") = mActor.GetBehaviorVariable<SharedInt>("EGForce");
+                    AccessTools.FieldRefAccess<EGDate, SharedInt>(date, "mMoodValue") = mActor.GetBehaviorVariable<SharedInt>("EGMood");
+                    AccessTools.FieldRefAccess<EGDate, SharedIntList>(date, "mEventCount") = mActor.GetBehaviorVariable<SharedIntList>("EGEventIDs");
+                    AccessTools.FieldRefAccess<EGDate, List<EGRoot>>(date, "mRoots") = mActor.behavior.FindTasks<EGRoot>();
                     Singleton<TipsMgr>.Instance.SendSystemTip(string.Format(TextMgr.GetStr(100507, -1), TextMgr.GetStr(AccessTools.FieldRefAccess<EGDate, int>(date, "mTipTypeID"), -1)), SystemTipType.warning);
                 }
                 else if (Module<TimeManager>.Self.DateTime > dateBegin - EGConst.Spawn_Hour_2)
                 {
+                    Dbgl("Less than two hours hour before engagement starts!");
                     date.GetType().GetMethod("InitProjectMap", BindingFlags.NonPublic | BindingFlags.Instance).Invoke(date, new object[] { });
                     Actor mActor = AccessTools.FieldRefAccess<EGDate, Actor>(date, "mActor");
                     AccessTools.FieldRefAccess<EGDate, Actor>(date, "mActor").SetBehaviorValue("EGActor", Module<Player>.Self.actor);
@@ -388,10 +464,14 @@ namespace SaveAnyTime
             {
                 Module<FarmModule>.Self.ForeachUnit(delegate (Unit unit, bool isFloor)
                 {
-                    if (unit is RidableTamingUnit)
+                    if (unit != null && unit is RidableTamingUnit)
                     {
                         RidableTamingUnit ru = unit as RidableTamingUnit;
                         GameObject unitGameObjectByUnit = Module<FarmModule>.Self.GetUnitGameObjectByUnit(unit);
+                        if(unitGameObjectByUnit == null)
+                        {
+                            return;
+                        }
                         RidableTamingUnitViewer uv = (RidableTamingUnitViewer) unitGameObjectByUnit.GetComponentInChildren<UnitViewer>();
 
                         AccessTools.FieldRefAccess<RidableTamingUnitViewer, List<IRidable>>(uv, "ridableList").Clear();
@@ -403,8 +483,42 @@ namespace SaveAnyTime
                     }
                 });
 
+                typeof(RidableModuleManager).GetMethod("InitIdGenerator", BindingFlags.NonPublic | BindingFlags.Instance).Invoke(Module<RidableModuleManager>.Self, new object[] { });
+
+                Dictionary<int, RidableTransactionSaveData> rideDic = AccessTools.FieldRefAccess<RidableModuleManager, Dictionary<int, RidableTransactionSaveData>>(Module<RidableModuleManager>.Self, "ridableTransactionDataDic");
+                int[] rideKeys = new int[rideDic.Count];
+                rideDic.Keys.CopyTo(rideKeys,0);
+                foreach (int key in rideKeys)
+                {
+                    if(rideDic[key].RidableSource == RidableSource.NPC)
+                    {
+                        AccessTools.FieldRefAccess<RidableModuleManager, Dictionary<int, RidableTransactionSaveData>>(Module<RidableModuleManager>.Self, "ridableTransactionDataDic").Remove(key);
+                    }
+                }
+
+                Scene sceneByName = SceneManager.GetSceneByName(arg.scenarioName);
+                if (sceneByName.IsValid() && sceneByName.isLoaded)
+                {
+                    GameObject[] gos = sceneByName.GetRootGameObjects();
+                    foreach(GameObject go in gos)
+                    {
+                        Component co = go.GetComponentInChildren(typeof(NpcsRidableManager));
+                        if(co != null)
+                        {
+                            Dbgl("Got NpcsRidableManager");
+                            (co as NpcsRidableManager).DestoryAllRidable();
+                            AccessTools.FieldRefAccess<RidableFences, Dictionary<IRidable, RidableFence>>((co as NpcsRidableManager), "ridableDic").Clear();
+                            typeof(NpcsRidableManager).GetMethod("AfterPlayerWakeUpEvent", BindingFlags.NonPublic | BindingFlags.Instance).Invoke(co as NpcsRidableManager, new object[] { });
+                        }
+                    }
+                }
             }
 
+            AccessTools.FieldRefAccess<DynamicWishManager, List<int>>(Module<DynamicWishManager>.Self, "hasTalkToday").AddRange(from it in AccessTools.FieldRefAccess<DynamicWishManager, List<DoubleInt>>(Module<DynamicWishManager>.Self, "curWishData") select it.id0);
+
+            //Module<RidableModuleManager>.Self.InitNpcRidableBehaviourValue();
+
+            // stuff that needs to be carried over but isnt, use meta file
 
             string filePath = Path.Combine(GetSavesPath(), $"{lastLoadedSave.fileName}.xml");
             try
@@ -422,19 +536,24 @@ namespace SaveAnyTime
                         Module<ActorMgr>.Self.MoveToScenario(actor, npc.scene, VectorFromString(npc.pos));
                     }
                 }
-                if(save.RideableList != null)
+                if (save.RideableList != null)
                 {
                     foreach (RideableMeta r in save.RideableList)
                     {
                         IRidable rideable = Module<RidableModuleManager>.Self.GetRidable(r.id);
-
                         if (rideable == null)
-                            continue;
-                        Dbgl("got rideable "+r.id);
-                        Actor actor = rideable.GetActor();
-                        if(actor != null)
                         {
-                            Dbgl("got rideable actor " + actor.ActorName);
+                            Dbgl("null rideable " + r.id);
+
+                            rideable = Module<RidableModuleManager>.Self.GetRidable(r.id);
+
+                            continue;
+                        }
+                        Dbgl("got rideable " + r.id);
+                        Actor actor = rideable.GetActor();
+                        if (actor != null)
+                        {
+                            Dbgl("got rideable actor for " + rideable.GetNickName());
                             actor.gamePos = VectorFromString(r.pos);
                             actor.RefreshPos();
                         }
@@ -447,13 +566,22 @@ namespace SaveAnyTime
                                 rideable.SetRidableState(RidableState.Idle);
                                 break;
                             case "Ride":
-                                int otherNPCID = Module<EGMgr>.Self.GetEngagementStartNpcID();
-                                if (RideUtils.TestRideWithNpcID > 0)
+                                if (rideable.BelongToPlayer)
                                 {
-                                    otherNPCID = RideUtils.TestRideWithNpcID;
-                                    RideUtils.TestRideWithNpcID = -1;
+                                    int otherNPCID = Module<EGMgr>.Self.GetEngagementStartNpcID();
+                                    if (RideUtils.TestRideWithNpcID > 0)
+                                    {
+                                        otherNPCID = RideUtils.TestRideWithNpcID;
+                                        RideUtils.TestRideWithNpcID = -1;
+                                    }
+                                    Module<Player>.Self.RideRidable(rideable, otherNPCID);
                                 }
-                                Module<Player>.Self.RideRidable(rideable, otherNPCID);
+                                else if (rideable.GetBelongRider() is ActorRiderAdapter)
+                                {
+                                    Actor belongActor = (rideable.GetBelongRider() as ActorRiderAdapter).actor;
+                                    RideController rideController = belongActor.RideController;
+                                    rideController.RideOn(rideable);
+                                }
                                 break;
                             case "Follow":
                                 rideable.SetRidableState(RidableState.Follow);
@@ -463,6 +591,27 @@ namespace SaveAnyTime
                                 break;
                         }
                     }
+                }
+
+                if(save.FishBowlConsumeHour != -1)
+                {
+                    typeof(FishBowl).GetField("consumeHour", BindingFlags.NonPublic | BindingFlags.Static).SetValue(Module<FishBowl>.Self, save.FishBowlConsumeHour);
+                }
+
+                AccessTools.FieldRefAccess<StoreManagerV40, float>(Module<StoreManagerV40>.Self, "curPriceIndex") = save.CurPriceIndex;
+
+                if (save.StoreList != null)
+                {
+                    foreach (StoreMeta sMeta in save.StoreList)
+                    {
+                        Module<StoreManagerV40>.Self.GetStore(sMeta.id).recycleCount = sMeta.recycleCount;
+                        Module<StoreManagerV40>.Self.GetStore(sMeta.id).ownMoney = sMeta.money;
+                    }
+                }
+
+                if(save.WeatherState != -1)
+                {
+                    AccessTools.FieldRefAccess<WeatherModule, WeatherCtr>(Module<WeatherModule>.Self, "weatherCtr").SetWeather((WeatherState)save.WeatherState);
                 }
             }
             catch(Exception ex)

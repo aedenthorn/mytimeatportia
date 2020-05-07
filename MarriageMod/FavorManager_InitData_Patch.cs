@@ -14,7 +14,14 @@ namespace MarriageMod
         {
             static void Postfix()
             {
-                Module<FavorManager>.Self.RemoveToBlackList(4000097);
+                if (typeof(FavorManager).GetMethod("RemoveFromBlackList") != null)
+                {
+                    typeof(FavorManager).GetMethod("RemoveFromBlackList").Invoke(Module<FavorManager>.Self, new object[] { 4000097 }); 
+                }
+                else if (typeof(FavorManager).GetMethod("RemoveToBlackList") != null)
+                {
+                    typeof(FavorManager).GetMethod("RemoveToBlackList").Invoke(Module<FavorManager>.Self, new object[] { 4000097 }); 
+                }
             }
         }
     }

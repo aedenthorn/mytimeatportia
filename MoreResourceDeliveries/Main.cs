@@ -34,6 +34,8 @@ namespace MoreResourceDeliveries
 
         private static void OnGUI(UnityModManager.ModEntry modEntry)
         {
+            GUILayout.Label(string.Format("Price limit multiplier (requires game restart): <b>{0}x</b>", settings.PriceLimitMult), new GUILayoutOption[0]);
+            settings.PriceLimitMult = (int)GUILayout.HorizontalSlider((float)Main.settings.PriceLimitMult, 1f, 100f, new GUILayoutOption[0]);
         }
         // Called when the mod is turned to on/off.
         static bool OnToggle(UnityModManager.ModEntry modEntry, bool value /* active or inactive */)
@@ -74,6 +76,8 @@ namespace MoreResourceDeliveries
                 {
                     if (___infoList[i].level == 0)
                         continue;
+
+                    ___infoList[i].priceLimit *= settings.PriceLimitMult;
 
                     var productsId = FieldRefAccess<ResPointInfo, string>(___infoList[i], "productsId");
                     var extraOutput = FieldRefAccess<ResPointInfo, string>(___infoList[i], "extraOutput");

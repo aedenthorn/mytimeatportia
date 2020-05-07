@@ -1,10 +1,10 @@
 ﻿using UnityModManagerNet;
 
-namespace MoreResourceDeliveries
+namespace DeeDeeAnywhere
 {
     public class Settings : UnityModManager.ModSettings
     {
-        public int PriceLimitMult { get; set; } = 1;
+
         public override void Save(UnityModManager.ModEntry modEntry)
         {
             Save(this, modEntry);

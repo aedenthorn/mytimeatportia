@@ -107,11 +107,6 @@ namespace Invasion
 
             Monster m = GetRandomMonster(rand, Get1337Level());
 
-            agent = new ActorAgent(m.pos.Value, m.rot, m.id, new Action<ActorAgent>(MonsterDeath));
-
-            Module<SpawnMgr>.Self.AddActorAgent(agent);
-            agent.Spawn();
-
             gangSpawned = false;
 
             int chanceGang = new IntR(0, 100).GetValue(rand);
@@ -166,6 +161,10 @@ namespace Invasion
                     agentLow.Spawn();
                 }
             }
+            agent = new ActorAgent(m.pos.Value, m.rot, m.id, new Action<ActorAgent>(MonsterDeath));
+
+            Module<SpawnMgr>.Self.AddActorAgent(agent);
+            agent.Spawn();
 
             areaTrigger = Module<AreaTriggerManager>.Self.CreateAreaTrigger(triggerID, m.pos.Value, "Main", 40, true);
             monsterAlive = true;

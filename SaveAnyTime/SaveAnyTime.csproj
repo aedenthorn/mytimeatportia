@@ -102,6 +102,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>copy "C:\Users\poiqwe\source\repos\PortiaMods\SaveAnyTime\bin\Debug\SaveAnyTime.dll" "G:\ga\MTAP\Mods\SaveAnyTime\"</PostBuildEvent>
+    <PostBuildEvent>copy "C:\Users\poiqwe\source\repos\PortiaMods\SaveAnyTime\bin\Debug\SaveAnyTime.dll" "G:\ga\MTAP\Mods\SaveAnyTime\"
+copy "C:\Users\poiqwe\source\repos\PortiaMods\SaveAnyTime\Info.json" "G:\ga\MTAP\Mods\SaveAnyTime\"</PostBuildEvent>
   </PropertyGroup>
 </Project>

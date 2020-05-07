@@ -6,6 +6,10 @@ namespace SaveAnyTime
     {
         public List<NPCMeta> NPClist;
         public List<RideableMeta> RideableList;
+        public List<StoreMeta> StoreList;
+        public int FishBowlConsumeHour = -1;
+        public int WeatherState = -1;
+        public float CurPriceIndex = 1f;
     }
     public class NPCMeta
     {
@@ -19,4 +23,11 @@ namespace SaveAnyTime
         public string pos;
         public string state;
     }
+    public class StoreMeta
+    {
+        public int id;
+        public int money;
+        public int recycleCount = 0;
+    }
+
 }

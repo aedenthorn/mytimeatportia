@@ -10,31 +10,20 @@ using System.Collections.Generic;
 using SimpleJSON;
 using Pathea.FavorSystemNs;
 using Pathea.ModuleNs;
-using Pathea.MessageSystem;
-using Pathea.PlayerMissionNs;
-using Pathea.HomeNs;
-using Pathea.SkillNs;
 using Pathea.Missions;
 using static Harmony12.AccessTools;
 using Pathea.ActorNs;
 using UnityEngine.SceneManagement;
-using Pathea.ConfigNs;
-using Pathea.GameResPointNs;
-using Pathea.StageNs;
-using System.Linq;
 using PatheaScript;
 using Ccc;
 using Hont;
 using Pathea.AppearNs;
 using PatheaScriptExt;
 using Pathea.BlackBoardNs;
-using Pathea.NpcRepositoryNs;
 using Pathea.OptionNs;
-using Mission = Pathea.Missions.Mission;
 using System.IO;
 using Pathea.HomeViewerNs;
-using Pathea.NpcAppearNs;
-using Pathea.ScenarioNs;
+using System.Text.RegularExpressions;
 
 namespace Cheats
 {
@@ -64,7 +53,7 @@ namespace Cheats
 
             //Module<ScenarioModule>.Self.EndLoadEventor += OnLoadGame;
 
-            //SceneManager.activeSceneChanged += ChangeScene;
+            SceneManager.activeSceneChanged += ChangeScene;
             /*
             assetBundle = AssetBundle.LoadFromFile(Application.streamingAssetsPath + "/untitled");
             if (assetBundle != null)
@@ -73,20 +62,29 @@ namespace Cheats
             */
 
             //string[] names = { "Emily", "Nora", "Phyllis", "Ginger", "Sonia", };
-            string[] names = { "Phyllis" };
 
-            foreach (string name in names)
+            string path = $"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\\assets";
+
+            if (!Directory.Exists(path))
             {
-                string path = $"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}/assets/{name}.png";
-                if (!File.Exists(path))
+                Dbgl($"Directory {path} does not exist!");
+                return;
+            }
+
+            Regex pattern = new Regex(@"^[0-9][0-9]*\.png$");
+
+            foreach (string file in Directory.GetFiles(path))
+            {
+                string fileName = Path.GetFileName(file);
+                if (pattern.IsMatch(fileName))
                 {
-                    Dbgl($"file not found for: {name}");
-                    break;
+                    int id = int.Parse(fileName.Substring(0, fileName.Length - 4));
+                    Dbgl($"got file at path: {file}");
+                    Texture2D tex = new Texture2D(2, 2);
+                    byte[] imageData = File.ReadAllBytes(file);
+                    tex.LoadImage(imageData);
+                    customTextures.Add(id, tex);
                 }
-                Texture2D tex = new Texture2D(2, 2);
-                byte[] imageData = File.ReadAllBytes(path);
-                tex.LoadImage(imageData);
-                customTextures.Add(name,tex);
             }
 
         }
@@ -105,9 +103,9 @@ namespace Cheats
 
 
         private static AssetBundle assetBundle = null;
-        private static Dictionary<string, Texture> customTextures = new Dictionary<string, Texture>();
+        private static Dictionary<int, Texture2D> customTextures = new Dictionary<int, Texture2D>();
         private static Dictionary<string, Texture> customClothes = new Dictionary<string, Texture>();
-        private static int[] textureActors = new int[] { 4000035, 4000141, 4000006, 4000093, 4000033};
+        private static int[] textureActors = new int[] { 4000035, 4000141, 4000006, 4000093, 4000033, 4000003 };
 
         private static void ChangeScene(Scene oldScene, Scene newScene)
         {
@@ -117,19 +115,16 @@ namespace Cheats
                 FieldRefAccess<Actor, SkinnedMeshRenderer>("skinnedMeshRenderer");
             SkinnedMeshRenderer skinnedMeshRenderer = null;
 
-            Dictionary<int, Actor> textureActors = new Dictionary<int, Actor>();
-
-
-            for (int i = 0; i < Main.textureActors.Length; i++)
+            foreach(KeyValuePair<int, Texture2D> kvp in customTextures)
             {
-
-                Actor a = Module<ActorMgr>.Self.Get(Main.textureActors[i]);
-                if (a != null && a.InActiveScene && customTextures.ContainsKey(a.ActorName) &&
-                    customTextures[a.ActorName] != null)
+                Actor a = Module<ActorMgr>.Self.Get(kvp.Key);
+                Dbgl($"trying to change texture for: {a.ActorName}");
+                if (a != null && a.InActiveScene && kvp.Value != null)
                 {
+                    Dbgl($"changing texture for: {a.ActorName}");
                     skinnedMeshRenderer = rendererByRef(a);
                     if (skinnedMeshRenderer != null)
-                        skinnedMeshRenderer.material.mainTexture = customTextures[a.ActorName];
+                        skinnedMeshRenderer.material.mainTexture = kvp.Value;
                 }
             }
         }

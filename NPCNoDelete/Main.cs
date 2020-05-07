@@ -100,7 +100,15 @@ namespace NPCNoDelete
             f.Relationship = FavorRelationshipId.Friend;
             FavorRelationshipUtil.TryUpgradeRelationShip(f, false, false, true);
             Module<FavorInfluenceManager>.Self.OnUpdateRelation(f.ID, r, f.Relationship);
-            Module<FavorManager>.Self.RemoveToBlackList(f.ID);
+
+            if (typeof(FavorManager).GetMethod("RemoveFromBlackList") != null)
+            {
+                typeof(FavorManager).GetMethod("RemoveFromBlackList").Invoke(Module<FavorManager>.Self, new object[] { f.ID });
+            }
+            else if (typeof(FavorManager).GetMethod("RemoveToBlackList") != null)
+            {
+                typeof(FavorManager).GetMethod("RemoveToBlackList").Invoke(Module<FavorManager>.Self, new object[] { f.ID });
+            }
         }
 
         private static Dictionary<int, Vector3[]> ReturnLocations = new Dictionary<int, Vector3[]>();

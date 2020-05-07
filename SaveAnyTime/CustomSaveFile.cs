@@ -6,14 +6,17 @@
         public string name;
         public string creationTime;
         public string saveTime;
+        public string saveTimeFormatted;
         public string date;
+        public string dateFormatted;
         public string playTime;
         public string GUID;
         public string version;
-        public int hour;
-        public int minute;
+        public string hour;
+        public string minute;
         public string sceneName;
         public string position;
+        public string saveTitle;
 
         public CustomSaveFile(string _fileName)
         {
@@ -30,10 +33,13 @@
                 this.playTime = list[i++];
                 this.GUID = list[i++];
                 this.version = list[i++];
-                this.hour = int.Parse(list[i].Split('h')[0]);
-                this.minute = int.Parse(list[i++].Split('h')[1].Split('m')[0]);
+                this.hour = list[i].Split('h')[0];
+                this.minute = list[i++].Split('h')[1].Split('m')[0];
                 this.sceneName = list[i++];
                 this.position = list[i++];
+                this.saveTimeFormatted = string.Format("{0}-{1}-{2} at {3}:{4}:{5}", saveTime.Substring(6, 2), saveTime.Substring(4, 2), saveTime.Substring(0, 4), saveTime.Substring(9, 2), saveTime.Substring(11, 2), saveTime.Substring(13, 2));
+                this.dateFormatted = string.Format("Year {0}, Month {1}, Day {2}", date.Split('Y')[0], date.Split('Y')[1].Split('M')[0], date.Split('Y')[1].Split('M')[1].Split('D')[0]);
+                this.saveTitle = string.Format("{0} at {1}:{2:00} on {3} in {4} (saved on {5})", name, hour, minute, dateFormatted, sceneName, saveTimeFormatted);
             }
             catch
             {
@@ -45,9 +51,5 @@
             return this.fileName != null && this.name != null && this.hour != null && this.minute != null && this.creationTime != null && this.saveTime != null && this.date != null && this.playTime != null && this.GUID != null && this.version != null && this.hour != null && this.minute != null && this.sceneName != null && this.position != null;
         }
 
-        public string GetSaveTitle()
-        {
-            return string.Format("{0} at {1}:{2:00} on {3} ({4} in {5})", name, hour, minute, date, saveTime, sceneName);
-        }
     }
 }

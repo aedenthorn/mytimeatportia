@@ -1,5 +1,6 @@
 ﻿using Harmony12;
 using Hont.ExMethod.Collection;
+using Pathea;
 using Pathea.AudioNs;
 using System;
 using System.Reflection;
@@ -34,14 +35,7 @@ namespace MusicBox
                     return true;
                 if (MusicBoxAudioIDs.Contains(id))
                 {
-                    AudioSource audioSource = (AudioSource)__instance.GetType().GetMethod("PlayEffect3D", BindingFlags.NonPublic | BindingFlags.Instance).Invoke(__instance, new object[] { GetAudioToPlay(), pos, AudioPlayer.GetOutPut(id), settings.LoopAudio, 0f });
-                    audioSource.gameObject.name = id.ToString() + "-" + hashCode;
-                    audioSource.dopplerLevel = 0;
-                    audioSource.minDistance = settings.MinDistance;
-                    audioSource.maxDistance = settings.MaxDistance;
-                    audioSource.spatialBlend = settings.Spatiality;
-                    audioSource.rolloffMode = AudioRolloffMode.Logarithmic;
-                    audioSource.volume = settings.MusicVolume;
+                    Singleton<TaskRunner>.Self.StartCoroutine(PlayAudioCoroutine(__instance, pos, id, hashCode));
                     return false;
                 }
                 return true;

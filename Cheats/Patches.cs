@@ -2,6 +2,7 @@
 using Pathea;
 using Pathea.ActorNs;
 using Pathea.AppearNs;
+using Pathea.Behavior;
 using Pathea.HomeNs;
 using Pathea.HomeViewerNs;
 using Pathea.InputSolutionNs;
@@ -96,47 +97,57 @@ namespace Cheats
             }
         }
 
-        [HarmonyPatch(typeof(RidableTamingUnit), "DayChange")]
-        static class RidableTamingUnit_Patch
+        //[HarmonyPatch(typeof(RidableModuleManager), "GetNewSaveUID")]
+        static class rmm_Patch
         {
-            static void Postfix(RidableTamingUnit __instance)
+            static void Postfix(RidableModuleManager __instance, int __result)
             {
-                Dbgl("unit poops: " + __instance.ShitCount);
-                System.Diagnostics.StackTrace t = new System.Diagnostics.StackTrace();
-                Dbgl(__instance.ShitCount+ " " + t.ToString());
-                
+                Dbgl("new id: " + __result+ " "+Environment.StackTrace);
             }
         }
-        [HarmonyPatch(typeof(RidableTamingUnitViewer), "CreateShit")]
-        static class CreateShit_Patch
+
+        //[HarmonyPatch(typeof(RidableModuleManager), "GetNewTempUID")]
+        static class rmm2_Patch
         {
-            static void Prefix(BoxCollider ___shitPlace, RidableTamingUnit ___thisUnit)
+            static void Postfix(RidableModuleManager __instance, int __result)
             {
-                if (___shitPlace == null)
+                Dbgl("new id: " + __result+ " "+Environment.StackTrace);
+            }
+        }
+
+
+                //[HarmonyPatch(typeof(PatrolArea), "OnStart")]
+        static class PatrolArea_Patch
+        {
+            static void Prefix(PatrolArea __instance)
+            {
+                //Dbgl($"npc name: {__instance.actor.Value.ActorName}");
+                if (__instance.actor.Value.InstanceId != 4000044)
+                    return;
+
+                int _ridableId = Module<RidableModuleManager>.Self.GetNpcRidableUID(__instance.actor.Value.InstanceId);
+                Dbgl($"ridable id: {_ridableId}");
+
+                foreach (IRidable r in AccessTools.FieldRefAccess<RidableModuleManager, List<IRidable>>(Module<RidableModuleManager>.Self, "allRidable"))
                 {
-                    Dbgl("poop place is null");
+                    Dbgl($"ridable id: {r.UID} name: {r.GetNickName()}, owner: {r.GetBelongRider().GetName()}");
                 }
-                Dbgl("unit poops: "+___thisUnit.ShitCount);
 
-                System.Diagnostics.StackTrace t = new System.Diagnostics.StackTrace();
-                Dbgl(t.ToString());
-                
-            }
-        }
+                IRidable _ridable = Module<RidableModuleManager>.Self.GetRidable(_ridableId);
 
-        //[HarmonyPatch(typeof(RidableTamingUnitViewer), "CreateRidable")]
-        static class RidableTransactionSaveData_Patch
-        {
-            static void Prefix(int uid, RidableTamingUnit ___thisUnit )
-            {
-                System.Diagnostics.StackTrace t = new System.Diagnostics.StackTrace();
-                Dbgl(___thisUnit.GetAllRidable().Length + " " + t.ToString());
-            }
-            static void Postfix(int uid, RidableTamingUnit ___thisUnit)
-            {
-                IRidable rideable = RideUtils.CreateRidable(uid);
-                Dbgl("ridable visible? " + rideable.GetActor().Visible);
-                
+                if (_ridable == null)
+                {
+                    Dbgl($"ridable is null");
+                    return;
+                }
+                Dbgl($"PatrolArea OnStart: {_ridableId} {_ridable.GetNickName()}");
+                return;
+                foreach (KeyValuePair<int, RidableTransactionSaveData> kvp in AccessTools.FieldRefAccess<RidableModuleManager, Dictionary<int, RidableTransactionSaveData>>(Module<RidableModuleManager>.Self, "ridableTransactionDataDic"))
+                {
+                    int id = kvp.Key;
+                    Dbgl($"got dic entry {id} {kvp.Value.BelongActorID} ActorName: {__instance.actor.Value.ActorName} ActorId: {__instance.actor.Value.InstanceId}");
+                }
+
             }
         }
 
@@ -221,10 +232,10 @@ namespace Cheats
         {
             static void Postfix(Actor __instance, int ___instanceId, SkinnedMeshRenderer ___skinnedMeshRenderer)
             {
-                if (!customTextures.ContainsKey(__instance.ActorName))
+                if (!customTextures.ContainsKey(__instance.InstanceId))
                     return;
 
-                Texture texture = customTextures[__instance.ActorName];
+                Texture texture = customTextures[__instance.InstanceId];
                 if(texture != null && ___skinnedMeshRenderer != null)
                     ___skinnedMeshRenderer.material.SetTexture("_MainTex", texture);
 
@@ -251,7 +262,7 @@ namespace Cheats
                                 appearUnit = appearUnit2;
                                 if (___equipAppearUnits[i].Contains("Linda_Pants018"))
                                 {
-                                    appearUnit.Smr.material.SetTexture("_MainTex", customTextures["Linda_Pants018"]);
+                                    //appearUnit.Smr.material.SetTexture("_MainTex", customTextures["Linda_Pants018"]);
                                 }
                             }
                         }
