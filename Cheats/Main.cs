@@ -24,6 +24,8 @@ using Pathea.OptionNs;
 using System.IO;
 using Pathea.HomeViewerNs;
 using System.Text.RegularExpressions;
+using Pathea.MessageSystem;
+using Pathea.ScenarioNs;
 
 namespace Cheats
 {
@@ -53,7 +55,7 @@ namespace Cheats
 
             //Module<ScenarioModule>.Self.EndLoadEventor += OnLoadGame;
 
-            SceneManager.activeSceneChanged += ChangeScene;
+            //SceneManager.activeSceneChanged += ChangeScene;
             /*
             assetBundle = AssetBundle.LoadFromFile(Application.streamingAssetsPath + "/untitled");
             if (assetBundle != null)
@@ -100,12 +102,16 @@ namespace Cheats
             //DumpStuff();
         }
 
-
+        private static void Teleport()
+        {
+            Module<ScenarioModule>.Self.TransferToScenario("PlayerHome");
+        }
 
         private static AssetBundle assetBundle = null;
         private static Dictionary<int, Texture2D> customTextures = new Dictionary<int, Texture2D>();
         private static Dictionary<string, Texture> customClothes = new Dictionary<string, Texture>();
         private static int[] textureActors = new int[] { 4000035, 4000141, 4000006, 4000093, 4000033, 4000003 };
+
 
         private static void ChangeScene(Scene oldScene, Scene newScene)
         {
@@ -128,6 +134,8 @@ namespace Cheats
                 }
             }
         }
+
+
 
 
         //[HarmonyPatch(typeof(ActorEquip), "ApplyCloth")]
@@ -213,6 +221,12 @@ namespace Cheats
             UnityEngine.Event e = UnityEngine.Event.current;
 
 
+            if (GUILayout.Button("Teleport", new GUILayoutOption[]{
+                        GUILayout.Width(150f)
+                    }))
+            {
+                Teleport();
+            }
             if (GUILayout.Button("New Game+", new GUILayoutOption[]{
                         GUILayout.Width(150f)
                     }))

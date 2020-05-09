@@ -86,6 +86,14 @@ namespace InstantActions
             GUILayout.Space(20);
             GUILayout.Label(string.Format("Axe Speed Multiplier: <b>{0:F1}x</b>", settings.AxeSpeed), new GUILayoutOption[0]);
             settings.AxeSpeed = GUILayout.HorizontalSlider((float)Main.settings.AxeSpeed*10f, 1f, 100f, new GUILayoutOption[0]) / 10f;
+
+            GUILayout.Space(20);
+            GUILayout.Label(string.Format("Throw 1 Speed Multiplier: <b>{0:F1}x</b>", settings.Throw1Speed), new GUILayoutOption[0]);
+            settings.Throw1Speed = GUILayout.HorizontalSlider((float)Main.settings.Throw1Speed * 10f, 1f, 100f, new GUILayoutOption[0]) / 10f;
+            
+            GUILayout.Space(20);
+            GUILayout.Label(string.Format("Throw 2 Speed Multiplier: <b>{0:F1}x</b>", settings.Throw2Speed), new GUILayoutOption[0]);
+            settings.Throw2Speed = GUILayout.HorizontalSlider((float)Main.settings.Throw2Speed * 10f, 1f, 100f, new GUILayoutOption[0]) / 10f;
             //GUILayout.Label(string.Format("Rock,Paper, Scissors Speed Multiplier : <b>{0:F0}x</b>", settings.RPCSpeed), new GUILayoutOption[0]);
             //settings.RPCSpeed = (int)GUILayout.HorizontalSlider((float)Main.settings.RPCSpeed, 1f, 100f, new GUILayoutOption[0]);
 

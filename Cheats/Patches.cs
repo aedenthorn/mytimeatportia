@@ -3,12 +3,14 @@ using Pathea;
 using Pathea.ActorNs;
 using Pathea.AppearNs;
 using Pathea.Behavior;
+using Pathea.FavorSystemNs;
 using Pathea.HomeNs;
 using Pathea.HomeViewerNs;
 using Pathea.InputSolutionNs;
 using Pathea.ItemSystem;
 using Pathea.Missions;
 using Pathea.ModuleNs;
+using Pathea.NpcInstanceNs;
 using Pathea.OptionNs;
 using Pathea.RiderNs;
 using Pathea.ScenarioNs;
@@ -302,6 +304,16 @@ namespace Cheats
                 //page = 10;
             }
         }
+
+        [HarmonyPatch(typeof(GamingSolution), "Init")]
+        static class GamingSolution_Patch
+        {
+            static void Prefix()
+            {
+                Dbgl("GamingSolution Init " + Environment.StackTrace);
+            }
+        }
+        
         //[HarmonyPatch(typeof(ItemTable))]
         //[HarmonyPatch(new Type[] { typeof(int), typeof(bool) })]
         static class ItemTable_Patch
@@ -311,65 +323,6 @@ namespace Cheats
                 if (size == 400)
                     isDefaultCount = true;
             }
-        }
-
-        [HarmonyPatch(typeof(FishBowlUnitViewer), "PlayerTarget_TriggerEvent")]
-        static class FishBowlUnitViewer_PlayerTarget_TriggerEvent_Patch
-        {
-            static void Postfix(ActionType type, FishBowlUnitViewer __instance, FishBowlUnit ___fishBowlUnit)
-            {
-                if (type == ActionType.ActionAttack)
-                {
-                    ShowHunger(__instance, ___fishBowlUnit);
-                }
-            }
-        }
-
-        [HarmonyPatch(typeof(FishBowlUnitViewer), "FreshActionHint", new Type[] { })]
-        static class FishBowlUnitViewer_FreshInteractHint_Patch
-        {
-            static bool Prefix(FishBowlUnitViewer __instance, FishBowlUnit ___fishBowlUnit)
-            {
-                ShowHunger(__instance, ___fishBowlUnit);
-                return false;
-            }
-        }
-
-        static void ShowHunger(FishBowlUnitViewer __instance, FishBowlUnit ___fishBowlUnit) {
-            FieldRef<UnitViewer, PlayerTargetMultiAction> CurPlayerTargetRef = FieldRefAccess<UnitViewer, PlayerTargetMultiAction>("playerTarget");
-
-            PlayerTargetMultiAction CurPlayerTarget = CurPlayerTargetRef(__instance);
-
-            if (CurPlayerTarget == null)
-                return;
-
-            Dbgl("Showing Hunger");
-
-            int count = ___fishBowlUnit.FishCount;
-            int hungry = count;
-
-            for (int i = 0; i < count; i++)
-            {
-                if (___fishBowlUnit.GetFish(i).isFull)
-                {
-                    hungry--;
-                }
-            }
-
-            ItemObject curUseItem = Module<Player>.Self.bag.itemBar.GetCurUseItem();
-            if (curUseItem != null && FishData.HasId(curUseItem.ItemDataId))
-            {
-                CurPlayerTarget.SetAction(ActionType.ActionAttack, TextMgr.GetStr(300315, -1), ActionTriggerMode.Normal);
-            }
-            else if (curUseItem != null && FishFeedItem.HasId(curUseItem.ItemDataId))
-            {
-                CurPlayerTarget.SetAction(ActionType.ActionAttack, TextMgr.GetStr(300317, -1) + " (Hungry: " + hungry + "/" + ___fishBowlUnit.FishCount + ")", ActionTriggerMode.Normal);
-            }
-            else
-            {
-                CurPlayerTarget.RemoveAction(ActionType.ActionAttack, ActionTriggerMode.Normal);
-            }
-
         }
 
         //[HarmonyPatch(typeof(PlayerItemBarCtr), "Update")]
@@ -462,9 +415,25 @@ namespace Cheats
                 return true;
             }
         }
-        
 
 
+        //[HarmonyPatch(typeof(NpcRelationModule.RelationFlagTime), "Dispose")]
+        static class NpcRelationModule_Patch
+        {
+            static void Prefix(NpcRelationModule.RelationFlagTime __instance)
+            {
+                Dbgl(__instance.selfID+" " +__instance.otherID+" " + Environment.StackTrace);
+            }
+        }
+
+        //[HarmonyPatch(typeof(FavorObject), "GainFavorValue")]
+        static class GainFavorValue_Patch
+        {
+            static void Prefix(FavorObject __instance)
+            {
+                Dbgl(__instance.ID.ToString());
+            }
+        }
         //[HarmonyPatch(typeof(Stage), "InitStage", new Type[] { })]
         static class Stage_InitStage_Patch
         {

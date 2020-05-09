@@ -26,6 +26,8 @@ namespace InstantActions
         public float SowGatherSpeed { get; set; } = 2f;
         public float PickAxeSpeed { get; set; } = 2f;
         public float AxeSpeed { get; set; } = 2f;
+        public float Throw1Speed { get; set; } = 2f;
+        public float Throw2Speed { get; set; } = 2f;
 
         public override void Save(UnityModManager.ModEntry modEntry)
         {

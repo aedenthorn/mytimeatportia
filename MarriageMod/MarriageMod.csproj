@@ -62,6 +62,8 @@
     <Compile Include="Jealous_OnStart_Patch.cs" />
     <Compile Include="Jealous_OnUpdate_Patch.cs" />
     <Compile Include="Main.cs" />
+    <Compile Include="NpcRelationModule_RelationFlagTime_Dispose.cs" />
+    <Compile Include="NpcRelationModule_OnRemoveFlag_Patch.cs" />
     <Compile Include="StoreData_Init_Patch.cs" />
     <Compile Include="MGMgr_CanFollow_Patch.cs" />
     <Compile Include="MGMgr_IsMarriage2_Patch.cs" />

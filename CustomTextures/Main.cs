@@ -160,11 +160,6 @@ namespace CustomTextures
 
                 if (customTextures.ContainsKey(__instance.InstanceId) && __instance.GetComponent<NpcAppear>() == null)
                 {
-                    if (__instance.InstanceId == 4000006)
-                    {
-                        ___skinnedMeshRenderer.sharedMesh = 
-                    }
-
                     Dbgl($"got texture for {__instance.ActorName}");
                     if (___skinnedMeshRenderer != null)
                         ___skinnedMeshRenderer.material.mainTexture = customTextures[__instance.InstanceId];

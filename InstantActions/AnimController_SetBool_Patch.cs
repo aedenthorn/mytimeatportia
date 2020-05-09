@@ -78,6 +78,16 @@ namespace InstantActions
                             if (!val)
                                 MessageManager.Instance.Dispatch("InteractAnimEnd");
                             break;
+                        case "Throw_1":
+                            ___animator.speed = val ? settings.Throw1Speed : 1f;
+                            if (!val)
+                                MessageManager.Instance.Dispatch("InteractAnimEnd");
+                            break;
+                        case "Throw_2":
+                            ___animator.speed = val ? settings.Throw2Speed : 1f;
+                            if (!val)
+                                MessageManager.Instance.Dispatch("InteractAnimEnd");
+                            break;
                         default:
                             break;
                     }
