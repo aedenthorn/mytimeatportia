@@ -58,6 +58,8 @@ namespace FishBowlMod
         {
             static void Postfix(FishBowlUnitViewer __instance, FishBowlUnit ___fishBowlUnit)
             {
+                if (!enabled)
+                    return;
                 Dbgl("Fed fish");
                 ShowHunger(__instance, ___fishBowlUnit);
             }
@@ -68,6 +70,8 @@ namespace FishBowlMod
         {
             static bool Prefix(FishBowlUnitViewer __instance, FishBowlUnit ___fishBowlUnit)
             {
+                if (!enabled)
+                    return true;
                 ShowHunger(__instance, ___fishBowlUnit);
                 return false;
             }
@@ -75,17 +79,14 @@ namespace FishBowlMod
 
         static void ShowHunger(FishBowlUnitViewer __instance, FishBowlUnit ___fishBowlUnit)
         {
-            FieldRef<UnitViewer, PlayerTargetMultiAction> CurPlayerTargetRef = FieldRefAccess<UnitViewer, PlayerTargetMultiAction>("playerTarget");
 
-            PlayerTargetMultiAction CurPlayerTarget = CurPlayerTargetRef(__instance);
-
-            if (CurPlayerTarget == null)
-                return;
+            PlayerTargetMultiAction CurPlayerTarget = (PlayerTargetMultiAction)typeof(UnitViewer).GetProperty("CurPlayerTarget", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(__instance, null);
 
             Dbgl("Showing Hunger");
 
             FishBowl fishBowl = AccessTools.FieldRefAccess<FishBowlUnit, FishBowl>(___fishBowlUnit, "fishBowl");
-            float max = AccessTools.FieldRefAccess<FishBowl, FishBowl.FishBowlData>(fishBowl, "data").maxVolumn;
+            float max = AccessTools.FieldRefAccess<FishBowl, FishBowl.FishBowlData>(fishBowl, "data").volumn;
+            float maxmax = AccessTools.FieldRefAccess<FishBowl, FishBowl.FishBowlData>(fishBowl, "data").maxVolumn;
             int count = ___fishBowlUnit.FishCount;
             int hungry = 0;
             float chp = 0;
@@ -153,13 +154,24 @@ namespace FishBowlMod
             }
             else if (___fishBowlUnit.FishCount > 0)
             {
-                CurPlayerTarget.SetAction(ActionType.ActionInteract, $"{TextMgr.GetStr(300316, -1)} ({count}/{max})", ActionTriggerMode.Normal);
+                string full = "";
+                if (count >= maxmax)
+                {
+                    full = " - Can't Breed";
+                }
+                else if (count >= max)
+                {
+                    full = " - Can't Add";
+                }
+                CurPlayerTarget.SetAction(ActionType.ActionInteract, $"{TextMgr.GetStr(300316, -1)} ({count}/{maxmax}{full})", ActionTriggerMode.Normal);
                 CurPlayerTarget.SetAction(ActionType.ActionMoveBack, $"{string.Join("\r\n",fishs.ToArray())}", ActionTriggerMode.Normal);
-                CurPlayerTarget.SetAction(ActionType.ActionFavor, $"Hungry: {hungry}, Avg. {Math.Round(chp / mhp * 100)}%, Low {Math.Round(lhp * 100)}%", ActionTriggerMode.Normal);
+                CurPlayerTarget.SetAction(ActionType.ActionFavor, $"Hungry: {hungry}, Avg. HP: {Math.Round(chp / mhp * 100)}%, Lowest HP: {Math.Round(lhp * 100)}%", ActionTriggerMode.Normal);
             }
             else
             {
                 CurPlayerTarget.RemoveAction(ActionType.ActionInteract, ActionTriggerMode.Normal);
+                CurPlayerTarget.RemoveAction(ActionType.ActionMoveBack, ActionTriggerMode.Normal);
+                CurPlayerTarget.RemoveAction(ActionType.ActionFavor, ActionTriggerMode.Normal);
             }
             return;
         }

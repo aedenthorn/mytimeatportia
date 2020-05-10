@@ -89,8 +89,11 @@ namespace VoicePitch
         public float WuwaPitch { get; set; } = 1.0f;
         public float YeyePitch { get; set; } = 1.0f;
         public float YoyoPitch { get; set; } = 1.0f;
+        public float PlayerPitch { get; set; } = 1f;
+        public float DMTR_6000Pitch { get; set; } = 1f;
+        public float MasonPitch { get; set; } = 1f;
 
-    public override void Save(UnityModManager.ModEntry modEntry)
+        public override void Save(UnityModManager.ModEntry modEntry)
         {
             Save(this, modEntry);
         }

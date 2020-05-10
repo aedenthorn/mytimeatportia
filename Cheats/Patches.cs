@@ -296,7 +296,7 @@ namespace Cheats
             }
         }
 
-        [HarmonyPatch(typeof(ItemBag), "InitItemBag", new Type[] { typeof(int),typeof(int)})]
+        //[HarmonyPatch(typeof(ItemBag), "InitItemBag", new Type[] { typeof(int),typeof(int)})]
         static class ItemBag_InitItemBag_Patch
         {
             static void Prefix(ItemBag __instance, ref int page, ref ItemTable[] ___itemTables)
@@ -305,7 +305,7 @@ namespace Cheats
             }
         }
 
-        [HarmonyPatch(typeof(GamingSolution), "Init")]
+        //[HarmonyPatch(typeof(GamingSolution), "Init")]
         static class GamingSolution_Patch
         {
             static void Prefix()

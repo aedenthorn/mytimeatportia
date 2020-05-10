@@ -63,6 +63,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Teleport", "Teleport\Telepo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FishBowlMod", "FishBowlMod\FishBowlMod.csproj", "{5E845101-0786-4FB6-90C9-395E87AAE4B9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonsterVacuum", "MonsterVacuum\MonsterVacuum.csproj", "{77A82EA2-1C49-4A7F-8B49-DEDFFEE632F8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomizePlayer", "CustomizePlayer\CustomizePlayer.csproj", "{9339AED0-869B-4AB2-B5E8-4974992217DC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -189,6 +193,14 @@ Global
 		{5E845101-0786-4FB6-90C9-395E87AAE4B9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5E845101-0786-4FB6-90C9-395E87AAE4B9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5E845101-0786-4FB6-90C9-395E87AAE4B9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{77A82EA2-1C49-4A7F-8B49-DEDFFEE632F8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{77A82EA2-1C49-4A7F-8B49-DEDFFEE632F8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{77A82EA2-1C49-4A7F-8B49-DEDFFEE632F8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{77A82EA2-1C49-4A7F-8B49-DEDFFEE632F8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9339AED0-869B-4AB2-B5E8-4974992217DC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9339AED0-869B-4AB2-B5E8-4974992217DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9339AED0-869B-4AB2-B5E8-4974992217DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9339AED0-869B-4AB2-B5E8-4974992217DC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

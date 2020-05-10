@@ -1,24 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using ChangeClothes;
-using Harmony12;
+﻿using Harmony12;
 using Pathea;
 using Pathea.ActorNs;
 using Pathea.AppearNs;
-using Pathea.FavorSystemNs;
 using Pathea.ItemSystem;
-using Pathea.Maths;
 using Pathea.MessageSystem;
 using Pathea.ModuleNs;
 using Pathea.NpcAppearNs;
-using Pathea.NpcRepositoryNs;
-using Pathea.ScenarioNs;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Reflection;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityModManagerNet;
 using static Harmony12.AccessTools;
 
@@ -31,7 +23,16 @@ namespace ChangeClothes
         public static void Dbgl(string str = "", bool pref = true)
         {
             if (isDebug)
-                UnityEngine.Debug.Log((pref ? "ClothesChanger " : "") + str);
+            {
+                //Debug.Log((pref ? "ClothesChanger " : "") + str);
+
+                using (StreamWriter w = File.AppendText(@"G:\ga\MTAP\log.txt")) 
+                { 
+                    w.WriteLine(str);
+                }
+
+                //File.AppendAllText(@"g:\ga\MTAP\mm\log.txt", str + Environment.NewLine);
+            }
         }
 
         public static bool enabled;
@@ -146,6 +147,7 @@ namespace ChangeClothes
 
             var harmony = HarmonyInstance.Create(modEntry.Info.Id);
             harmony.PatchAll(Assembly.GetExecutingAssembly());
+            wasPlayerEnabled = settings.EnablePlayerModelling;
 
         }
 
@@ -166,10 +168,75 @@ namespace ChangeClothes
 
         }
 
+        private static bool wasPlayerEnabled = false;
+        private static void OnGUI(UnityModManager.ModEntry modEntry)
+        {
+            if (settings.EnablePlayerModelling != wasPlayerEnabled && Module<Player>.Self.actor != null)
+            {
+                Dbgl("loading cloth");
+                Module<Player>.Self.actor.ApplyCloth(false);
+                wasPlayerEnabled = settings.EnablePlayerModelling;
+            }
+            settings.EnablePlayerModelling = GUILayout.Toggle(settings.EnablePlayerModelling, " Enable custom clothes for player", new GUILayoutOption[0]);
+            if (settings.EnablePlayerModelling)
+            {
+                GUILayout.Label(string.Format("Player clothes: <b>{0}</b>", clothesNames[settings.playerClothes]), new GUILayoutOption[0]);
+                settings.playerClothes = (int)GUILayout.HorizontalSlider(settings.playerClothes, 0f, clothes.Count - 1, new GUILayoutOption[0]);
+                GUILayout.Space(10f);
+                GUILayout.Label(string.Format("Player head offset: <b>{0:F2}</b>", settings.playerHeadOffset), new GUILayoutOption[0]);
+                settings.playerHeadOffset = GUILayout.HorizontalSlider((settings.playerHeadOffset+0.25f)*100, 0f, 50, new GUILayoutOption[0])/100f - 0.25f;
+            }
+            //GUILayout.Label(string.Format("Hair: <b>{0}</b>", hairNames[settings.PlayerHair]), new GUILayoutOption[0]);
+            //settings.PlayerHair = (int)GUILayout.HorizontalSlider(settings.PlayerHair, 0f, hairs.Count - 1, new GUILayoutOption[0]);
+            GUILayout.Space(20f);
+            for (int i = 0; i < clothesChangers.Count; i++)
+            {
+                GUILayout.Label($"<b>{clothesChangers[i].name}</b>", new GUILayoutOption[0]);
+                GUILayout.Label(string.Format("Hair: <b>{0}</b>", hairNames[settings.hairs[i]]), new GUILayoutOption[0]);
+                settings.hairs[i] = (int)GUILayout.HorizontalSlider(settings.hairs[i], 0f, hairs.Count-1, new GUILayoutOption[0]);
+                GUILayout.Space(10f);
+                GUILayout.Label(string.Format("Clothes: <b>{0}</b>", clothesNames[settings.clothes[i]]), new GUILayoutOption[0]);
+                settings.clothes[i] = (int)GUILayout.HorizontalSlider(settings.clothes[i], 0f, clothes.Count-1, new GUILayoutOption[0]);
+                GUILayout.Space(20f);
+            }
+        }
+
         private static void ChangeAllClothes(object[] obj = null)
         {
             if (!enabled)
                 return;
+
+            if(Module<Player>.Self.actor != null)
+            {
+                Module<Player>.Self.actor.ApplyCloth(false);
+            }
+
+
+            /*
+            if (settings.EnablePlayerModelling)
+            {
+                Dbgl("player");
+
+                //AccessTools.FieldRefAccess<Player, SkinnedMeshRenderer>(Singleton<Player>.Instance, "skinnedMeshRenderer");
+                DynamicBone[] dybones = Module<Player>.Self.actor.Equip.GetComponentsInChildren<DynamicBone>(true);
+                Transform[] bones = Module<Player>.Self.actor.Equip.GetComponentsInChildren<Transform>(true);
+                for (int j = 0; j < dybones.Length; j++)
+                {
+                    //Dbgl("dybones");
+                    Transform transform = dybones[j].transform;
+                    transform.position += new Vector3(0f, j/10f, 0f);
+                    Dbgl(transform.name + " " + transform.position);
+                }
+                for (int j = 0; j < bones.Length; j++)
+                {
+                    Transform transform = bones[j];
+                    bones[j].position += new Vector3(0f, j/10f, 0f);
+                    Dbgl(transform.name + " " + transform.position);
+                }
+                //Module<Player>.Self.actor.RefreshMeshReference(smr);
+                //Module<Player>.Self.actor.ApplyCloth(false);
+            }
+            */
 
             //ChangeClothes(Player.Self.actor, hairs[settings.PlayerHair], -1);
             for (int i = 0; i < clothesChangers.Count; i++)
@@ -183,23 +250,6 @@ namespace ChangeClothes
             }
         }
 
-        private static void OnGUI(UnityModManager.ModEntry modEntry)
-        {
-            //GUILayout.Label($"<b>{Player.Self.ActorName}</b>", new GUILayoutOption[0]);
-            //GUILayout.Label(string.Format("Hair: <b>{0}</b>", hairNames[settings.PlayerHair]), new GUILayoutOption[0]);
-            //settings.PlayerHair = (int)GUILayout.HorizontalSlider(settings.PlayerHair, 0f, hairs.Count - 1, new GUILayoutOption[0]);
-            GUILayout.Space(10f);
-            for (int i = 0; i < clothesChangers.Count; i++)
-            {
-                GUILayout.Label($"<b>{clothesChangers[i].name}</b>", new GUILayoutOption[0]);
-                GUILayout.Label(string.Format("Hair: <b>{0}</b>", hairNames[settings.hairs[i]]), new GUILayoutOption[0]);
-                settings.hairs[i] = (int)GUILayout.HorizontalSlider(settings.hairs[i], 0f, hairs.Count-1, new GUILayoutOption[0]);
-                GUILayout.Space(10f);
-                GUILayout.Label(string.Format("Clothes: <b>{0}</b>", clothesNames[settings.clothes[i]]), new GUILayoutOption[0]);
-                settings.clothes[i] = (int)GUILayout.HorizontalSlider(settings.clothes[i], 0f, clothes.Count-1, new GUILayoutOption[0]);
-                GUILayout.Space(20f);
-            }
-        }
 
         private static void ChangeClothes(Actor actor, int hairId, int clothesId)
         {
@@ -258,6 +308,216 @@ namespace ChangeClothes
 
             public string name { get; }
             public int id { get; }
+        }
+
+
+        [HarmonyPatch(typeof(AppearTarget), "BuildMesh", new Type[] { typeof(List<AppearUnit>), typeof(AppearData), typeof(AppearUnit), typeof(string) })]
+        static class BuildMesh1_Patch
+        {
+            static void Prefix(AppearTarget __instance, ref List<AppearUnit> units, ref Transform[] __state)
+            {
+                Dbgl($"Building player mesh");
+
+                if (!enabled || !settings.EnablePlayerModelling)
+                    return;
+
+                bool isFemale = !Module<Player>.Self.IsMan;
+                /*
+                List<string> bones = new List<string>();
+                Dictionary<string, Transform> bonedic = AccessTools.FieldRefAccess<AppearTarget, Dictionary<string, Transform>>(__instance, "targetBones");
+                List<string> keys = new List<string>(bonedic.Keys);
+                for(int i = 0; i < keys.Count; i++)
+                {
+                    Transform bone = bonedic[keys[i]];
+                    //bonedic[keys[i]].position += new Vector3(i/10f, i/10f, 0);
+                    bones.Add(bone.name + " "+bone.position);
+                }
+                //Dbgl(string.Join("\r\n", bones.ToArray()));
+                */
+                for (int i = 0; i < units.Count; i++)
+                {
+                    if (units[i].Part == AppearPartEnum.Body)
+                    {
+                        units[i].Smr = Singleton<ResMgr>.Instance.LoadSyncByType<NpcAppearUnit>(AssetType.NpcAppear, clothesNames[settings.playerClothes]).smrs[0];
+                        /*
+                        Matrix4x4[] bindPoses;
+                        bindPoses = new Matrix4x4[units[i].Smr.sharedMesh.bindposes.Length + 1];
+                        Transform[] newBones = new Transform[units[i].Smr.bones.Length+1];
+                        Dictionary<string, Transform> boneMap = new Dictionary<string, Transform>();
+                        foreach (Transform bone in units[i].Smr.bones) boneMap[bone.gameObject.name] = bone;
+                        Dbgl("2");
+                        */
+                        for (int j = 0; j < units[i].Smr.bones.Length; j++)
+                        {
+                            //units[i].Smr.bones[j].name += "X";
+                            //bindPoses[j] = units[i].Smr.sharedMesh.bindposes[j];
+                            //newBones[j] = units[i].Smr.bones[j];
+                            if (units[i].Smr.bones[j].name == "Bip001 Spine1")
+                            {
+                                if (isFemale)
+                                {
+                                    units[i].Smr.bones[j].name = "Bip001 Spine2";
+                                }
+                                
+                                //units[i].Smr.bones[j].position = new Vector3(0, 2.9f, 0);
+                                /*
+                                //units[i].Smr.bones[j].name = "Bip001 Spine2";
+                                Transform t = Transform.Instantiate(units[i].Smr.bones[j],new Vector3(0,1.1f,0), units[i].Smr.bones[j].rotation, units[i].Smr.bones[j].parent);
+                                t.name = "Bip001 Spine2";
+                                newBones[newBones.Length-1] = t;
+                                bindPoses[bindPoses.Length-1] = t.worldToLocalMatrix * units[i].Smr.bones[j].parent.transform.localToWorldMatrix;
+                                */
+                            }
+                            if (units[i].Smr.bones[j].name == "Bip001 Spine2")
+                            {
+                                if (!isFemale)
+                                {
+                                    units[i].Smr.bones[j].name = "Bip001 Spine1";
+                                }
+                            }
+                        }
+                        for (int j = 0; j < units[i].Smr.bones.Length; j++)
+                        {
+                            if (units[i].Smr.bones[j].name == "Bip001 Spine1")
+                            {
+                                //units[i].Smr.bones[j].name = "Bip001 Spine";
+
+                                //units[i].Smr.bones[j].position = new Vector3(0, 0.9f, 0);
+                            }
+                        }
+                        //units[i].Smr.bones = newBones;
+                        //units[i].Smr.sharedMesh.bindposes = bindPoses;
+
+                        for (int j = 0; j < units[i].Smr.bones.Length; j++)
+                        {
+                            //bones.Add(units[i].Smr.bones[j].name + " " + units[i].Smr.bones[j].position);
+                        }
+                        //Dbgl(string.Join("\r\n", bones.ToArray()));
+                        __state = units[i].Smr.bones;
+                    }
+                    else if (units[i].Part == AppearPartEnum.Foot)
+                    {
+                        units[i].Smr = null;
+                    }
+                    else if (units[i].Part == AppearPartEnum.Head && units[i].Smr != null && units[i].Smr.bones != null)
+                    {
+                        if (isFemale)
+                        {
+                            units[i].Smr.rootBone.position = new Vector3(0, 1.15f+settings.playerHeadOffset, 0);
+                        }
+                        else
+                        {
+                            units[i].Smr.rootBone.position = new Vector3(0, 1f + settings.playerHeadOffset, 0);
+                        }
+
+                    }
+                    else if (units[i].Part == AppearPartEnum.Hair && units[i].Smr != null && units[i].Smr.bones != null)
+                    {
+                        if (isFemale)
+                        {
+                            units[i].Smr.rootBone.position = new Vector3(0, 1.35f + settings.playerHeadOffset, 0);
+                        }
+                        else
+                        {
+                            units[i].Smr.rootBone.position = new Vector3(0, 1.40f + settings.playerHeadOffset, 0);
+                        }
+                    }
+                }
+
+            }
+            static void Postfix(AppearTarget __instance, ref SkinnedMeshRenderer __result)
+            {
+                if (!enabled || !settings.EnablePlayerModelling)
+                    return;
+
+                List<string> bones = new List<string>();
+                for (int j = 0; j < __result.bones.Length; j++)
+                {
+                    if (__result.bones[j].name == "Bip001 Spine2")
+                    {
+                        //Dbgl(__result.bones[j].name + " " + __result.bones[j].position);
+                    }
+                }
+                //__result = Singleton<ResMgr>.Instance.LoadSyncByType<NpcAppearUnit>(AssetType.NpcAppear, clothesNames[0]).smrs[0];
+            }
+        }
+        //[HarmonyPatch(typeof(ActorEquip), "ApplyCloth")]
+        static class ApplyCloth_Patch
+        {
+            static void Postfix(ref SkinnedMeshRenderer __result)
+            {
+                if (!enabled || !settings.EnablePlayerModelling)
+                    return;
+
+                List<string> bones = new List<string>();
+                for (int j = 0; j < __result.bones.Length; j++)
+                {
+                    if (__result.bones[j].name == "Bip001 Spine2")
+                    {
+                        //Dbgl(__result.bones[j].name + " " + __result.bones[j].position);
+                    }
+                }
+                //__result = Singleton<ResMgr>.Instance.LoadSyncByType<NpcAppearUnit>(AssetType.NpcAppear, clothesNames[0]).smrs[0];
+            }
+        }
+
+
+        [HarmonyPatch(typeof(NpcAppear), "InitAppear")]
+        static class InitAppear_Patch
+        {
+            static void Postfix(NpcAppearDBData npcAppearDBData, NpcAppearData appearData, Actor actor)
+            {
+                if (!enabled)
+                    return;
+
+                for (int i = 0; i < clothesChangers.Count; i++)
+                {
+                    //Dbgl($"changing for {i} {clothesChangers[i].name}");
+                    if (clothesChangers[i].id == actor.InstanceId)
+                    {
+                        //Dbgl($"actor: {actor.ActorName}");
+                        Dictionary<int, AppearDBData> appearDbDatas = AccessTools.FieldRefAccess<NpcAppearModule, Dictionary<int, AppearDBData>>(Module<NpcAppearModule>.Self, "m_AppearDBDataDic");
+                        NpcAppear component = actor.GetComponent<NpcAppear>();
+                        if (component == null)
+                        {
+                            Dbgl("actor does not have npcappear");
+                            return;
+                        }
+                        component.SetPart(appearDbDatas[hairs[settings.hairs[i]]]);
+                        component.SetPart(appearDbDatas[clothes[settings.clothes[i]]]);
+                    }
+                }
+            }
+        }
+
+        //[HarmonyPatch(typeof(Actor), "RefreshMeshReference")]
+        static class RefreshMeshReference_Patch
+        {
+            static void Prefix(Actor __instance, SkinnedMeshRenderer meshRenderer)
+            {
+                if (!enabled)
+                    return;
+
+                if (__instance.ActorName != "Phyllis")
+                    return;
+
+                List<string> bones = new List<string>();
+                for (int j = 0; j < meshRenderer.bones.Length; j++)
+                {
+                    bones.Add(meshRenderer.bones[j].name + " " + meshRenderer.bones[j].position);
+                }
+                //Dbgl("\r\nPhyllis bones: \r\n"+string.Join("\r\n", bones.ToArray()));
+
+            }
+        }
+        //[HarmonyPatch(typeof(NpcAppear), "RebuildMesh", new Type[] { typeof(List<NpcAppearUnit>), typeof(Transform), typeof(SkinnedMeshRenderer[]) })]
+        static class RebuildMesh2_Patch
+        {
+            static void Prefix(ref List<NpcAppearUnit> npcAppearUnits)
+            {
+                if (!enabled)
+                    return;
+            }
         }
 
         //[HarmonyPatch(typeof(Actor), "Start")]
@@ -415,32 +675,5 @@ namespace ChangeClothes
             }
         }
 
-        [HarmonyPatch(typeof(NpcAppear), "InitAppear")]
-        static class InitAppear_Patch
-        {
-            static void Postfix(NpcAppearDBData npcAppearDBData, NpcAppearData appearData, Actor actor)
-            {
-                if (!enabled)
-                    return;
-
-                for (int i = 0; i < clothesChangers.Count; i++)
-                {
-                    Dbgl($"changing for {i} {clothesChangers[i].name}");
-                    if (clothesChangers[i].id == actor.InstanceId)
-                    {
-                        Dbgl($"actor: {actor.ActorName}");
-                        Dictionary<int, AppearDBData> appearDbDatas = AccessTools.FieldRefAccess<NpcAppearModule, Dictionary<int, AppearDBData>>(Module<NpcAppearModule>.Self, "m_AppearDBDataDic");
-                        NpcAppear component = actor.GetComponent<NpcAppear>();
-                        if (component == null)
-                        {
-                            Dbgl("actor does not have npcappear");
-                            return;
-                        }
-                        component.SetPart(appearDbDatas[hairs[settings.hairs[i]]]);
-                        component.SetPart(appearDbDatas[clothes[settings.clothes[i]]]);
-                    }
-                }
-            }
-        }
     }
 }

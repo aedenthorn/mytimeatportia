@@ -1,17 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using BehaviorDesigner.Runtime.Tasks.Basic.UnityAudioSource;
+﻿using CinemaDirector;
 using Harmony12;
 using Pathea;
 using Pathea.ActorNs;
-using Pathea.FavorSystemNs;
-using Pathea.MessageSystem;
-using Pathea.NpcRepositoryNs;
 using Pathea.TipsNs;
+using System.IO;
+using System.Reflection;
 using UnityEngine;
 using UnityModManagerNet;
 
@@ -24,7 +17,7 @@ namespace VoicePitch
         public static void Dbgl(string str = "", bool pref = true)
         {
             if (isDebug)
-                Debug.Log((pref ? "InteractMod " : "") + str);
+                Debug.Log((pref ? "VoicePitch " : "") + str);
         }
         public static void TpSend(string str = "")
         {
@@ -65,6 +58,9 @@ namespace VoicePitch
         }
         private static void OnGUI(UnityModManager.ModEntry modEntry)
         {
+            GUILayout.Label(string.Format("Pitch for Player: <b>{0:F2}x</b>", settings.PlayerPitch), new GUILayoutOption[0]);
+            settings.PlayerPitch = GUILayout.HorizontalSlider((settings.PlayerPitch) * 100f, 1f, 200f, new GUILayoutOption[0]) / 100f;
+            GUILayout.Space(20f);
             GUILayout.Label(string.Format("Pitch for Aadit: <b>{0:F2}x</b>", settings.AaditPitch), new GUILayoutOption[0]);
             settings.AaditPitch = GUILayout.HorizontalSlider((settings.AaditPitch) * 100f, 1f, 200f, new GUILayoutOption[0]) / 100f;
             GUILayout.Label(string.Format("Pitch for Ack: <b>{0:F2}x</b>", settings.AckPitch), new GUILayoutOption[0]);
@@ -97,6 +93,8 @@ namespace VoicePitch
             settings.DawaPitch = GUILayout.HorizontalSlider((settings.DawaPitch) * 100f, 1f, 200f, new GUILayoutOption[0]) / 100f;
             GUILayout.Label(string.Format("Pitch for Django: <b>{0:F2}x</b>", settings.DjangoPitch), new GUILayoutOption[0]);
             settings.DjangoPitch = GUILayout.HorizontalSlider((settings.DjangoPitch) * 100f, 1f, 200f, new GUILayoutOption[0]) / 100f;
+            GUILayout.Label(string.Format("Pitch for DMTR 6000: <b>{0:F2}x</b>", settings.DMTR_6000Pitch), new GUILayoutOption[0]);
+            settings.DMTR_6000Pitch = GUILayout.HorizontalSlider((settings.DMTR_6000Pitch) * 100f, 1f, 200f, new GUILayoutOption[0]) / 100f;
             GUILayout.Label(string.Format("Pitch for Dolly: <b>{0:F2}x</b>", settings.DollyPitch), new GUILayoutOption[0]);
             settings.DollyPitch = GUILayout.HorizontalSlider((settings.DollyPitch) * 100f, 1f, 200f, new GUILayoutOption[0]) / 100f;
             GUILayout.Label(string.Format("Pitch for Dr. Xu: <b>{0:F2}x</b>", settings.Dr_XuPitch), new GUILayoutOption[0]);
@@ -127,20 +125,18 @@ namespace VoicePitch
             settings.JackPitch = GUILayout.HorizontalSlider((settings.JackPitch) * 100f, 1f, 200f, new GUILayoutOption[0]) / 100f;
             GUILayout.Label(string.Format("Pitch for Lee: <b>{0:F2}x</b>", settings.LeePitch), new GUILayoutOption[0]);
             settings.LeePitch = GUILayout.HorizontalSlider((settings.LeePitch) * 100f, 1f, 200f, new GUILayoutOption[0]) / 100f;
-            GUILayout.Label(string.Format("Pitch for Linda: <b>{0:F2}x</b>", settings.LindaPitch), new GUILayoutOption[0]);
-            settings.LindaPitch = GUILayout.HorizontalSlider((settings.LindaPitch) * 100f, 1f, 200f, new GUILayoutOption[0]) / 100f;
             GUILayout.Label(string.Format("Pitch for Liuwa: <b>{0:F2}x</b>", settings.LiuwaPitch), new GUILayoutOption[0]);
             settings.LiuwaPitch = GUILayout.HorizontalSlider((settings.LiuwaPitch) * 100f, 1f, 200f, new GUILayoutOption[0]) / 100f;
             GUILayout.Label(string.Format("Pitch for Lucy: <b>{0:F2}x</b>", settings.LucyPitch), new GUILayoutOption[0]);
             settings.LucyPitch = GUILayout.HorizontalSlider((settings.LucyPitch) * 100f, 1f, 200f, new GUILayoutOption[0]) / 100f;
             GUILayout.Label(string.Format("Pitch for Mali: <b>{0:F2}x</b>", settings.MaliPitch), new GUILayoutOption[0]);
             settings.MaliPitch = GUILayout.HorizontalSlider((settings.MaliPitch) * 100f, 1f, 200f, new GUILayoutOption[0]) / 100f;
-            GUILayout.Label(string.Format("Pitch for Marco: <b>{0:F2}x</b>", settings.MarcoPitch), new GUILayoutOption[0]);
-            settings.MarcoPitch = GUILayout.HorizontalSlider((settings.MarcoPitch) * 100f, 1f, 200f, new GUILayoutOption[0]) / 100f;
             GUILayout.Label(string.Format("Pitch for Mars: <b>{0:F2}x</b>", settings.MarsPitch), new GUILayoutOption[0]);
             settings.MarsPitch = GUILayout.HorizontalSlider((settings.MarsPitch) * 100f, 1f, 200f, new GUILayoutOption[0]) / 100f;
             GUILayout.Label(string.Format("Pitch for Martha: <b>{0:F2}x</b>", settings.MarthaPitch), new GUILayoutOption[0]);
             settings.MarthaPitch = GUILayout.HorizontalSlider((settings.MarthaPitch) * 100f, 1f, 200f, new GUILayoutOption[0]) / 100f;
+            GUILayout.Label(string.Format("Pitch for Mason: <b>{0:F2}x</b>", settings.MasonPitch), new GUILayoutOption[0]);
+            settings.MasonPitch = GUILayout.HorizontalSlider((settings.MasonPitch) * 100f, 1f, 200f, new GUILayoutOption[0]) / 100f;
             GUILayout.Label(string.Format("Pitch for McDonald: <b>{0:F2}x</b>", settings.McDonaldPitch), new GUILayoutOption[0]);
             settings.McDonaldPitch = GUILayout.HorizontalSlider((settings.McDonaldPitch) * 100f, 1f, 200f, new GUILayoutOption[0]) / 100f;
             GUILayout.Label(string.Format("Pitch for Mei: <b>{0:F2}x</b>", settings.MeiPitch), new GUILayoutOption[0]);
@@ -246,7 +242,6 @@ namespace VoicePitch
             {
                 if (!enabled || ___audioSource == null)
                     return;
-
                 ___audioSource.pitch = GetPitch(__instance);
 
             }
@@ -278,342 +273,382 @@ namespace VoicePitch
 
         public static float GetPitch(Actor actor)
         {
+            Dbgl("" + actor.InstanceId);
             float pitch = 1.0f;
-            if (actor.ActorName == "Aadit")
+            if (actor.InstanceId == 4000001)
+            {
+                pitch = settings.PlayerPitch;
+            }
+            else if (actor.InstanceId == 4000038)
             {
                 pitch = settings.AaditPitch;
             }
-            else if (actor.ActorName == "Ack")
+            else if (actor.InstanceId == 4000002)
             {
                 pitch = settings.AckPitch;
             }
-            else if (actor.ActorName == "Albert Jr.")
+            else if (actor.InstanceId == 4000109)
             {
-                pitch = settings.Albert_Jr_Pitch;
+                pitch = settings.AckPitch;
             }
-            else if (actor.ActorName == "Albert")
+            else if (actor.InstanceId == 4000110)
+            {
+                pitch = settings.AckPitch;
+            }
+            else if (actor.InstanceId == 4000026)
             {
                 pitch = settings.AlbertPitch;
             }
-            else if (actor.ActorName == "Alice")
+            else if (actor.InstanceId == 4000145)
+            {
+                pitch = settings.Albert_Jr_Pitch;
+            }
+            else if (actor.InstanceId == 4000050)
             {
                 pitch = settings.AlicePitch;
             }
-            else if (actor.ActorName == "Allen Carter")
+            else if (actor.InstanceId == 4000121)
             {
                 pitch = settings.Allen_CarterPitch;
             }
-            else if (actor.ActorName == "Alliance Soldier")
+            else if (actor.InstanceId == 4000137)
             {
                 pitch = settings.Alliance_SoldierPitch;
             }
-            else if (actor.ActorName == "Antoine")
+            else if (actor.InstanceId == 4000138)
+            {
+                pitch = settings.Alliance_SoldierPitch;
+            }
+            else if (actor.InstanceId == 4000139)
+            {
+                pitch = settings.Alliance_SoldierPitch;
+            }
+            else if (actor.InstanceId == 4000009)
             {
                 pitch = settings.AntoinePitch;
             }
-            else if (actor.ActorName == "Arlo")
+            else if (actor.InstanceId == 4000063)
             {
                 pitch = settings.ArloPitch;
             }
-            else if (actor.ActorName == "Bob")
-            {
-                pitch = settings.BobPitch;
-            }
-            else if (actor.ActorName == "Builder Wang")
+            else if (actor.InstanceId == 4000120)
             {
                 pitch = settings.Builder_WangPitch;
             }
-            else if (actor.ActorName == "Carol")
+            else if (actor.InstanceId == 4000015)
             {
                 pitch = settings.CarolPitch;
             }
-            else if (actor.ActorName == "Cent")
+            else if (actor.InstanceId == 4000113)
             {
                 pitch = settings.CentPitch;
             }
-            else if (actor.ActorName == "Dana")
+            else if (actor.InstanceId == 4000146)
+            {
+                pitch = settings.DMTR_6000Pitch;
+            }
+            else if (actor.InstanceId == 4000115)
             {
                 pitch = settings.DanaPitch;
             }
-            else if (actor.ActorName == "Dawa")
+            else if (actor.InstanceId == 4000102)
             {
                 pitch = settings.DawaPitch;
             }
-            else if (actor.ActorName == "Django")
+            else if (actor.InstanceId == 4000011)
             {
                 pitch = settings.DjangoPitch;
             }
-            else if (actor.ActorName == "Dolly")
+            else if (actor.InstanceId == 4000017)
             {
                 pitch = settings.DollyPitch;
             }
-            else if (actor.ActorName == "Dr. Xu")
+            else if (actor.InstanceId == 4000092)
             {
                 pitch = settings.Dr_XuPitch;
             }
-            else if (actor.ActorName == "Emily")
+            else if (actor.InstanceId == 4000003)
             {
                 pitch = settings.EmilyPitch;
             }
-            else if (actor.ActorName == "Erwa")
+            else if (actor.InstanceId == 4000103)
             {
                 pitch = settings.ErwaPitch;
             }
-            else if (actor.ActorName == "Everglade")
+            else if (actor.InstanceId == 4000133)
             {
                 pitch = settings.EvergladePitch;
             }
-            else if (actor.ActorName == "First_Child")
+            else if (actor.InstanceId == 4000134)
             {
                 pitch = settings.First_ChildPitch;
             }
-            else if (actor.ActorName == "Gale")
+            else if (actor.InstanceId == 4000008)
             {
                 pitch = settings.GalePitch;
             }
-            else if (actor.ActorName == "Ginger")
+            else if (actor.InstanceId == 4000093)
             {
                 pitch = settings.GingerPitch;
             }
-            else if (actor.ActorName == "Gust")
+            else if (actor.InstanceId == 4000091)
             {
                 pitch = settings.GustPitch;
             }
-            else if (actor.ActorName == "Han")
+            else if (actor.InstanceId == 4000112)
             {
                 pitch = settings.HanPitch;
             }
-            else if (actor.ActorName == "Higgins")
+            else if (actor.InstanceId == 4000097)
             {
                 pitch = settings.HigginsPitch;
             }
-            else if (actor.ActorName == "Huss")
+            else if (actor.InstanceId == 4000024)
             {
                 pitch = settings.HussPitch;
             }
-            else if (actor.ActorName == "Isaac")
+            else if (actor.InstanceId == 4000013)
             {
                 pitch = settings.IsaacPitch;
             }
-            else if (actor.ActorName == "Jack")
+            else if (actor.InstanceId == 4000098)
             {
                 pitch = settings.JackPitch;
             }
-            else if (actor.ActorName == "Lee")
+            else if (actor.InstanceId == 4000055)
             {
                 pitch = settings.LeePitch;
             }
-            else if (actor.ActorName == "Linda")
-            {
-                pitch = settings.LindaPitch;
-            }
-            else if (actor.ActorName == "Liuwa")
+            else if (actor.InstanceId == 4000106)
             {
                 pitch = settings.LiuwaPitch;
             }
-            else if (actor.ActorName == "Lucy")
+            else if (actor.InstanceId == 4000053)
             {
                 pitch = settings.LucyPitch;
             }
-            else if (actor.ActorName == "Mali")
+            else if (actor.InstanceId == 4000117)
             {
                 pitch = settings.MaliPitch;
             }
-            else if (actor.ActorName == "Marco")
-            {
-                pitch = settings.MarcoPitch;
-            }
-            else if (actor.ActorName == "Mars")
+            else if (actor.InstanceId == 4000014)
             {
                 pitch = settings.MarsPitch;
             }
-            else if (actor.ActorName == "Martha")
+            else if (actor.InstanceId == 4000019)
             {
                 pitch = settings.MarthaPitch;
             }
-            else if (actor.ActorName == "McDonald")
+            else if (actor.InstanceId == 4000147)
+            {
+                pitch = settings.MasonPitch;
+            }
+            else if (actor.InstanceId == 4000059)
             {
                 pitch = settings.McDonaldPitch;
             }
-            else if (actor.ActorName == "Mei")
+            else if (actor.InstanceId == 4000052)
             {
                 pitch = settings.MeiPitch;
             }
-            else if (actor.ActorName == "Merlin")
+            else if (actor.InstanceId == 4000099)
             {
                 pitch = settings.MerlinPitch;
             }
-            else if (actor.ActorName == "Mint")
+            else if (actor.InstanceId == 4000111)
             {
                 pitch = settings.MintPitch;
             }
-            else if (actor.ActorName == "Molly")
+            else if (actor.InstanceId == 4000016)
             {
                 pitch = settings.MollyPitch;
             }
-            else if (actor.ActorName == "Musa")
+            else if (actor.InstanceId == 4000118)
             {
                 pitch = settings.MusaPitch;
             }
-            else if (actor.ActorName == "Mysterious Man")
+            else if (actor.InstanceId == 4000101)
             {
                 pitch = settings.Mysterious_ManPitch;
             }
-            else if (actor.ActorName == "Nora")
+            else if (actor.InstanceId == 4000006)
             {
                 pitch = settings.NoraPitch;
             }
-            else if (actor.ActorName == "Oaks")
+            else if (actor.InstanceId == 4000004)
             {
                 pitch = settings.OaksPitch;
             }
-            else if (actor.ActorName == "Pa")
+            else if (actor.InstanceId == 4000136)
             {
                 pitch = settings.PaPitch;
             }
-            else if (actor.ActorName == "Papa Bear")
+            else if (actor.InstanceId == 4000041)
             {
                 pitch = settings.Papa_BearPitch;
             }
-            else if (actor.ActorName == "Paulie")
+            else if (actor.InstanceId == 4000100)
             {
                 pitch = settings.PauliePitch;
             }
-            else if (actor.ActorName == "Penny")
+            else if (actor.InstanceId == 4000141)
             {
                 pitch = settings.PennyPitch;
             }
-            else if (actor.ActorName == "Petra")
+            else if (actor.InstanceId == 4000094)
             {
                 pitch = settings.PetraPitch;
             }
-            else if (actor.ActorName == "Phyllis")
+            else if (actor.InstanceId == 4000035)
             {
                 pitch = settings.PhyllisPitch;
             }
-            else if (actor.ActorName == "Pinky")
+            else if (actor.InstanceId == 4000069)
             {
                 pitch = settings.PinkyPitch;
             }
-            else if (actor.ActorName == "Polly")
+            else if (actor.InstanceId == 4000018)
             {
                 pitch = settings.PollyPitch;
             }
-            else if (actor.ActorName == "Presley")
+            else if (actor.InstanceId == 4000040)
             {
                 pitch = settings.PresleyPitch;
             }
-            else if (actor.ActorName == "Qiwa")
-            {
-                pitch = settings.QiwaPitch;
-            }
-            else if (actor.ActorName == "QQ")
+            else if (actor.InstanceId == 4000007)
             {
                 pitch = settings.QQPitch;
             }
-            else if (actor.ActorName == "Remington")
+            else if (actor.InstanceId == 4000021)
+            {
+                pitch = settings.QiwaPitch;
+            }
+            else if (actor.InstanceId == 4000044)
             {
                 pitch = settings.RemingtonPitch;
             }
-            else if (actor.ActorName == "Robot")
+            else if (actor.InstanceId == 4000108)
             {
                 pitch = settings.RobotPitch;
             }
-            else if (actor.ActorName == "Rogue Knight")
+            else if (actor.InstanceId == 4000132)
             {
                 pitch = settings.Rogue_KnightPitch;
             }
-            else if (actor.ActorName == "Russo")
+            else if (actor.InstanceId == 4000010)
             {
                 pitch = settings.RussoPitch;
             }
-            else if (actor.ActorName == "Ryder")
+            else if (actor.InstanceId == 4000129)
             {
                 pitch = settings.RyderPitch;
             }
-            else if (actor.ActorName == "Sam")
+            else if (actor.InstanceId == 4000067)
             {
                 pitch = settings.SamPitch;
             }
-            else if (actor.ActorName == "Sanwa")
+            else if (actor.InstanceId == 4000104)
             {
                 pitch = settings.SanwaPitch;
             }
-            else if (actor.ActorName == "Scraps")
+            else if (actor.InstanceId == 4000128)
             {
                 pitch = settings.ScrapsPitch;
             }
-            else if (actor.ActorName == "Second Child")
+            else if (actor.InstanceId == 4000135)
             {
                 pitch = settings.Second_ChildPitch;
             }
-            else if (actor.ActorName == "Siwa")
+            else if (actor.InstanceId == 4000105)
             {
                 pitch = settings.SiwaPitch;
             }
-            else if (actor.ActorName == "Sonia")
+            else if (actor.InstanceId == 4000033)
             {
                 pitch = settings.SoniaPitch;
             }
-            else if (actor.ActorName == "Sophie")
+            else if (actor.InstanceId == 4000012)
             {
                 pitch = settings.SophiePitch;
             }
-            else if (actor.ActorName == "Sweet")
+            else if (actor.InstanceId == 4000119)
             {
                 pitch = settings.SweetPitch;
             }
-            else if (actor.ActorName == "Ten")
+            else if (actor.InstanceId == 4000130)
             {
                 pitch = settings.TenPitch;
             }
-            else if (actor.ActorName == "The All Source AI")
+            else if (actor.InstanceId == 4000140)
             {
                 pitch = settings.The_All_Source_AIPitch;
             }
-            else if (actor.ActorName == "Toby")
+            else if (actor.InstanceId == 4000005)
             {
                 pitch = settings.TobyPitch;
             }
-            else if (actor.ActorName == "Tody")
+            else if (actor.InstanceId == 4000043)
             {
                 pitch = settings.TodyPitch;
             }
-            else if (actor.ActorName == "Tourist")
+            else if (actor.InstanceId == 4000122)
             {
                 pitch = settings.TouristPitch;
             }
-            else if (actor.ActorName == "Tuss")
+            else if (actor.InstanceId == 4000123)
+            {
+                pitch = settings.TouristPitch;
+            }
+            else if (actor.InstanceId == 4000124)
+            {
+                pitch = settings.TouristPitch;
+            }
+            else if (actor.InstanceId == 4000125)
+            {
+                pitch = settings.TouristPitch;
+            }
+            else if (actor.InstanceId == 4000126)
+            {
+                pitch = settings.TouristPitch;
+            }
+            else if (actor.InstanceId == 4000127)
+            {
+                pitch = settings.TouristPitch;
+            }
+            else if (actor.InstanceId == 4000023)
             {
                 pitch = settings.TussPitch;
             }
-            else if (actor.ActorName == "Ursula")
+            else if (actor.InstanceId == 4000131)
             {
                 pitch = settings.UrsulaPitch;
             }
-            else if (actor.ActorName == "Warthog")
+            else if (actor.InstanceId == 4000142)
             {
                 pitch = settings.WarthogPitch;
             }
-            else if (actor.ActorName == "Workshop Rep")
+            else if (actor.InstanceId == 4000116)
             {
                 pitch = settings.Workshop_RepPitch;
             }
-            else if (actor.ActorName == "Wuwa")
+            else if (actor.InstanceId == 4000054)
             {
                 pitch = settings.WuwaPitch;
             }
-            else if (actor.ActorName == "Yeye")
+            else if (actor.InstanceId == 4000114)
             {
                 pitch = settings.YeyePitch;
             }
-            else if (actor.ActorName == "Yoyo")
+            else if (actor.InstanceId == 4000143)
+            {
+                pitch = settings.YoyoPitch;
+            }
+            else if (actor.InstanceId == 4000144)
             {
                 pitch = settings.YoyoPitch;
             }
 
             return pitch;
-
         }
 
     }

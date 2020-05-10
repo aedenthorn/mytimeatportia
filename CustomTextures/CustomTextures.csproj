@@ -96,6 +96,6 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>copy "C:\Users\poiqwe\source\repos\PortiaMods\CustomTextures\bin\Debug\CustomTextures.dll" "G:\ga\MTAP\Mods\CustomTextures\"</PostBuildEvent>
+    <PostBuildEvent>copy "C:\Users\poiqwe\source\repos\PortiaMods\CustomTextures\bin\Debug\CustomTextures.dll" "H:\tmp\ga\MTAP\Mods\CustomTextures\"</PostBuildEvent>
   </PropertyGroup>
 </Project>

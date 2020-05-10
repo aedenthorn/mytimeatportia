@@ -12,6 +12,10 @@ namespace ChangeClothes
         {
             0,2,4,6,8,10,12,14
         };
+        public int playerClothes;
+        public float playerHeadOffset = 0f;
+
+        public bool EnablePlayerModelling { get; set; } = false;
 
         //public int PlayerHair { get; set; } = -1;
 
