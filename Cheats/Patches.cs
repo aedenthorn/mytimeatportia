@@ -1,8 +1,12 @@
 ﻿using Harmony12;
 using Pathea;
+using Pathea.ACT;
 using Pathea.ActorNs;
 using Pathea.AppearNs;
 using Pathea.Behavior;
+using Pathea.CameraSystemNs;
+using Pathea.EffectNs;
+using Pathea.EquipmentNs;
 using Pathea.FavorSystemNs;
 using Pathea.HomeNs;
 using Pathea.HomeViewerNs;
@@ -99,12 +103,12 @@ namespace Cheats
             }
         }
 
-        //[HarmonyPatch(typeof(RidableModuleManager), "GetNewSaveUID")]
-        static class rmm_Patch
+        [HarmonyPatch(typeof(EffectMgr), "Create", new Type[] { typeof(int) })]
+        static class EffectMgr_Patch
         {
-            static void Postfix(RidableModuleManager __instance, int __result)
+            static void Postfix()
             {
-                Dbgl("new id: " + __result+ " "+Environment.StackTrace);
+                Dbgl(Environment.StackTrace);
             }
         }
 

@@ -90,6 +90,6 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>copy "C:\Users\poiqwe\source\repos\PortiaMods\MissionDebug\bin\Debug\MissionDebug.dll" "G:\ga\MTAP\Mods\MissionDebug\"</PostBuildEvent>
+    <PostBuildEvent>copy "C:\Users\poiqwe\source\repos\PortiaMods\MissionDebug\bin\Debug\MissionDebug.dll" "h:\tmp\ga\MTAP\Mods\MissionDebug\"</PostBuildEvent>
   </PropertyGroup>
 </Project>

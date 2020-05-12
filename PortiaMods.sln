@@ -67,6 +67,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonsterVacuum", "MonsterVac
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomizePlayer", "CustomizePlayer\CustomizePlayer.csproj", "{9339AED0-869B-4AB2-B5E8-4974992217DC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NoWiggle", "NoWiggle\NoWiggle.csproj", "{61FFB588-1CC3-4F89-A4DF-B95CA208118C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -201,6 +203,10 @@ Global
 		{9339AED0-869B-4AB2-B5E8-4974992217DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9339AED0-869B-4AB2-B5E8-4974992217DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9339AED0-869B-4AB2-B5E8-4974992217DC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{61FFB588-1CC3-4F89-A4DF-B95CA208118C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{61FFB588-1CC3-4F89-A4DF-B95CA208118C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{61FFB588-1CC3-4F89-A4DF-B95CA208118C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{61FFB588-1CC3-4F89-A4DF-B95CA208118C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
