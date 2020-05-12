@@ -1,4 +1,5 @@
 ﻿using Harmony12;
+using NovaEnv;
 using Pathea;
 using Pathea.ACT;
 using Pathea.ActorNs;
@@ -22,6 +23,7 @@ using Pathea.StageNs;
 using Pathea.UISystemNs;
 using Pathea.UISystemNs.Grid;
 using Pathea.UISystemNs.MainMenu.MissionUI;
+using Pathea.WeatherNs;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -103,14 +105,6 @@ namespace Cheats
             }
         }
 
-        [HarmonyPatch(typeof(EffectMgr), "Create", new Type[] { typeof(int) })]
-        static class EffectMgr_Patch
-        {
-            static void Postfix()
-            {
-                Dbgl(Environment.StackTrace);
-            }
-        }
 
         //[HarmonyPatch(typeof(RidableModuleManager), "GetNewTempUID")]
         static class rmm2_Patch

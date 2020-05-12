@@ -65,30 +65,6 @@ namespace Cheats
 
             //string[] names = { "Emily", "Nora", "Phyllis", "Ginger", "Sonia", };
 
-            string path = $"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\\assets";
-
-            if (!Directory.Exists(path))
-            {
-                Dbgl($"Directory {path} does not exist!");
-                return;
-            }
-
-            Regex pattern = new Regex(@"^[0-9][0-9]*\.png$");
-
-            foreach (string file in Directory.GetFiles(path))
-            {
-                string fileName = Path.GetFileName(file);
-                if (pattern.IsMatch(fileName))
-                {
-                    int id = int.Parse(fileName.Substring(0, fileName.Length - 4));
-                    Dbgl($"got file at path: {file}");
-                    Texture2D tex = new Texture2D(2, 2);
-                    byte[] imageData = File.ReadAllBytes(file);
-                    tex.LoadImage(imageData);
-                    customTextures.Add(id, tex);
-                }
-            }
-
         }
 
         private static void OnLoadGame()

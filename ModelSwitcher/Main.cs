@@ -1,4 +1,5 @@
-﻿using CutScene;
+﻿using BehaviorDesigner.Runtime.Tasks.Basic.UnityGameObject;
+using CutScene;
 using Harmony12;
 using Hont.ExMethod.Collection;
 using Pathea;
@@ -83,9 +84,9 @@ namespace ModelSwitcher
                     return true;
                 }
 
-                /*
-                if(model == "Nora")
+                if (___model == "Actor/Npc_Nora")
                 {
+                    Dbgl("found Nora: " + ___model);
                     string asset = "Cg/Cutscene_Marry_CG001";
 
                     SingleBundle bundle = AccessTools.FieldRefAccess<CutSceneMngr, SingleBundle>(Singleton<CutSceneMngr>.Instance, "bundle");
@@ -94,22 +95,37 @@ namespace ModelSwitcher
                     {
                         bundle.Load("cg");
                     }
-                    UnityEngine.Object @object = bundle.LoadAsset<GameObject>(asset, false);
-                    if (@object == null)
+                    UnityEngine.Object scene = bundle.LoadAsset<GameObject>(asset, false);
+                    if (scene == null)
                     {
-                        Debug.LogErrorFormat("cannot find actor:{0}", new object[]
-                        {
-                            ___model
-                        });
+                        Dbgl($"cannot find scene: {asset}");
                     }
                     else
                     {
-                        GameObject gameObject = UnityEngine.Object.Instantiate(@object, parent) as GameObject;
-                        __result = gameObject.GetComponent<Actor>();
-                        return false;
+                      
+                        //GameObject go = GameObject.Instantiate(scene as GameObject);
+                        GameObject go = (scene as GameObject);
+                        Dbgl("found scene: " + asset);
+                        foreach (Transform t in go.GetComponentsInChildren<Transform>())
+                        {
+                            break;
+                            if(t.gameObject != null && t.gameObject.name == "medium_NoraNew_Model")
+                            {
+                                UnityEngine.Object @object = Singleton<ResMgr>.Instance.LoadSyncByType(AssetType.Actor, ___model, false, false);
+                                GameObject gameObject = UnityEngine.Object.Instantiate(@object, parent) as GameObject;
+                                Actor actor = gameObject.GetComponent<Actor>();
+                                GameObject gameObject2 = GameObject.Instantiate(t.gameObject, actor.gameObject.transform);
+                                SkinnedMeshRenderer smro = gameObject.GetComponentInChildren<SkinnedMeshRenderer>();
+                                smro = SkinnedMeshRenderer.Instantiate(gameObject2.GetComponentInChildren<SkinnedMeshRenderer>(),smro.transform.parent);
+                                //AccessTools.FieldRefAccess<Actor, SkinnedMeshRenderer>(actor, "skinnedMeshRenderer") = ;
+                                __result = actor;
+                                return false;
+                                //__result.RefreshMeshReference(smrs[0]);
+                            }
+                        }
                     }
                 }
-                */
+                
 
                 string id = modelToIds[___model];
 
@@ -121,7 +137,7 @@ namespace ModelSwitcher
 
                 string modelId = (string)typeof(Settings).GetField($"CustomModelFor{id}").GetValue(settings);
                 string model = idToModels[modelId];
-                Dbgl($"model: {model}");
+                //Dbgl($"model: {model}");
                 ___model = model;
                 return true;
             }

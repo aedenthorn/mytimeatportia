@@ -97,6 +97,6 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>copy "C:\Users\poiqwe\source\repos\PortiaMods\ModelSwitcher\bin\Debug\ModelSwitcher.dll" "G:\ga\MTAP\Mods\ModelSwitcher\"</PostBuildEvent>
+    <PostBuildEvent>copy "C:\Users\poiqwe\source\repos\PortiaMods\ModelSwitcher\bin\Debug\ModelSwitcher.dll" "H:\tmp\ga\MTAP\Mods\ModelSwitcher\"</PostBuildEvent>
   </PropertyGroup>
 </Project>

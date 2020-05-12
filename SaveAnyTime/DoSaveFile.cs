@@ -111,7 +111,7 @@ namespace SaveAnyTime
             save.NPClist = npcs;
             save.RideableList = rideables;
             save.StoreList = stores;
-            save.FishBowlConsumeHour = (int)typeof(FishBowl).GetField("consumeHour", BindingFlags.NonPublic | BindingFlags.Static).GetValue(Module<FishBowl>.Self);
+            save.FishBowlConsumeHour = (int)typeof(FishBowl).GetField("consumeHour", BindingFlags.NonPublic | BindingFlags.Static).GetValue(null);
             save.WeatherState = (int)Module<WeatherModule>.Self.CurWeatherState;
             save.CurPriceIndex = Module<StoreManagerV40>.Self.CurPriceIndex;
 

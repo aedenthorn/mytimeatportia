@@ -117,6 +117,7 @@ namespace ChangeClothes
         private static List<int> playerHair = new List<int>();
         private static List<string> playerClothesNames = new List<string>();
         private static List<int> playerClothes = new List<int>();
+        private static Dictionary<string, AppearUnit> playerAppearUnits = new Dictionary<string, AppearUnit>();
 
         private static List<ClothesChanger> clothesChangers = new List<ClothesChanger>()
         {
@@ -363,8 +364,12 @@ namespace ChangeClothes
 
                     if (units[i].Part == AppearPartEnum.Body && settings.playerClothes > 0)
                     {
-                        units[i] = UnityEngine.Object.Instantiate(units[i]);
-                        units[i].Smr = UnityEngine.Object.Instantiate(Singleton<ResMgr>.Instance.LoadSyncByType<NpcAppearUnit>(AssetType.NpcAppear, playerClothesNames[settings.playerClothes]).smrs[0]);
+                        if (!playerAppearUnits.ContainsKey(units[i].name))
+                        { 
+                            playerAppearUnits.Add(units[i].name, GameObject.Instantiate<AppearUnit>(units[i]));
+                        }
+                        units[i] = playerAppearUnits[units[i].name];
+                        units[i].Smr = Singleton<ResMgr>.Instance.LoadSyncByType<NpcAppearUnit>(AssetType.NpcAppear, playerClothesNames[settings.playerClothes]).smrs[0];
                         for (int j = 0; j < units[i].Smr.bones.Length; j++)
                         {
                             
@@ -372,16 +377,16 @@ namespace ChangeClothes
                             {
                                 if (isFemale)
                                 {
-                                    Transform bone = Transform.Instantiate(units[i].Smr.bones[j], units[i].Smr.bones[j].parent, false); 
+                                    Transform bone = Transform.Instantiate(units[i].Smr.bones[j], units[i].Smr.bones[j].parent, false);
                                     units[i].Smr.bones[j] = bone;
+                                    units[i].Smr.bones[j].name = "Bip001 Spine2";
 
                                     int count = units[i].Smr.bones[j].childCount;
-                                    for(int k = 0; k < count; k++)
+                                    for (int k = 0; k < count; k++)
                                     {
                                         Transform child = units[i].Smr.bones[j].GetChild(k);
                                         //Dbgl(child.name + " "+child.position);
                                     }
-                                    units[i].Smr.bones[j].name = "Bip001 Spine2";
                                     //units[i].Smr.bones[j].localPosition += new Vector3(0,2f,0);
                                 }
                             }
@@ -421,10 +426,13 @@ namespace ChangeClothes
                         __state = units[i].Smr.bones;
                         */
                     }
-                    else if (units[i].Part == AppearPartEnum.Foot)
+                    if (units[i].Part == AppearPartEnum.Foot && settings.playerClothes > 0)
                     {
-                        units[i] = GameObject.Instantiate<AppearUnit>(units[i]);
-                        units[i].Smr = null;
+                        if (settings.playerHair > 0)
+                        {
+                            //units[i] = GameObject.Instantiate<AppearUnit>(units[i], units[i].);
+                            units[i].Smr = null;
+                        }
                     }
                     else if (units[i].Part == AppearPartEnum.Head && units[i].Smr != null && units[i].Smr.bones != null)
                     {
@@ -442,8 +450,12 @@ namespace ChangeClothes
                     {
                         if(settings.playerHair > 0) 
                         {
-                            units[i] = GameObject.Instantiate<AppearUnit>(units[i]);
-                            units[i].Smr = SkinnedMeshRenderer.Instantiate(Singleton<ResMgr>.Instance.LoadSyncByType<NpcAppearUnit>(AssetType.NpcAppear, playerHairNames[settings.playerHair]).smrs[0]);
+                            if (!playerAppearUnits.ContainsKey(units[i].name))
+                            { 
+                                playerAppearUnits.Add(units[i].name, GameObject.Instantiate<AppearUnit>(units[i]));
+                            }
+                            units[i] = playerAppearUnits[units[i].name];
+                            units[i].Smr = Singleton<ResMgr>.Instance.LoadSyncByType<NpcAppearUnit>(AssetType.NpcAppear, playerHairNames[settings.playerHair]).smrs[0];
                         }
                         if (isFemale)
                         {
