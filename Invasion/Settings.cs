@@ -4,6 +4,11 @@ namespace Invasion
 {
     public class Settings : UnityModManager.ModSettings
     {
+        public bool spawnRandomMonsters = false;
+        public int spawnRandomMonstersMin = 1;
+        public int spawnRandomMonstersMax = 100;
+        public int spawnRandomMonstersGroupMax = 5;
+
         public int ChanceInvade { get; set; } = 30;
         public int ChanceGang { get; set; } = 0;
         public int MinGang { get; set; } = 1;

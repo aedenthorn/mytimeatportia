@@ -204,6 +204,9 @@ namespace ChangeClothes
                 GUILayout.Space(10f);
                 GUILayout.Label(string.Format("Player head offset: <b>{0:F2}</b>", settings.playerHeadOffset), new GUILayoutOption[0]);
                 settings.playerHeadOffset = GUILayout.HorizontalSlider((settings.playerHeadOffset+0.25f)*100, 0f, 50, new GUILayoutOption[0])/100f - 0.25f;
+                GUILayout.Space(10f);
+                GUILayout.Label(string.Format("Player hair offset: <b>{0:F2}</b>", settings.playerHairOffset), new GUILayoutOption[0]);
+                settings.playerHairOffset = GUILayout.HorizontalSlider((settings.playerHairOffset + 0.25f)*100, 0f, 50, new GUILayoutOption[0])/100f - 0.25f;
             }
             //GUILayout.Label(string.Format("Hair: <b>{0}</b>", hairNames[settings.PlayerHair]), new GUILayoutOption[0]);
             //settings.PlayerHair = (int)GUILayout.HorizontalSlider(settings.PlayerHair, 0f, hairs.Count - 1, new GUILayoutOption[0]);
@@ -231,33 +234,6 @@ namespace ChangeClothes
             }
 
 
-            /*
-            if (settings.EnablePlayerModelling)
-            {
-                Dbgl("player");
-
-                //AccessTools.FieldRefAccess<Player, SkinnedMeshRenderer>(Singleton<Player>.Instance, "skinnedMeshRenderer");
-                DynamicBone[] dybones = Module<Player>.Self.actor.Equip.GetComponentsInChildren<DynamicBone>(true);
-                Transform[] bones = Module<Player>.Self.actor.Equip.GetComponentsInChildren<Transform>(true);
-                for (int j = 0; j < dybones.Length; j++)
-                {
-                    //Dbgl("dybones");
-                    Transform transform = dybones[j].transform;
-                    transform.position += new Vector3(0f, j/10f, 0f);
-                    Dbgl(transform.name + " " + transform.position);
-                }
-                for (int j = 0; j < bones.Length; j++)
-                {
-                    Transform transform = bones[j];
-                    bones[j].position += new Vector3(0f, j/10f, 0f);
-                    Dbgl(transform.name + " " + transform.position);
-                }
-                //Module<Player>.Self.actor.RefreshMeshReference(smr);
-                //Module<Player>.Self.actor.ApplyCloth(false);
-            }
-            */
-
-            //ChangeClothes(Player.Self.actor, hairs[settings.PlayerHair], -1);
             for (int i = 0; i < clothesChangers.Count; i++)
             {
                 Actor actor = Module<ActorMgr>.Self.Get(clothesChangers[i].id);
@@ -290,31 +266,7 @@ namespace ChangeClothes
                 component.SetPart(appearDbDatas[hairId]);
             if(clothesId > -1)
                 component.SetPart(appearDbDatas[clothesId]);
-            /*
-            SkinnedMeshRenderer[] smrs = AccessTools.FieldRefAccess<NpcAppear, SkinnedMeshRenderer[]>(component,
-                "m_Smrs");
 
-            SkinnedMeshRenderer[] mSmrs = new SkinnedMeshRenderer[smrs.Length];
-            for (int j = 0; j < mSmrs.Length; j++)
-            {
-                Texture2D tex = (Texture2D)smrs[j].material.mainTexture;
-                Color[] data = tex.GetPixels();
-                for (int i = 0; i < data.Length; i++)
-                {
-                    if (data[i] != Color.clear && ((data[i].b > data[i].r && data[i].g > data[i].r) || data[i].r - data[i].b > 200 && data[i].r - data[i].g > 200))
-                    {
-                        data[i] = new Color(data[i].b, data[i].r, data[i].g, 255);
-                    }
-                }
-                Texture2D outTex = new Texture2D(tex.width, tex.height);
-                outTex.SetPixels(data);
-                smrs[j].material.mainTexture = outTex;
-                mSmrs[j] = smrs[j];
-            }
-
-            AccessTools.FieldRefAccess<NpcAppear, SkinnedMeshRenderer[]>(component,
-                "m_Smrs") = mSmrs;
-            */
         }
         internal class ClothesChanger
         {
@@ -339,24 +291,7 @@ namespace ChangeClothes
 
                 if (!enabled || !settings.EnablePlayerModelling)
                     return;
-                /*
-                List<string> bones = new List<string>();
-                Dictionary<string, Transform> bonedic = AccessTools.FieldRefAccess<AppearTarget, Dictionary<string, Transform>>(__instance, "targetBones");
-                List<string> keys = new List<string>(bonedic.Keys);
-                for(int i = 0; i < keys.Count; i++)
-                {
-                    Transform bone = bonedic[keys[i]];
-                    if(bone.name == "Linda_Model")
-                    {
-                        isFemale = true;
-                        break;
-                    }
-                    //bonedic[keys[i]].position += new Vector3(i/10f, i/10f, 0);
-                    //bones.Add(bone.name + " "+bone.position);
-                }
-                */
-                //Dbgl(string.Join("\r\n", bones.ToArray()));
-                
+
                 for (int i = 0; i < units.Count; i++)
                 {
                     //Dbgl(units[i].name + " " + units[i].Part + " "+ (units[i].Smr != null && units[i].Smr.rootBone != null? units[i].Smr.rootBone.position+"" : ""));
@@ -380,51 +315,10 @@ namespace ChangeClothes
                                     Transform bone = Transform.Instantiate(units[i].Smr.bones[j], units[i].Smr.bones[j].parent, false);
                                     units[i].Smr.bones[j] = bone;
                                     units[i].Smr.bones[j].name = "Bip001 Spine2";
-
-                                    int count = units[i].Smr.bones[j].childCount;
-                                    for (int k = 0; k < count; k++)
-                                    {
-                                        Transform child = units[i].Smr.bones[j].GetChild(k);
-                                        //Dbgl(child.name + " "+child.position);
-                                    }
-                                    //units[i].Smr.bones[j].localPosition += new Vector3(0,2f,0);
                                 }
                             }
                         }
 
-                        /*
-                        Matrix4x4[] bindPoses;
-                        bindPoses = new Matrix4x4[units[i].Smr.sharedMesh.bindposes.Length + 1];
-                        Transform[] newBones = new Transform[units[i].Smr.bones.Length+1];
-                        Dictionary<string, Transform> boneMap = new Dictionary<string, Transform>();
-                        foreach (Transform bone in units[i].Smr.bones) boneMap[bone.gameObject.name] = bone;
-                        Dbgl("2");units[i].Smr.bones[j]
-                        
-                        Mesh mesh2 = (Mesh)typeof(AppearTarget).GetMethod("BakeToMesh", BindingFlags.NonPublic | BindingFlags.Instance).Invoke(__instance, new object[] { units[i], appearData });
-                        List<Transform> tmpMeshRefBones = new List<Transform>();
-                        for (int k = 0; k < mesh2.subMeshCount; k++)
-                        {
-                            CombineInstance item = default(CombineInstance);
-                            item.mesh = mesh2;
-                            item.subMeshIndex = k;
-                            typeof(AppearTarget).GetMethod("FindBonesByName", BindingFlags.NonPublic | BindingFlags.Instance).Invoke(__instance, new object[] { units[i].Smr.bones, tmpMeshRefBones });
-                        }
-                        List<string> bones = new List<string>();
-                        for (int k = 0; k < tmpMeshRefBones.Count; k++)
-                        {
-                            bones.Add(tmpMeshRefBones[k].name + " " + tmpMeshRefBones[k].position + " " + tmpMeshRefBones[k].localPosition);
-                            if (tmpMeshRefBones[k].name.Contains("Spine1"))
-                            {
-                                tmpMeshRefBones[k].position += new Vector3(0, 1f, 0);
-                                //boneA[j].position += new Vector3(2f,0,0);
-                                //boneA[j].localPosition += new Vector3(0,2f,0);
-
-                            }
-                        }
-                        Dbgl(string.Join("\r\n", bones.ToArray()));
-
-                        __state = units[i].Smr.bones;
-                        */
                     }
                     if (units[i].Part == AppearPartEnum.Foot && settings.playerClothes > 0)
                     {
@@ -459,11 +353,11 @@ namespace ChangeClothes
                         }
                         if (isFemale)
                         {
-                            units[i].Smr.rootBone.position = new Vector3(0, 1.35f + settings.playerHeadOffset, 0);
+                            units[i].Smr.rootBone.position = new Vector3(0, 1.35f + settings.playerHeadOffset + settings.playerHairOffset, 0);
                         }
                         else
                         {
-                            units[i].Smr.rootBone.position = new Vector3(0, 1.40f + settings.playerHeadOffset, 0);
+                            units[i].Smr.rootBone.position = new Vector3(0, 1.40f + settings.playerHeadOffset + settings.playerHairOffset, 0);
                         }
                     }
                 }

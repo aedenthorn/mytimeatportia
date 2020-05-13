@@ -13,8 +13,9 @@ namespace ChangeClothes
             0,2,4,6,8,10,12,14
         };
         public int playerClothes;
-        internal int playerHair;
+        public int playerHair;
         public float playerHeadOffset = 0f;
+        public float playerHairOffset = 0f;
 
         public bool EnablePlayerModelling { get; set; } = false;
 

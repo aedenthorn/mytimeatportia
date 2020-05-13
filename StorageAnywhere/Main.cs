@@ -147,21 +147,21 @@ namespace StorageAnywhere
             }
         }
 
-        [HarmonyPatch(typeof(StoreageUICtr), "Update")]
+        [HarmonyPatch(typeof(PackageUIBase), "Update")]
         static class StoreageUICtr_Update_Patch
         {
-            static void Postfix(StoreageUICtr __instance)
+            static void Postfix(PackageUIBase __instance)
             {
-                if (!enabled || UIStateMgr.Instance.currentState.type != UIStateMgr.StateType.Storeage)
+                if (!enabled || UIStateMgr.Instance.currentState.type != UIStateMgr.StateType.Storeage || !(__instance is StoreageUICtr))
                     return;
 
                 if (Input.GetKeyDown(settings.PrevStorageKey))
                 {
-                    __instance.SwitchStorage(false);
+                    (__instance as StoreageUICtr).SwitchStorage(false);
                 }
                 else if (Input.GetKeyDown(settings.NextStorageKey))
                 {
-                    __instance.SwitchStorage(true);
+                    (__instance as StoreageUICtr).SwitchStorage(true);
                 }
 
             }

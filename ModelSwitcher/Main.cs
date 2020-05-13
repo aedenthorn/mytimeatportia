@@ -20,7 +20,7 @@ namespace ModelSwitcher
     public partial class Main
     {
             
-        private static bool isDebug = true;
+        private static bool isDebug = false;
 
         public static void Dbgl(string str = "", bool pref = true)
         {
@@ -84,7 +84,7 @@ namespace ModelSwitcher
                     return true;
                 }
 
-                if (___model == "Actor/Npc_Nora")
+                if (false && ___model == "Actor/Npc_Nora")
                 {
                     Dbgl("found Nora: " + ___model);
                     string asset = "Cg/Cutscene_Marry_CG001";

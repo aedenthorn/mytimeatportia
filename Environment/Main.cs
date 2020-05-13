@@ -17,7 +17,7 @@ namespace Environment
     {
         private static Settings settings;
         private static bool enabled;
-        private static bool isDebug = true;
+        private static bool isDebug = false;
         private static float buttonWidth = 20f;
         private static float labelWidth = 80f;
 
@@ -410,7 +410,7 @@ namespace Environment
             {
                 if (!enabled)
                     return;
-
+                /*
                 Dbgl("SunLightColor " + __instance.SunLightColor);
                 Dbgl("SunLightIntensity " + __instance.SunLightIntensity);
 
@@ -420,7 +420,7 @@ namespace Environment
                 Dbgl("flowCloudBColor " + __instance.flowCloudBColor);
                 Dbgl("overcastAlpha " + __instance.OvercastAlpha);
                 Dbgl("flowCloudAlpha " + __instance.flowCloudAlpha);
-
+                */
 
                 if (settings.SunLightColorEnable)
                     __instance.SunLightColor = new Color(settings.SunLightColorR, settings.SunLightColorG, settings.SunLightColorB, settings.SunLightColorA);
