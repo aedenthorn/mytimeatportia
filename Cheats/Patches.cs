@@ -106,12 +106,14 @@ namespace Cheats
         }
 
 
-        //[HarmonyPatch(typeof(RidableModuleManager), "GetNewTempUID")]
+        //[HarmonyPatch(typeof(SkyboxTexture), "CreateTexture")]
         static class rmm2_Patch
         {
-            static void Postfix(RidableModuleManager __instance, int __result)
+            static void Prefix(ref int width, ref int height)
             {
-                Dbgl("new id: " + __result+ " "+Environment.StackTrace);
+                //Dbgl("skybox");
+                width = 1;
+                height = 1;
             }
         }
 

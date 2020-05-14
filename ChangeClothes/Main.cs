@@ -19,7 +19,7 @@ namespace ChangeClothes
 {
     public static partial class Main
     {
-        private static bool isDebug = true;
+        private static bool isDebug = false;
 
         public static void Dbgl(string str = "", bool pref = true)
         {

@@ -17,7 +17,7 @@ namespace Teleport
     public static class Main
     {
         public static bool enabled;
-        private static bool isDebug = true;
+        private static bool isDebug = false;
 
         public static void Dbgl(string str = "", bool pref = true)
         {

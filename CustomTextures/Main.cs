@@ -1,10 +1,7 @@
 ﻿using Harmony12;
-using Hont.ExMethod.Collection;
-using Pathea;
 using Pathea.ActorNs;
 using Pathea.ModuleNs;
 using Pathea.NpcAppearNs;
-using Pathea.NpcRepositoryNs;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -18,7 +15,7 @@ namespace CustomTextures
     public partial class Main
     {
             
-        private static bool isDebug = true;
+        private static bool isDebug = false;
         private static Dictionary<int, Texture2D> customTextures = new Dictionary<int, Texture2D>();
         private static Dictionary<int, Dictionary<int, Texture2D>> customTexturesSupp = new Dictionary<int, Dictionary<int, Texture2D>>();
 
@@ -57,7 +54,7 @@ namespace CustomTextures
             }
 
             Regex pattern = new Regex(@"^[0-9][0-9][0-9][0-9][0-9][0-9][0-9]\.png$");
-            Regex pattern2 = new Regex(@"^[0-9][0-9][0-9][0-9][0-9][0-9][0-9]_[0-9][0-9]*\.png$");
+            Regex pattern2 = new Regex(@"^[0-9][0-9][0-9][0-9][0-9][0-9][0-9]_[0-9]\.png$");
 
             customTextures.Clear();
             customTexturesSupp.Clear();
