@@ -41,8 +41,7 @@ namespace MarriageMod
             modEntry.OnGUI = OnGUI;
             modEntry.OnSaveGUI = OnSaveGUI;
 
-            PreloadAudio pa = new PreloadAudio();
-            pa.Start("Npc_Kiss.ogg");
+            StaticCoroutine.Start(Coroutine("Npc_Kiss.ogg"));
 
             var harmony = HarmonyInstance.Create(modEntry.Info.Id);
             harmony.PatchAll(Assembly.GetExecutingAssembly());
@@ -94,27 +93,19 @@ namespace MarriageMod
 
             private class StaticCoroutineRunner : MonoBehaviour { }
         }
-
-        private class PreloadAudio : MonoBehaviour
+        public static IEnumerator Coroutine(string filename)
         {
-            public void Start(string filename)
-            {
-                StaticCoroutine.Start(Coroutine(filename));
-            }
-            public static IEnumerator Coroutine(string filename)
-            {
-                string uri = GetModDir(filename);
+            string uri = GetModDir(filename);
 
-                using (UnityWebRequest www = UnityWebRequestMultimedia.GetAudioClip(uri, AudioType.OGGVORBIS))
+            using (UnityWebRequest www = UnityWebRequestMultimedia.GetAudioClip(uri, AudioType.OGGVORBIS))
+            {
+                www.SendWebRequest();
+                yield return www;
+                if (www != null)
                 {
-                    www.SendWebRequest();
-                    yield return www;
-                    if (www != null)
-                    {
-                        kissAudioClip = DownloadHandlerAudioClip.GetContent(www);
-                    }
-
+                    kissAudioClip = DownloadHandlerAudioClip.GetContent(www);
                 }
+
             }
         }
 

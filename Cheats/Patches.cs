@@ -106,14 +106,12 @@ namespace Cheats
         }
 
 
-        //[HarmonyPatch(typeof(SkyboxTexture), "CreateTexture")]
+        //[HarmonyPatch(typeof(Actor), "HpChangeEventTrigger")]
         static class rmm2_Patch
         {
-            static void Prefix(ref int width, ref int height)
+            static void Prefix()
             {
-                //Dbgl("skybox");
-                width = 1;
-                height = 1;
+                Dbgl(Environment.StackTrace);
             }
         }
 

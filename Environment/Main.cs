@@ -78,7 +78,6 @@ namespace Environment
                 SetColorSetting("SunBloomColor");
                 SetColorSetting("SunColor", 0, 3);
                 SetColorSetting("Moon1BloomColor");
-                SetColorSetting("SunColorFade");
 
                 SetColorSetting("SunLightColor");
 
@@ -102,6 +101,7 @@ namespace Environment
             GUILayout.Space(10f);
             if (settings.floatsShow)
             {
+                SetFloatSetting("SunColorFade",-1f);
                 SetFloatSetting("FogHeight");
                 SetFloatSetting("SunColorFade", -1);
                 SetFloatSetting("Moon1Power", 0, 100f, 1);
@@ -122,40 +122,58 @@ namespace Environment
         private static void SetColorSetting(string name, float min = 0, float max = 1f, bool isG = false)
         {
             FieldInfo mie = typeof(Settings).GetField(name + "Enable");
+            FieldInfo mif = typeof(Settings).GetField(name + "ForceMonochrome");
             FieldInfo mir = typeof(Settings).GetField(name + "R");
             FieldInfo mig = typeof(Settings).GetField(name + "G");
             FieldInfo mib = typeof(Settings).GetField(name + "B");
             FieldInfo mia = typeof(Settings).GetField(name + "A");
+            FieldInfo mim = typeof(Settings).GetField(name + "ColorMonochrome");
 
             bool ev = (bool)mie.GetValue(settings);
             float rv = (float)mir.GetValue(settings);
             float gv = (float)mig.GetValue(settings);
             float bv = (float)mib.GetValue(settings);
             float av = (float)mia.GetValue(settings);
+            float mv = (float)mim.GetValue(settings);
 
             GUILayout.BeginHorizontal();
             GUILayout.Space(indentSpace);
-
             mie.SetValue(settings, GUILayout.Toggle((bool)mie.GetValue(settings), $"<b>{name}</b>", new GUILayoutOption[0]));
+            if (isG)
+            {
+                mif.SetValue(settings, GUILayout.Toggle((bool)mif.GetValue(settings), $"<b>Force Monochrome</b>", new GUILayoutOption[] { GUILayout.Width(labelWidth*2f) }));
+                
+            }
             GUILayout.EndHorizontal();
 
             if ((bool)mie.GetValue(settings))
             {
-                GUILayout.BeginHorizontal();
-                GUILayout.Space(indentSpace*2);
-                GUILayout.Label(string.Format("Red: <b>{0:F2}</b> ", mir.GetValue(settings)), new GUILayoutOption[] { GUILayout.Width(labelWidth) });
-                mir.SetValue(settings,GUILayout.HorizontalSlider((float)mir.GetValue(settings) * 100f, 100f*min, 100f * max) / 100f);
-                GUILayout.EndHorizontal();
-                GUILayout.BeginHorizontal();
-                GUILayout.Space(indentSpace * 2);
-                GUILayout.Label(string.Format("Green: <b>{0:F2}</b> ", mig.GetValue(settings)), new GUILayoutOption[] { GUILayout.Width(labelWidth) });
-                mig.SetValue(settings, GUILayout.HorizontalSlider((float)mig.GetValue(settings) * 100f, 100f * min, 100f * max) / 100f);
-                GUILayout.EndHorizontal();
-                GUILayout.BeginHorizontal();
-                GUILayout.Space(indentSpace * 2);
-                GUILayout.Label(string.Format("Blue: <b>{0:F2}</b> ", mib.GetValue(settings)), new GUILayoutOption[] { GUILayout.Width(labelWidth) });
-                mib.SetValue(settings, GUILayout.HorizontalSlider((float)mib.GetValue(settings) * 100f, 100f * min, 100f * max) / 100f);
-                GUILayout.EndHorizontal();
+                if(isG && (bool)mif.GetValue(settings))
+                {
+                    GUILayout.BeginHorizontal();
+                    GUILayout.Space(indentSpace * 2);
+                    GUILayout.Label(string.Format("Grey: <b>{0:F2}</b> ", mim.GetValue(settings)), new GUILayoutOption[] { GUILayout.Width(labelWidth) });
+                    mim.SetValue(settings, GUILayout.HorizontalSlider((float)mim.GetValue(settings) * 100f, 100f * min, 100f * max) / 100f);
+                    GUILayout.EndHorizontal();
+                }
+                else
+                {
+                    GUILayout.BeginHorizontal();
+                    GUILayout.Space(indentSpace * 2);
+                    GUILayout.Label(string.Format("Red: <b>{0:F2}</b> ", mir.GetValue(settings)), new GUILayoutOption[] { GUILayout.Width(labelWidth) });
+                    mir.SetValue(settings, GUILayout.HorizontalSlider((float)mir.GetValue(settings) * 100f, 100f * min, 100f * max) / 100f);
+                    GUILayout.EndHorizontal();
+                    GUILayout.BeginHorizontal();
+                    GUILayout.Space(indentSpace * 2);
+                    GUILayout.Label(string.Format("Green: <b>{0:F2}</b> ", mig.GetValue(settings)), new GUILayoutOption[] { GUILayout.Width(labelWidth) });
+                    mig.SetValue(settings, GUILayout.HorizontalSlider((float)mig.GetValue(settings) * 100f, 100f * min, 100f * max) / 100f);
+                    GUILayout.EndHorizontal();
+                    GUILayout.BeginHorizontal();
+                    GUILayout.Space(indentSpace * 2);
+                    GUILayout.Label(string.Format("Blue: <b>{0:F2}</b> ", mib.GetValue(settings)), new GUILayoutOption[] { GUILayout.Width(labelWidth) });
+                    mib.SetValue(settings, GUILayout.HorizontalSlider((float)mib.GetValue(settings) * 100f, 100f * min, 100f * max) / 100f);
+                    GUILayout.EndHorizontal();
+                }
                 GUILayout.BeginHorizontal();
                 GUILayout.Space(indentSpace * 2);
                 GUILayout.Label(string.Format("Alpha: <b>{0:F2}</b> ", mia.GetValue(settings)), new GUILayoutOption[] { GUILayout.Width(labelWidth) });
@@ -179,7 +197,7 @@ namespace Environment
             }
             GUILayout.Space(20f);
 
-            if(isG && (ev != (bool)mie.GetValue(settings) || rv != (float)mir.GetValue(settings) || gv != (float)mig.GetValue(settings) || bv != (float)mib.GetValue(settings) || av != (float)mia.GetValue(settings)))
+            if(isG && (ev != (bool)mie.GetValue(settings) || rv != (float)mir.GetValue(settings) || gv != (float)mig.GetValue(settings) || bv != (float)mib.GetValue(settings) || av != (float)mia.GetValue(settings)) || mv != (float)mim.GetValue(settings))
             {
                 UpdateGradients();
             }

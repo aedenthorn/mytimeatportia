@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Harmony12;
+﻿using Harmony12;
 using Hont;
 using Pathea;
-using Pathea.ActorNs;
 using Pathea.GameFlagNs;
 using Pathea.TipsNs;
 using Pathea.UISystemNs;
+using System;
 using UnityEngine;
 
 namespace YourTime
@@ -77,13 +73,13 @@ namespace YourTime
                 {
                     if (settings.TimeScaleModifier > 0.1f)
                     {
-                        if (settings.TimeScaleModifier > 1.5f)
+                        if (Input.GetKey("left shift"))
                         {
-                            settings.TimeScaleModifier = (float)Math.Round(settings.TimeScaleModifier - 1f);
+                            settings.TimeScaleModifier = Math.Max(0.1f,(float)Math.Round(settings.TimeScaleModifier - 1f));
                         }
                         else
                         {
-                            settings.TimeScaleModifier = (float)Math.Round(settings.TimeScaleModifier - 0.1f,1);
+                            settings.TimeScaleModifier = (float)Math.Round(settings.TimeScaleModifier - 0.1f, 1);
                         }
                         Singleton<TipsMgr>.Instance.SendImageTip($"Time speed set to {TimeSpeedString()} speed", MessageUITipImageAssets.ImageType.CalendarRemind, 0);
                         settings.Save(myModEntry);
@@ -97,9 +93,9 @@ namespace YourTime
                 {
                     if (settings.TimeScaleModifier < 10.0f)
                     {
-                        if (settings.TimeScaleModifier >= 1f)
+                        if (Input.GetKey("left shift"))
                         {
-                            settings.TimeScaleModifier = (float)Math.Round(settings.TimeScaleModifier + 1f);
+                            settings.TimeScaleModifier = Math.Min(10f, (float)Math.Round(settings.TimeScaleModifier + 1f));
                         }
                         else
                         {

@@ -71,34 +71,55 @@ namespace Environment
                         for (int i = 0; i < gradientColorKeys.Length; i++)
                         {
                             Color color = gradientColorKeys[i].color;
-                            float r = (float)typeof(Settings).GetField(name + "GradientMaskR").GetValue(settings);
-                            float g = (float)typeof(Settings).GetField(name + "GradientMaskG").GetValue(settings);
-                            float b = (float)typeof(Settings).GetField(name + "GradientMaskB").GetValue(settings);
+                            if ((bool)typeof(Settings).GetField(name + "GradientMaskForceMonochrome").GetValue(settings))
+                            {
+                                float mask = (float)typeof(Settings).GetField(name + "GradientMaskColorMonochrome").GetValue(settings);
+                                float orig = (color.r + color.g + color.b) / 3;
+                                float grey;
+                                if (mask >= 0)
+                                {
+                                    grey = orig + (1f - orig) * mask;
+                                }
+                                else
+                                {
+                                    grey = orig + orig * mask;
+                                }
+                                gradientColorKeys[i].color.r = grey;
+                                gradientColorKeys[i].color.g = grey;
+                                gradientColorKeys[i].color.b = grey;
+                            }
+                            else
+                            {
+                                float r = (float)typeof(Settings).GetField(name + "GradientMaskR").GetValue(settings);
+                                float g = (float)typeof(Settings).GetField(name + "GradientMaskG").GetValue(settings);
+                                float b = (float)typeof(Settings).GetField(name + "GradientMaskB").GetValue(settings);
+                                if (r >= 0)
+                                {
+                                    gradientColorKeys[i].color.r = color.r + (1f - color.r) * r;
+                                }
+                                else
+                                {
+                                    gradientColorKeys[i].color.r = color.r + color.r * r;
+                                }
+                                if (g >= 0)
+                                {
+                                    gradientColorKeys[i].color.g = color.g + (1f - color.g) * g;
+                                }
+                                else
+                                {
+                                    gradientColorKeys[i].color.g = color.g + color.g * g;
+                                }
+                                if (b >= 0)
+                                {
+                                    gradientColorKeys[i].color.b = color.b + (1f - color.b) * b;
+                                }
+                                else
+                                {
+                                    gradientColorKeys[i].color.b = color.b + color.b * b;
+                                }
+
+                            }
                             float a = (float)typeof(Settings).GetField(name + "GradientMaskA").GetValue(settings);
-                            if (r >= 0)
-                            {
-                                gradientColorKeys[i].color.r = color.r + (1f - color.r) * r;
-                            }
-                            else
-                            {
-                                gradientColorKeys[i].color.r = color.r + color.r * r;
-                            }
-                            if (g >= 0)
-                            {
-                                gradientColorKeys[i].color.g = color.g + (1f - color.g) * g;
-                            }
-                            else
-                            {
-                                gradientColorKeys[i].color.g = color.g + color.g * g;
-                            }
-                            if (b >= 0)
-                            {
-                                gradientColorKeys[i].color.b = color.b + (1f - color.b) * b;
-                            }
-                            else
-                            {
-                                gradientColorKeys[i].color.b = color.b + color.b * b;
-                            }
                             if (a >= 0)
                             {
                                 gradientColorKeys[i].color.a = color.a + (1f - color.a) * a;
@@ -113,20 +134,20 @@ namespace Environment
                         //Dbgl("setting " + name + " " + gradient.colorKeys[0].color);
                     }
                     GradientAlphaKey[] gradientAlphaKeys = gradient.alphaKeys;
+                    float a2 = (float)typeof(Settings).GetField(name + "GradientMaskA").GetValue(settings);
                     for (int i = 0; i < gradientAlphaKeys.Length; i++)
                     {
                         float alpha = gradientAlphaKeys[i].alpha;
-                        float a = (float)typeof(Settings).GetField(name + "GradientMaskA").GetValue(settings);
-                        if (a >= 0)
+                        if (a2 >= 0)
                         {
-                            gradientAlphaKeys[i].alpha = alpha + (1f - alpha) * a;
+                            gradientAlphaKeys[i].alpha = alpha + (1f - alpha) * a2;
                         }
                         else
                         {
-                            gradientAlphaKeys[i].alpha = alpha + alpha * a;
+                            gradientAlphaKeys[i].alpha = alpha + alpha * a2;
                         }
-                        gradient.alphaKeys = gradientAlphaKeys;
                     }
+                    gradient.alphaKeys = gradientAlphaKeys;
                     typeof(BiomoTheme).GetField(name).SetValue(executor.BiomoThemes[k], gradient);
                 }
             }

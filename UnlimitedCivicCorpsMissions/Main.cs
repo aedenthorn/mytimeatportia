@@ -106,10 +106,12 @@ namespace UnlimitedCivicCorpsMissions
             }
         }
 
+        private static string[] mdfields = { "Id", "MissionType", "Level", "Title", "Desc", "TargetLocation", "CostMoney", "NumRange", "TimeRange", "rewardStr", "DungeonName", "DungeonLevel", "MissionRequired", "IconPath", "FaildMissionRate" };
         private static Dictionary<int,object[]> newMissions = new Dictionary<int, object[]>(){
             { 1015,new object[] { 1015, 1, 1, -1, 283024, "", 4, new int[] { 50, 200 }, new int[] { 2, 6 }, new string[] { "4000022" }, "", null, -1, "", 0 } },
-            { 1016,new object[] { 1016, 1, 2, -1, 283024, "", 14, new int[] { 15, 50 }, new int[] { 2, 6 }, new string[] { "4000165" }, "", null, 1100411, "", 0 } },
-            { 1017,new object[] { 1017, 1, 3, -1, 283024, "", 12, new int[] { 15, 50 }, new int[] { 2, 6 }, new string[] { "4000140" }, "", null, 1100452, "", 0 } },
+            { 1016,new object[] { 1016, 1, 2, -1, 283024, "", 12, new int[] { 15, 50 }, new int[] { 2, 6 }, new string[] { "4000161" }, "", null, -1, "", 0 } },
+            { 1017,new object[] { 1017, 1, 2, -1, 283024, "", 14, new int[] { 15, 50 }, new int[] { 2, 6 }, new string[] { "4000165" }, "", null, 1100411, "", 0 } },
+            { 1018,new object[] { 1018, 1, 3, -1, 283024, "", 12, new int[] { 15, 50 }, new int[] { 2, 6 }, new string[] { "4000140" }, "", null, 1100452, "", 0 } },
         };
 
         [HarmonyPatch(typeof(MissionData), "List")]
@@ -145,7 +147,6 @@ namespace UnlimitedCivicCorpsMissions
             }
         }
 
-        private static string[] mdfields = { "Id", "MissionType", "Level", "Title", "Desc", "TargetLocation", "CostMoney", "NumRange", "TimeRange", "rewardStr", "DungeonName", "DungeonLevel", "MissionRequired", "IconPath", "FaildMissionRate"};
 
         static MissionData MakeMission(object[] args)
         {

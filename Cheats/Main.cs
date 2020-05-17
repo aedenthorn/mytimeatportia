@@ -49,6 +49,7 @@ namespace Cheats
             modEntry.OnToggle = OnToggle;
             modEntry.OnGUI = OnGUI;
             modEntry.OnSaveGUI = OnSaveGUI;
+            modEntry.OnUpdate = OnUpdate;
 
             var harmony = HarmonyInstance.Create(modEntry.Info.Id);
             harmony.PatchAll(Assembly.GetExecutingAssembly());
@@ -67,6 +68,14 @@ namespace Cheats
 
         }
 
+        private static void OnUpdate(UnityModManager.ModEntry arg1, float arg2)
+        {
+            if (Input.GetKeyDown(","))
+            {
+                Module<Player>.Self.bag.ChangeMoney(100000, true, 0);
+            }
+        }
+
         private static void OnLoadGame()
         {
             if (!Module<FarmBuildingModeModule>.Self.IsBuildingActive(FarmBuildingEnum.Factory))
@@ -77,6 +86,8 @@ namespace Cheats
             }
             //DumpStuff();
         }
+
+
 
         private static void Teleport()
         {
@@ -352,7 +363,6 @@ namespace Cheats
 
                 //Dbgl("OtherConfig: " + string.Format(str));
 
-                //Module<Player>.Self.bag.AddItem(ItemObject.CreateItem(1001402,1), true);
 
 
 
@@ -437,7 +447,7 @@ namespace Cheats
         }
 
 
-        [HarmonyPatch(typeof(TextMgr), "Get", new Type[] { typeof(int) })]
+        //[HarmonyPatch(typeof(TextMgr), "Get", new Type[] { typeof(int) })]
         static class TextMgr_Get_Patch
         {
             static void Postfix(ref String __result)

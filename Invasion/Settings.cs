@@ -8,6 +8,7 @@ namespace Invasion
         public int spawnRandomMonstersMin = 1;
         public int spawnRandomMonstersMax = 100;
         public int spawnRandomMonstersGroupMax = 5;
+        //public bool removeBossBuff = true;
 
         public int ChanceInvade { get; set; } = 30;
         public int ChanceGang { get; set; } = 0;

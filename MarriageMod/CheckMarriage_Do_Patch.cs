@@ -1,13 +1,8 @@
 ﻿using Harmony12;
-using Pathea.FavorSystemNs;
-using Pathea.MG;
-using Pathea.ModuleNs;
 using PatheaScript;
 using PatheaScriptExt;
 using System;
-using System.Collections.Generic;
 using System.Xml;
-using UnityEngine;
 using static Harmony12.AccessTools;
 
 namespace MarriageMod

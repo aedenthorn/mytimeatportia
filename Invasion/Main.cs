@@ -1,29 +1,27 @@
 ﻿using Harmony12;
 using Pathea;
+using Pathea.ActorNs;
 using Pathea.BlackBoardNs;
 using Pathea.DungeonModuleNs;
 using Pathea.FavorSystemNs;
 using Pathea.MessageSystem;
 using Pathea.Missions;
 using Pathea.ModuleNs;
-using Pathea.ScenarioNs;
 using Pathea.Spawn;
 using Pathea.SpawnNs;
 using Pathea.TipsNs;
-using Redmine.Net.Api.Async;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityModManagerNet;
 
 namespace Invasion
 {
-    public class Main
+    public partial class Main
     {
         private static readonly bool isDebug = true;
 
@@ -78,17 +76,28 @@ namespace Invasion
         {
             GUILayout.Label(string.Format("Chance per day of being invaded: <b>{00:F0}</b>", settings.ChanceInvade), new GUILayoutOption[0]);
             settings.ChanceInvade = (int)GUILayout.HorizontalSlider((float)Main.settings.ChanceInvade, 0f, 100f, new GUILayoutOption[0]);
+            GUILayout.Space(10f);
             GUILayout.Label(string.Format("Chance of invaders bringing lower-tier gang: <b>{00:F0}</b>", settings.ChanceGang), new GUILayoutOption[0]);
             settings.ChanceGang = (int)GUILayout.HorizontalSlider((float)Main.settings.ChanceGang, 0f, 100f, new GUILayoutOption[0]);
-            settings.AllowRats = GUILayout.Toggle(settings.AllowRats, "Allow Rat King and Prince (potential respawn bug)", new GUILayoutOption[0]);
+            GUILayout.Space(10f);
+            GUILayout.Label(string.Format("Minimum gang members: <b>{00:F0}</b>", settings.MinGang), new GUILayoutOption[0]);
+            settings.MinGang = (int)GUILayout.HorizontalSlider((float)Main.settings.MinGang, 0f, 100f, new GUILayoutOption[0]);
+            GUILayout.Space(10f);
+            GUILayout.Label(string.Format("Maximum gang members: <b>{00:F0}</b>", settings.MaxGang), new GUILayoutOption[0]);
+            settings.MaxGang = (int)GUILayout.HorizontalSlider((float)Main.settings.MaxGang, 0f, 100f, new GUILayoutOption[0]);
+            GUILayout.Space(20f);
 
+            settings.AllowRats = GUILayout.Toggle(settings.AllowRats, "Allow Rat King and Prince (potential respawn bug)", new GUILayoutOption[0]);
             GUILayout.Space(20f);
 
             settings.spawnRandomMonsters = GUILayout.Toggle(settings.spawnRandomMonsters, "Spawn random dungeon monsters throughout the map.", new GUILayoutOption[0]);
+            GUILayout.Space(10f);
             GUILayout.Label(string.Format("Minimum total monsters to spawn: <b>{00:F0}</b>", settings.spawnRandomMonstersMin), new GUILayoutOption[0]);
             settings.spawnRandomMonstersMin = (int)GUILayout.HorizontalSlider((float)Main.settings.spawnRandomMonstersMin, 1f, 2000f, new GUILayoutOption[0]);
+            GUILayout.Space(10f);
             GUILayout.Label(string.Format("Maximum total monsters to spawn: <b>{00:F0}</b>", settings.spawnRandomMonstersMax), new GUILayoutOption[0]);
             settings.spawnRandomMonstersMax = (int)GUILayout.HorizontalSlider((float)Main.settings.spawnRandomMonstersMax, 1f, 2000f, new GUILayoutOption[0]);
+            GUILayout.Space(10f);
             GUILayout.Label(string.Format("Maximum monsters per spawn point: <b>{00:F0}</b>", settings.spawnRandomMonstersGroupMax), new GUILayoutOption[0]);
             settings.spawnRandomMonstersGroupMax = (int)GUILayout.HorizontalSlider((float)Main.settings.spawnRandomMonstersGroupMax, 1f, 50f, new GUILayoutOption[0]);
 
@@ -106,6 +115,7 @@ namespace Invasion
         {
             if (!enabled)
                 return;
+
             SceneManager.activeSceneChanged -= ChangeScene;
             SceneManager.activeSceneChanged += ChangeScene;
 
@@ -129,41 +139,23 @@ namespace Invasion
             if (chance >= settings.ChanceInvade)
                 return;
 
-            Monster m = GetRandomMonster(rand, Get1337Level());
+            bossMonster = GetRandomMonster(rand, Get1337Level());
 
             gangSpawned = false;
-
             int chanceGang = new IntR(0, 100).GetValue(rand);
             if (Get1337Level() > 1 && chanceGang < settings.ChanceGang)
             {
                 gangSpawned = true;
-                int gangNo = new IntR(settings.MinGang, settings.MaxGang).GetValue(rand);
-                for (int i = 0; i < gangNo; i++)
-                {
-                    int l337 = new IntR(1, Get1337Level()-1).GetValue(rand);
-                    Monster mLow = GetRandomMonster(rand, l337);
-
-                    Vector3 pos = GetGroupPos(m.pos.Value, i, 8f);
-
-                    ActorAgent agentLow = new ActorAgent(pos, m.rot, mLow.id, new Action<ActorAgent>(MonsterGangDeath));
-                    Module<SpawnMgr>.Self.AddActorAgent(agentLow);
-                    agentLow.Spawn();
-                }
             }
-            agent = new ActorAgent(m.pos.Value, m.rot, m.id, new Action<ActorAgent>(MonsterDeath));
-
-            Module<SpawnMgr>.Self.AddActorAgent(agent);
-            agent.Spawn();
-
-            areaTrigger = Module<AreaTriggerManager>.Self.CreateAreaTrigger(triggerID, m.pos.Value, "Main", 40, true);
+            areaTrigger = Module<AreaTriggerManager>.Self.CreateAreaTrigger(triggerID, bossMonster.pos.Value, "Main", 40, true);
             monsterAlive = true;
-            monsterName = m.name;
+            monsterName = bossMonster.name;
             char[] vowels = { 'A', 'E', 'I', 'O', 'U' };
-            Singleton<TipsMgr>.Instance.SendSystemTip((vowels.Contains(monsterName[0]) ? "An " : "A ") + monsterName + " is attacking " + m.pos.Key + (gangSpawned?" and they brought a gang":"") + "!", SystemTipType.danger);
+            Singleton<TipsMgr>.Instance.SendSystemTip((vowels.Contains(monsterName[0]) ? "An " : "A ") + monsterName + " is attacking " + bossMonster.pos.Key + (gangSpawned?" and they brought a gang":"") + "!", SystemTipType.danger);
 
         }
 
-        private static Vector3 GetGroupPos(Vector3 pos, int i, float distance)
+        private static Vector3 GetGroupPos(Vector3 pos, int i, float distance, float variation)
         {
             float posx = pos.x;
             float posz = pos.z;
@@ -202,7 +194,7 @@ namespace Invasion
                     break;
             }
 
-            return new Vector3(posx, pos.y, posz);
+            return new Vector3(posx + (rand.Next(-100, 100) / 100f * variation), pos.y, posz + (rand.Next(-100, 100) / 100f * variation));
         }
 
         private static void ChangeScene(Scene arg0, Scene arg1)
@@ -210,15 +202,59 @@ namespace Invasion
             if (!enabled)
                 return;
 
-            if (arg1.name == "Main" && settings.spawnRandomMonsters)
+            if (arg1.name == "Main")
             {
                 SceneManager.activeSceneChanged -= ChangeScene;
-                Singleton<TaskRunner>.Self.StartCoroutine(SpawnRandomMonsters());
+                SpawnBossMonster();
+                SpawnGangMonsters();
+                SpawnRandomMonsters();
             }
         }
 
-        private static IEnumerator SpawnRandomMonsters()
+        private static void SpawnBossMonster()
         {
+            if (monsterAlive)
+            {
+                Vector3 pos = GetValidPos(bossMonster.pos.Value);
+                agent = new BossActorAgent(pos, bossMonster.rot, bossMonster.id, new Action<ActorAgent>(MonsterDeath));
+
+                Module<SpawnMgr>.Self.AddActorAgent(agent);
+                agent.Spawn();
+            }
+        }
+
+        private static void SpawnGangMonsters()
+        {
+            if(gangSpawned) {
+                Dbgl("spawning gang members");
+                int gangNo = new IntR(settings.MinGang, settings.MaxGang).GetValue(rand);
+                for (int i = 0; i < gangNo; i++)
+                {
+                    int l337 = new IntR(1, Get1337Level() - 1).GetValue(rand);
+                    Monster mLow = GetRandomMonster(rand, l337);
+
+                    Vector3 pos = GetValidPos(GetGroupPos(bossMonster.pos.Value, i, 8f, 4f));
+                    if (pos == Vector3.zero)
+                    {
+                        Dbgl("gang member invalid position");
+                        if (gangNo < settings.MaxGang * 2)
+                        {
+                            gangNo++;
+                        }
+                        continue;
+                    }
+                    Dbgl("gang member valid position");
+                    ActorAgent agentLow = new ActorAgent(pos, bossMonster.rot, mLow.id, new Action<ActorAgent>(MonsterGangDeath));
+                    Module<SpawnMgr>.Self.AddActorAgent(agentLow);
+                    agentLow.Spawn();
+                }
+            }
+        }
+
+        private static void SpawnRandomMonsters()
+        {
+            if (!settings.spawnRandomMonsters)
+                return;
 
             int x1 = -600;
             int x2 = 1000;
@@ -252,10 +288,10 @@ namespace Invasion
 
                     for (int i = 0; i < gangNo; i++)
                     {
-                        Vector3 pos = GetValidPos(GetGroupPos(valid, i, 2f));
+                        Vector3 pos = GetValidPos(GetGroupPos(valid, i, 2f, 1f));
                         if (pos != Vector3.zero)
                         {
-                            ActorAgent agentM = new ActorAgent(pos, Vector3.forward, mm.id, new Action<ActorAgent>(MonsterGangDeath));
+                            BossActorAgent agentM = new BossActorAgent(pos, Vector3.forward, mm.id, new Action<ActorAgent>(MonsterGangDeath));
                             Module<SpawnMgr>.Self.AddActorAgent(agentM);
                             agentM.Spawn();
                             points.Add(pos);
@@ -269,13 +305,13 @@ namespace Invasion
                     break;
                 }
             }
-            yield break;
         }
 
         private static Vector3 GetValidPos(Vector3 pos)
         {
             Ray ray = default;
             RaycastHit[] hits = new RaycastHit[4];
+            pos.y = 0;
             ray.origin = pos + Vector3.up * 1000f;
             ray.direction = Vector3.down;
             int num = Physics.RaycastNonAlloc(ray, hits, 999f, 256);
@@ -286,7 +322,6 @@ namespace Invasion
             for (int i = 0; i < num; i++)
             {
                 RaycastHit raycastHit = hits[i];
-                //Dbgl(raycastHit.collider.tag+" "+raycastHit.point);
                 if (raycastHit.collider.CompareTag("Ground"))
                 {
                     return raycastHit.point;
@@ -317,6 +352,7 @@ namespace Invasion
         private static readonly int triggerID = 999999999;
         private static bool monsterAlive = false;
         private static string monsterName = "monster";
+        private static Monster bossMonster;
         private static bool gangSpawned = false;
 
         public static void MonsterDeath(ActorAgent agent)

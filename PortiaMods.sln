@@ -71,6 +71,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NoWiggle", "NoWiggle\NoWigg
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Environment", "Environment\Environment.csproj", "{DDD40766-C6E2-4538-A04C-9CA3D581C399}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DialogueEdit", "DialogueEdit\DialogueEdit.csproj", "{09694AB4-E999-4494-B613-499B8FB1E3D7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WeaponMod", "WeaponMod\WeaponMod.csproj", "{94F182D6-43D8-4599-A9B4-7A16EAADFDAF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -213,6 +217,14 @@ Global
 		{DDD40766-C6E2-4538-A04C-9CA3D581C399}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DDD40766-C6E2-4538-A04C-9CA3D581C399}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DDD40766-C6E2-4538-A04C-9CA3D581C399}.Release|Any CPU.Build.0 = Release|Any CPU
+		{09694AB4-E999-4494-B613-499B8FB1E3D7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{09694AB4-E999-4494-B613-499B8FB1E3D7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{09694AB4-E999-4494-B613-499B8FB1E3D7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{09694AB4-E999-4494-B613-499B8FB1E3D7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{94F182D6-43D8-4599-A9B4-7A16EAADFDAF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{94F182D6-43D8-4599-A9B4-7A16EAADFDAF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{94F182D6-43D8-4599-A9B4-7A16EAADFDAF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{94F182D6-43D8-4599-A9B4-7A16EAADFDAF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
