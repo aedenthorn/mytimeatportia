@@ -16,6 +16,7 @@ namespace MarriageMod
         public float MaxKissingDistance { get; set; } = 5f;
         public bool KissSound { get; set; } = true;
         public int RingsPerMonth { get; set; } = 5;
+        public bool AddExtraRomanceables { get; set; } = true;
 
         public override void Save(UnityModManager.ModEntry modEntry)
         {

@@ -142,6 +142,8 @@ namespace MarriageMod
                 }
             }
             GUILayout.Space(10f);
+            settings.AddExtraRomanceables = GUILayout.Toggle(settings.AddExtraRomanceables, "Make all adults romanceable", new GUILayoutOption[0]);
+            GUILayout.Space(10f);
             GUILayout.Label(string.Format("Number of wedding rings to sell per month: <b>{0}</b>", settings.RingsPerMonth), new GUILayoutOption[0]);
             settings.RingsPerMonth = (int)GUILayout.HorizontalSlider((float)settings.RingsPerMonth, 1f, 30f, new GUILayoutOption[0]);
             GUILayout.Space(10f);

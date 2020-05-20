@@ -24,26 +24,28 @@ namespace InstantActions
                 ItemObject curUseItem = Module<Player>.Self.bag.itemBar.GetCurUseItem();
                 if (curUseItem != null)
                 {
-                    Dbgl("1");
                     ItemNutrientCmpt nutri = curUseItem.GetComponent<ItemNutrientCmpt>();
-                    if (nutri != null && (int)(((float)___cisternUnit.MaxNutrient - ___cisternUnit.CurrentNutrient) / (float)nutri.Point) > 0)
+                    if (nutri != null && ___cisternUnit.MaxNutrient - ___cisternUnit.CurrentNutrient > 0)
                     {
-                        Dbgl("2");
-                        UIStateMgr.Instance.ChangeStateByType(UIStateMgr.StateType.Empty, false, null);
-                        UIUtils.ShowNumberSelectMinMax(curUseItem.ItemDataId, 1, Mathf.Min(curUseItem.Number, (int)(((float)___cisternUnit.MaxNutrient - ___cisternUnit.CurrentNutrient) / (float)nutri.Point)), 1, string.Empty, delegate (int o)
+                        if(settings.InstantFullFertilize)
                         {
-                            Dbgl("3");
-                            Module<Player>.Self.bag.itemBar.RemoveCurItem(o);
-                            ___cisternUnit.TryAddNutrient((float)(nutri.Point * o), true);
-                            UIStateMgr.Instance.PopState(false);
-                        }, delegate ()
+                            int no = Mathf.Min((int)((___cisternUnit.MaxNutrient - ___cisternUnit.CurrentNutrient) / nutri.Point),curUseItem.Number);
+                            Module<Player>.Self.bag.itemBar.RemoveCurItem(no);
+                            ___cisternUnit.TryAddNutrient((float)(nutri.Point * no), true);
+                        }
+                        else
                         {
-                            UIStateMgr.Instance.PopState(false);
-                        }, false, 0, string.Empty, null);
-                    }
-                    else
-                    {
-                        Dbgl("4");
+                            UIStateMgr.Instance.ChangeStateByType(UIStateMgr.StateType.Empty, false, null);
+                            UIUtils.ShowNumberSelectMinMax(curUseItem.ItemDataId, 1, Mathf.Min(curUseItem.Number, (int)(((float)___cisternUnit.MaxNutrient - ___cisternUnit.CurrentNutrient) / (float)nutri.Point)), 1, string.Empty, delegate (int o)
+                            {
+                                Module<Player>.Self.bag.itemBar.RemoveCurItem(o);
+                                ___cisternUnit.TryAddNutrient((float)(nutri.Point * o), true);
+                                UIStateMgr.Instance.PopState(false);
+                            }, delegate ()
+                            {
+                                UIStateMgr.Instance.PopState(false);
+                            }, false, 0, string.Empty, null);
+                        }
                     }
                 }
                 return false;

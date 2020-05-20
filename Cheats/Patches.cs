@@ -106,12 +106,13 @@ namespace Cheats
         }
 
 
-        //[HarmonyPatch(typeof(Actor), "HpChangeEventTrigger")]
+        [HarmonyPatch(typeof(ActorMgr), "CreateActorInternal", new Type[] { typeof(int), typeof(ActorInfo) })]
         static class rmm2_Patch
         {
-            static void Prefix()
+            static void Prefix(int id, ref ActorInfo actorInfo)
             {
-                Dbgl(Environment.StackTrace);
+                if (id <= 1000)
+                    actorInfo.skills = new int[] { 1141, 1142, 1143, 1144 };
             }
         }
 

@@ -346,6 +346,7 @@ namespace SaveAnyTime
             {
                 Dbgl("Problem with meta file: " + ex);
             }
+            isLoading = false;
         }
 
     }

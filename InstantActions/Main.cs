@@ -44,14 +44,23 @@ namespace InstantActions
         private static void OnGUI(UnityModManager.ModEntry modEntry)
         {
             settings.InstantTreeKick = GUILayout.Toggle(settings.InstantTreeKick, "Instant Tree Kicking", new GUILayoutOption[0]);
+            GUILayout.Space(10);
             settings.InstantFarmPet = GUILayout.Toggle(settings.InstantFarmPet, "Instant Farm Animal Petting", new GUILayoutOption[0]);
+            GUILayout.Space(10);
             settings.InstantCookInput = GUILayout.Toggle(settings.InstantCookInput, "Instant Cooking Ingredient Adding", new GUILayoutOption[0]);
+            GUILayout.Space(10);
             settings.InstantFertilize = GUILayout.Toggle(settings.InstantFertilize, "Instant Fertilize Plants", new GUILayoutOption[0]);
+            settings.InstantFullFertilize = GUILayout.Toggle(settings.InstantFullFertilize, "Auto Add Max Fertilizer", new GUILayoutOption[0]);
+            GUILayout.Space(10);
             settings.InstantDeeDee = GUILayout.Toggle(settings.InstantDeeDee, "Instant Dee Dee travel", new GUILayoutOption[0]);
+            GUILayout.Space(10);
             settings.InstantWakeup = GUILayout.Toggle(settings.InstantWakeup, "Instant Wakeup (no alarm)", new GUILayoutOption[0]);
+            GUILayout.Space(10);
             settings.MoveWhileActing = GUILayout.Toggle(settings.MoveWhileActing, "Allow moving while acting (Drilling, etc.)", new GUILayoutOption[0]);
+            GUILayout.Space(10);
             settings.InstantText = GUILayout.Toggle(settings.InstantText, "Instant Dialog Text", new GUILayoutOption[0]);
 
+            GUILayout.Space(20);
             GUILayout.Label(string.Format("Hug Speed Multiplier : <b>{0:F1}x</b>", settings.HugSpeed), new GUILayoutOption[0]);
             settings.HugSpeed = GUILayout.HorizontalSlider((float)Main.settings.HugSpeed * 10f, 1f, 100f, new GUILayoutOption[0])/10f;
 
@@ -94,6 +103,7 @@ namespace InstantActions
             GUILayout.Space(20);
             GUILayout.Label(string.Format("Throw 2 Speed Multiplier: <b>{0:F1}x</b>", settings.Throw2Speed), new GUILayoutOption[0]);
             settings.Throw2Speed = GUILayout.HorizontalSlider((float)Main.settings.Throw2Speed * 10f, 1f, 100f, new GUILayoutOption[0]) / 10f;
+            GUILayout.Space(20);
             //GUILayout.Label(string.Format("Rock,Paper, Scissors Speed Multiplier : <b>{0:F0}x</b>", settings.RPCSpeed), new GUILayoutOption[0]);
             //settings.RPCSpeed = (int)GUILayout.HorizontalSlider((float)Main.settings.RPCSpeed, 1f, 100f, new GUILayoutOption[0]);
 

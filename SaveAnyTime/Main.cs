@@ -49,6 +49,8 @@ namespace SaveAnyTime
                 Debug.Log((pref ? "SaveAnyTime " : "") + str);
         }
         public static bool enabled;
+        private static bool isLoading;
+
         public static Settings settings { get; private set; }
 
         // Send a response to the mod manager about the launch status, success or not.
@@ -59,12 +61,14 @@ namespace SaveAnyTime
             modEntry.OnGUI = OnGUI;
             modEntry.OnSaveGUI = OnSaveGUI;
             modEntry.OnShowGUI = OnShowGUI;
+            modEntry.OnUpdate = OnUpdate;
 
             var harmony = HarmonyInstance.Create(modEntry.Info.Id);
             harmony.PatchAll(Assembly.GetExecutingAssembly());
             DoBuildSaveList();
             return true;
         }
+
 
         private static void OnSaveGUI(UnityModManager.ModEntry modEntry)
         {
@@ -132,34 +136,31 @@ namespace SaveAnyTime
             return true; // Permit or not.
         }
 
-
-        [HarmonyPatch(typeof(UIBaseSolution), "Update")]
-        static class UIBaseSolution_Update_Patch
+        private static void OnUpdate(UnityModManager.ModEntry arg1, float arg2)
         {
-            static void Postfix()
-            {
-                if (!enabled)
-                    return;
+            if (!enabled)
+                return;
 
-                if (Input.GetKeyDown(settings.QuickLoadKey) && saveFiles.Count > 0)
+            if (Input.GetKeyDown(settings.QuickLoadKey) && saveFiles.Count > 0 && !isLoading)
+            {
+                List<string> files = new List<string>();
+                foreach (CustomSaveFile csf in saveFiles)
                 {
-                    List<string> files = new List<string>();
-                    foreach (CustomSaveFile csf in saveFiles)
-                    {
-                        files.Add(csf.fileName);
-                    }
-                    files.Sort(delegate (string x, string y)
-                    {
-                        string datex = x.Split('_')[2];
-                        string datey = y.Split('_')[2];
-                        return datex.CompareTo(datey);
-                    });
-                    string fileName = files[files.Count - 1];
-                    Dbgl($"Quick load {fileName}");
-                    Singleton<TaskRunner>.Self.StartCoroutine(LoadGameFromArchive(fileName));
+                    files.Add(csf.fileName);
                 }
+                files.Sort(delegate (string x, string y)
+                {
+                    string datex = x.Split('_')[2];
+                    string datey = y.Split('_')[2];
+                    return datex.CompareTo(datey);
+                });
+                string fileName = files[files.Count - 1];
+                Dbgl($"Quick load {fileName}");
+                isLoading = true;
+                Singleton<TaskRunner>.Self.StartCoroutine(LoadGameFromArchive(fileName));
             }
         }
+
         [HarmonyPatch(typeof(GamingSolution), "Update")]
         static class GamingSolution_Update_Patch
         {

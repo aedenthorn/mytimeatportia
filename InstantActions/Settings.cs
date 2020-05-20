@@ -28,6 +28,7 @@ namespace InstantActions
         public float AxeSpeed { get; set; } = 2f;
         public float Throw1Speed { get; set; } = 2f;
         public float Throw2Speed { get; set; } = 2f;
+        public bool InstantFullFertilize { get; set; } = true;
 
         public override void Save(UnityModManager.ModEntry modEntry)
         {

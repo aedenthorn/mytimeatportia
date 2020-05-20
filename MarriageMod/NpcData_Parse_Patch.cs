@@ -15,12 +15,12 @@ namespace MarriageMod
         {
             static void Prefix(ref int ___factionId, ref string ___interactStr, int ___id, NpcData __instance, ref int ___addLike)
             {
-                if (!enabled)
+                if (!enabled || !settings.AddExtraRomanceables)
                     return;
                 List<int> l = new List<int> { 4000002, 4000008, 4000102, 4000012 , 4000114 , 4000040 , 4000059, 4000019, 4000014, 4000055, 4000015 , 4000010, 4000041, 4000013, 4000115, 4000141, 4000097 };
 
 
-                if (l.IndexOf(___id) > -1)
+                if (l.Contains(___id))
                 {
                     if (___addLike == 0)
                     {
