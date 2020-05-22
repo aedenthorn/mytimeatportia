@@ -1,10 +1,14 @@
 ﻿using Harmony12;
+using Pathea;
 using Pathea.CameraSystemNs;
+using Pathea.ModuleNs;
+using Pathea.ScenarioNs;
+using PatheaScriptExt;
 using System.Reflection;
 using UnityEngine;
 using UnityModManagerNet;
 
-namespace NoWiggle
+namespace OpenDungeons
 {
     public class Main
     {
@@ -16,7 +20,7 @@ namespace NoWiggle
         public static void Dbgl(string str = "", bool pref = true)
         {
             if (isDebug)
-                Debug.Log((pref ? "JumpRun " : "") + str);
+                Debug.Log((pref ? "OpenDungeons " : "") + str);
         }
 
         private static void Load(UnityModManager.ModEntry modEntry)
@@ -45,15 +49,15 @@ namespace NoWiggle
         private static void OnGUI(UnityModManager.ModEntry modEntry)
         {
         }
-        [HarmonyPatch(typeof(CameraWiggle), "ExecuteWiggle")]
-        static class Wiggle_Patch
-        {
-            static bool Prefix()
-            {
-                if(enabled)
-                    return false;
 
-                return true;
+        //[HarmonyPatch(typeof(ScenarioModule), "PostLoad")]
+        static class ScenarioModule_PostLoad_Patch
+        {
+            static void Postfix()
+            {
+                Module<SceneItemManager>.Self.SetItemInteract((SceneItemType)1, 106, true);
+                Module<SceneItemManager>.Self.Create((SceneItemType)0, 13640, "Mission/Mission_Arrow2", "Main", new Vector3(765.61f, 97.97f, 74.11f), new Vector3(0, 0, 0), "", false, AssetType.Mission);
+                Module<SceneItemManager>.Self.Create((SceneItemType)0, 136401, "Mission/Mission_Arrow2", "TestRandom", new Vector3(386.4505f, 30.98072f, 402.6f), new Vector3(0, 0, 0), "", false, AssetType.Mission);
             }
         }
     }

@@ -9,9 +9,11 @@ using Pathea.CameraSystemNs;
 using Pathea.EffectNs;
 using Pathea.EquipmentNs;
 using Pathea.FavorSystemNs;
+using Pathea.GameFlagNs;
 using Pathea.HomeNs;
 using Pathea.HomeViewerNs;
 using Pathea.InputSolutionNs;
+using Pathea.IntendNs;
 using Pathea.ItemSystem;
 using Pathea.Missions;
 using Pathea.ModuleNs;
@@ -24,9 +26,11 @@ using Pathea.UISystemNs;
 using Pathea.UISystemNs.Grid;
 using Pathea.UISystemNs.MainMenu.MissionUI;
 using Pathea.WeatherNs;
+using PatheaScriptExt;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using TinyJson;
 using UnityEngine;
 using UnityEngine.UI;
 using static Harmony12.AccessTools;
@@ -106,13 +110,12 @@ namespace Cheats
         }
 
 
-        [HarmonyPatch(typeof(ActorMgr), "CreateActorInternal", new Type[] { typeof(int), typeof(ActorInfo) })]
+        //[HarmonyPatch(typeof(SceneItemManager), "Create")]
         static class rmm2_Patch
         {
-            static void Prefix(int id, ref ActorInfo actorInfo)
+            static void Prefix(string path)
             {
-                if (id <= 1000)
-                    actorInfo.skills = new int[] { 1141, 1142, 1143, 1144 };
+                Dbgl($"creating: {path}");
             }
         }
 
@@ -152,20 +155,39 @@ namespace Cheats
             }
         }
 
-        [HarmonyPatch(typeof(ScenarioModule), "PostLoad")]
+        //[HarmonyPatch(typeof(Player), "TriggerAction")]
         static class ScenarioModule_PostLoad_Patch
         {
-            static void Postfix()
+            static void Postfix(ActionType type, ActionTriggerMode mode, ref bool __result, Player __instance, Intend ___intend)
             {
-                OnLoadGame();
+                if (type == ActionType.ActionAttack && Singleton<GameFlag>.Instance.Gaming && __instance.IsActionRunning(ACType.Jump) && ___intend.DoAction(IntendBtn.Left))
+                {
+                    Dbgl(type + " can " + mode);
+                    __result = true;
+                }
             }
         }
-        //[HarmonyPatch(typeof(HomeBedGetupUI), "Update")]
+        //[HarmonyPatch(typeof(Intend.TargetItem), "Get")]
         static class HomeBedGetupUI_Patch
         {
-            static void Prefix(HomeBedGetupUI __instance)
+            static void Postfix(PlayerAction[] ___actions)
             {
-                __instance.GetUp();
+            }
+        }
+
+        [HarmonyPatch(typeof(Intend.TargetItem), "DoAction")]
+        static class a2_Patch
+        {
+            static void Postfix(ref bool __result, IntendBtn actionType, PlayerAction[] ___actions)
+            {
+                Dbgl("intend action type: " + actionType + " " + __result);
+                if(___actions[(int)actionType] == null)
+                    Dbgl("action for type is null");
+
+                foreach (PlayerAction a in ___actions)
+                {
+                    Dbgl("action " + a.ToJson().ToString());
+                }
 
             }
         }

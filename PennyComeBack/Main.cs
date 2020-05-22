@@ -11,8 +11,11 @@ using Pathea.NpcRepositoryNs;
 using Pathea.ScenarioNs;
 using PatheaScriptExt;
 using System;
+using System.Collections;
+using System.IO;
 using System.Reflection;
 using UnityEngine;
+using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
 using UnityModManagerNet;
 
@@ -24,6 +27,10 @@ namespace PennyComeBack
         public static Settings settings { get; private set; }
         public static readonly int PennyID = 4000141;
         public static readonly int EmilyID = 4000003;
+        private static bool isDebug = false;
+        private static AudioClip songAudio;
+        private static string audioPath = $"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\\assets\\";
+
         // Send a response to the mod manager about the launch status, success or not.
         private static bool Load(UnityModManager.ModEntry modEntry)
         {
@@ -38,6 +45,8 @@ namespace PennyComeBack
 
             MessageManager.Instance.Subscribe("WakeUpScreenEnd", new Action<object[]>(OnWakeUp));
             SceneManager.activeSceneChanged += Main.ActiveSceneChanged;
+
+            Singleton<TaskRunner>.Self.StartCoroutine(PreloadClipCoroutine());
             return true;
         }
 
@@ -49,12 +58,33 @@ namespace PennyComeBack
         private static void OnGUI(UnityModManager.ModEntry modEntry)
         {
             settings.ReplaceMusic = GUILayout.Toggle(settings.ReplaceMusic, "Replace outdoor background music with Penny's song", new GUILayoutOption[0]);
+            GUILayout.Space(20f);
             GUILayout.Label(string.Format("Music Volume %: <b>{00:F0}</b>", settings.MusicVolume*100), new GUILayoutOption[0]);
             settings.MusicVolume = GUILayout.HorizontalSlider(Main.settings.MusicVolume, 0f, 3f, new GUILayoutOption[0]);
+            GUILayout.Space(20f);
             GUILayout.Label(string.Format("Music positional %: <b>{00:F0}</b>", settings.SpatialBlend*100), new GUILayoutOption[0]);
             settings.SpatialBlend = GUILayout.HorizontalSlider(Main.settings.SpatialBlend, 0f, 1f, new GUILayoutOption[0]);
+            GUILayout.Space(20f);
             GUILayout.Label("Music falloff distance: <b>"+ settings.MusicDistance+"</b>", new GUILayoutOption[0]);
             settings.MusicDistance = (int)GUILayout.HorizontalSlider((float)Main.settings.MusicDistance, 1f, 10000f, new GUILayoutOption[0]);
+            GUILayout.Space(20f);
+            GUILayout.Label("Song language to use:", new GUILayoutOption[0]);
+            bool eng = GUILayout.Toggle(settings.UseEnglish, "English", new GUILayoutOption[0]);
+            if(eng != settings.UseEnglish)
+            {
+                settings.UseEnglish = eng;
+                settings.UseChinese = !eng;
+                Singleton<TaskRunner>.Self.StartCoroutine(PreloadClipCoroutine());
+            }
+            bool cn = GUILayout.Toggle(settings.ReplaceMusic, "Chinese", new GUILayoutOption[0]);
+            if (cn != settings.UseChinese)
+            {
+                settings.UseChinese = cn;
+                settings.UseEnglish = !cn;
+                Singleton<TaskRunner>.Self.StartCoroutine(PreloadClipCoroutine());
+            }
+
+
         }
         // Called when the mod is turned to on/off.
         static bool OnToggle(UnityModManager.ModEntry modEntry, bool value /* active or inactive */)
@@ -129,7 +159,7 @@ namespace PennyComeBack
                 audio.spatialBlend = settings.SpatialBlend;
                 audio.rolloffMode = AudioRolloffMode.Logarithmic;
 
-                AudioClip audioClip = Singleton<ResMgr>.Instance.LoadSync<AudioClip>("Audio/Music/Wanderer\u2019sDream", false, false);
+                AudioClip audioClip = songAudio;
                 if (audioClip == null)
                     Dbgl("audio clip is null");
                 else
@@ -153,12 +183,53 @@ namespace PennyComeBack
                 return false;
             return true;
         }
-        private static bool isDebug = false;
 
         public static void Dbgl(string str = "", bool pref = true)
         {
             if (isDebug)
                 Debug.Log((pref ? "PennyComeBack " : "") + str);
+        }
+
+        public static IEnumerator PreloadClipCoroutine()
+        {
+            string filename = Path.Combine(audioPath, (settings.UseEnglish ? "eng" : "cn") + ".ogg");
+
+            filename = "file:///" + filename.Replace("\\", "/");
+
+            //Dbgl($"filename: {filename}");
+
+            using (UnityWebRequest www = UnityWebRequestMultimedia.GetAudioClip(filename, AudioType.OGGVORBIS))
+            {
+
+                www.SendWebRequest();
+                yield return null;
+                //Dbgl($"checking downloaded {filename}");
+                if (www != null)
+                {
+                    //Dbgl("www not null. errors: " + www.error);
+                    DownloadHandlerAudioClip dac = ((DownloadHandlerAudioClip)www.downloadHandler);
+                    if (dac != null)
+                    {
+                        AudioClip ac = dac.audioClip;
+                        if (ac != null)
+                        {
+                            songAudio = ac;
+                        }
+                        else
+                        {
+                            Dbgl("audio clip is null. data: " + dac.text);
+                        }
+                    }
+                    else
+                    {
+                        Dbgl("DownloadHandler is null. bytes downloaded: " + www.downloadedBytes);
+                    }
+                }
+                else
+                {
+                    Dbgl("www is null " + www.url);
+                }
+            }
         }
     }
 }

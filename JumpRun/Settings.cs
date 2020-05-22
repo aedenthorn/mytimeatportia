@@ -5,6 +5,7 @@ namespace JumpRun
     public class Settings : UnityModManager.ModSettings
     {
         public bool multiJump { get; set; } = false;
+        public bool jumpAttack { get; set; } = true;
         public bool replaceJetpack { get; set; } = false;
 
         public float MovementSpeed { get; set; } = 1.5f;

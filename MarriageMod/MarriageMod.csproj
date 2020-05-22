@@ -144,6 +144,6 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>copy "C:\Users\poiqwe\source\repos\PortiaMods\MarriageMod\bin\Debug\MarriageMod.dll" "G:\ga\MTAP\Mods\MarriageMod\"</PostBuildEvent>
+    <PostBuildEvent>copy "C:\Users\poiqwe\source\repos\PortiaMods\MarriageMod\bin\Debug\MarriageMod.dll" "H:\tmp\ga\MTAP\Mods\MarriageMod\"</PostBuildEvent>
   </PropertyGroup>
 </Project>

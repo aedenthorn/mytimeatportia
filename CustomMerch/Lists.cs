@@ -17,16 +17,16 @@ using UnityEngine.SceneManagement;
 using UnityModManagerNet;
 using static Harmony12.AccessTools;
 
-namespace WeaponMod
+namespace CustomMerch
 {
     public partial class Main
     {
 
-        private static int productIds = 4200;
+        private static int productIds = 5200;
 
-        private static List<WeaponItem> weaponItems = new List<WeaponItem>();
-        
-        private static List<Weapon> weapons = new List<Weapon>();
+        private static List<NewItem> newItems = new List<NewItem>();
+
+        private static List<StoreItem> storeItems = new List<StoreItem>();
 
         private static Dictionary<int, string> storeNames = new Dictionary<int, string>()
         {

@@ -52,9 +52,14 @@ namespace JumpRun
         {
             GUILayout.Label(string.Format("Jump height multiplier: <b>{0:F1}</b>", settings.JumpHeight), new GUILayoutOption[0]);
             settings.JumpHeight = GUILayout.HorizontalSlider(settings.JumpHeight*10f, 10f, 50f, new GUILayoutOption[0]) / 10f;
+            GUILayout.Space(10f);
             GUILayout.Label(string.Format("Movement speed multiplier: <b>{0:F1}</b>", settings.MovementSpeed), new GUILayoutOption[0]);
             settings.MovementSpeed = GUILayout.HorizontalSlider(settings.MovementSpeed * 10f, 10f, 50f, new GUILayoutOption[0]) / 10f;
+            GUILayout.Space(10f);
             settings.multiJump = GUILayout.Toggle(settings.multiJump, "Allow multi-jump", new GUILayoutOption[0]);
+            GUILayout.Space(10f);
+            settings.jumpAttack = GUILayout.Toggle(settings.jumpAttack, "Allow jump-attack", new GUILayoutOption[0]);
+            GUILayout.Space(10f);
             settings.replaceJetpack = GUILayout.Toggle(settings.replaceJetpack, "Disable jetpack in mines", new GUILayoutOption[0]);
         }
         [HarmonyPatch(typeof(Player), "Move")]
@@ -113,10 +118,10 @@ namespace JumpRun
         {
             static bool Prefix(ref bool __result, ref ACTAction[] ____acts, int index)
             {
-                if (!enabled || !settings.multiJump)
+                if (!enabled)
                     return true;
 
-                if (____acts[index] is ACTJump)
+                if ((settings.multiJump && ____acts[index] is ACTJump) || (settings.jumpAttack && ____acts[index] is ACTAttack))
                 {
                     Dbgl("CanDoAction Jump");
                     jumpsJumped++;
@@ -142,7 +147,7 @@ namespace JumpRun
                     Dbgl("TryAddAction Jump");
                     for (int i = ____runs.Count - 1; i >= 0; i--)
                     {
-                        if (____acts[____runs[i]] is ACTJump)
+                        if ((settings.multiJump && ____acts[____runs[i]] is ACTJump) || (settings.jumpAttack && ____acts[____runs[i]] is ACTAttack))
                         {
                             Dbgl("TryAddAction Jump removing");
                             ____acts[i].Reset();

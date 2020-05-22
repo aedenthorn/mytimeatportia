@@ -75,6 +75,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DialogueEdit", "DialogueEdi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WeaponMod", "WeaponMod\WeaponMod.csproj", "{94F182D6-43D8-4599-A9B4-7A16EAADFDAF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomMerch", "CustomMerch\CustomMerch.csproj", "{02B12343-69D0-4BE0-906F-56462F5F3163}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenDungeons", "OpenDungeons\OpenDungeons.csproj", "{EE0D6BD7-1FA5-46E5-AF10-E4225E88BE3A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -225,6 +229,14 @@ Global
 		{94F182D6-43D8-4599-A9B4-7A16EAADFDAF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{94F182D6-43D8-4599-A9B4-7A16EAADFDAF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{94F182D6-43D8-4599-A9B4-7A16EAADFDAF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{02B12343-69D0-4BE0-906F-56462F5F3163}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{02B12343-69D0-4BE0-906F-56462F5F3163}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{02B12343-69D0-4BE0-906F-56462F5F3163}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{02B12343-69D0-4BE0-906F-56462F5F3163}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EE0D6BD7-1FA5-46E5-AF10-E4225E88BE3A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EE0D6BD7-1FA5-46E5-AF10-E4225E88BE3A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EE0D6BD7-1FA5-46E5-AF10-E4225E88BE3A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EE0D6BD7-1FA5-46E5-AF10-E4225E88BE3A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

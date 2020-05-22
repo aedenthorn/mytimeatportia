@@ -1,13 +1,9 @@
 ﻿using Harmony12;
 using NovaEnv;
-using Pathea;
-using Pathea.ModuleNs;
 using Pathea.WeatherNs;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityModManagerNet;
@@ -134,7 +130,10 @@ namespace Environment
             float gv = (float)mig.GetValue(settings);
             float bv = (float)mib.GetValue(settings);
             float av = (float)mia.GetValue(settings);
-            float mv = (float)mim.GetValue(settings);
+            float mv = 0;
+            if (isG) {
+                 mv = (float)mim.GetValue(settings);
+            }
 
             GUILayout.BeginHorizontal();
             GUILayout.Space(indentSpace);
@@ -148,7 +147,7 @@ namespace Environment
 
             if ((bool)mie.GetValue(settings))
             {
-                if(isG && (bool)mif.GetValue(settings))
+                if (isG && (bool)mif.GetValue(settings))
                 {
                     GUILayout.BeginHorizontal();
                     GUILayout.Space(indentSpace * 2);
@@ -197,7 +196,7 @@ namespace Environment
             }
             GUILayout.Space(20f);
 
-            if(isG && (ev != (bool)mie.GetValue(settings) || rv != (float)mir.GetValue(settings) || gv != (float)mig.GetValue(settings) || bv != (float)mib.GetValue(settings) || av != (float)mia.GetValue(settings)) || mv != (float)mim.GetValue(settings))
+            if (isG && (ev != (bool)mie.GetValue(settings) || rv != (float)mir.GetValue(settings) || gv != (float)mig.GetValue(settings) || bv != (float)mib.GetValue(settings) || av != (float)mia.GetValue(settings) || mv != (float)mim.GetValue(settings)))
             {
                 UpdateGradients();
             }
