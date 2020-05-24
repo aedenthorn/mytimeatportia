@@ -1,0 +1,38 @@
+{
+    "Releases":
+    [
+		{"Id": "AlwaysOpen", "Version": "0.1.0"},
+		{"Id": "ChangeClothes", "Version": "0.2.4"},
+		{"Id": "ChineseVoice", "Version": "0.1.0"},
+		{"Id": "CustomizePlayer", "Version": "0.1.1"},
+		{"Id": "CustomMerch", "Version": "0.1.0"},
+		{"Id": "CustomTextures", "Version": "0.5.0"},
+		{"Id": "DeeDeeAnywhere", "Version": "0.1.3"},
+		{"Id": "DialogueEdit", "Version": "0.1.0"},
+		{"Id": "Environment", "Version": "0.3.1"},
+		{"Id": "FasterPiggy", "Version": "0.1.0"},
+		{"Id": "FishBowlMod", "Version": "0.3.2"},
+		{"Id": "InfiniteLevels", "Version": "0.1.0"},
+		{"Id": "InstantActions", "Version": "1.2.0"},
+		{"Id": "Interact", "Version": "0.6.1"},
+		{"Id": "Invasion", "Version": "0.6.3"},
+		{"Id": "JumpRun", "Version": "0.3.0"},
+		{"Id": "MarriageMod", "Version": "2.2.1"},
+		{"Id": "MissionDebug", "Version": "0.0.1"},
+		{"Id": "ModelSwitcher", "Version": "0.2.0"},
+		{"Id": "MoreResourceDeliveries", "Version": "0.4.0"},
+		{"Id": "MultipleCommerce", "Version": "0.7.1"},
+		{"Id": "MusicBox", "Version": "0.4.0"},
+		{"Id": "NoWiggle", "Version": "0.1.0"},
+		{"Id": "PennyComeBack", "Version": "0.1.0"},
+		{"Id": "SaveAnyTime", "Version": "0.8.5"},
+		{"Id": "StorageAnywhere", "Version": "0.5.2"},
+		{"Id": "Teleport", "Version": "0.0.1"},
+		{"Id": "TreasureRevealer", "Version": "0.2.2"},
+		{"Id": "UnlimitedCivicCorpsMissions", "Version": "0.4.0"},
+		{"Id": "VoicePitch", "Version": "0.1.3"},
+		{"Id": "WeaponMod", "Version": "0.1.1"},
+		{"Id": "YourTime", "Version": "0.2.0"}
+    ]
+}
+

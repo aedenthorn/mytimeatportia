@@ -4,10 +4,13 @@ using Pathea;
 using Pathea.WeatherNs;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.Design.Serialization;
 using System.Linq;
 using System.Reflection;
+using System.Security.Policy;
 using System.Text;
 using UnityEngine;
+using UnityEngine.PostProcessing;
 
 namespace Environment
 {
@@ -249,6 +252,89 @@ namespace Environment
                     __instance.BloomSpread = settings.BloomSpread;
                 if (settings.StarPowerEnable)
                     __instance.StarPower = settings.StarPower;
+            }
+        }
+
+        private static bool defaultPostProcessingSet = false;
+        private static VignetteModel.Settings defaultVignetteSettings;
+        private static BloomModel.Settings defaultBloomSettings;
+
+        [HarmonyPatch(typeof(PostProcessingBehaviour), "OnEnable")]
+        static class PostProcessingBehaviour_OnEnable_Patch
+        {
+
+            static void Prefix(PostProcessingBehaviour __instance)
+            {
+                if(__instance.profile != null && !defaultPostProcessingSet)
+                {
+                    Dbgl("setting default pp");
+                    defaultVignetteSettings = __instance.profile.vignette.settings;
+                    defaultBloomSettings = __instance.profile.bloom.settings;
+                    defaultPostProcessingSet = true;
+                }
+                else
+                {
+                    defaultVignetteSettings = VignetteModel.Settings.defaultSettings;
+                    defaultBloomSettings = BloomModel.Settings.defaultSettings;
+                }
+            }
+        }
+
+        [HarmonyPatch(typeof(PostProcessingBehaviour), "OnPreCull")]
+        static class PostProcessingBehaviour_OnPreCull_Patch
+        {
+            static void Postfix(PostProcessingBehaviour __instance, PostProcessingContext ___m_Context, ref VignetteComponent ___m_Vignette, ref BloomComponent ___m_Bloom)
+            {
+                PostProcessingContext postProcessingContext = ___m_Context;
+
+                if (enabled && settings.customVignette)
+                {
+
+                    VignetteModel.Settings vSettings = new VignetteModel.Settings
+                    {
+                        mode = VignetteModel.Mode.Classic,
+                        intensity = settings.vignetteIntensity,
+                        color = new Color(settings.vignetteColorRed, settings.vignetteColorGreen, settings.vignetteColorBlue, settings.vignetteColorAlpha),
+                        center = new Vector2(settings.vignetteX,settings.vignetteY),
+                        smoothness = settings.vignetteSmoothness,
+                        roundness = settings.vignetteRoundness,
+                        rounded = settings.vignetteRounded
+                    };
+                    ___m_Vignette.model.settings = vSettings;
+                }
+                else
+                {
+                    ___m_Vignette.model.settings = defaultVignetteSettings;
+                }
+
+                if (enabled && settings.customBloom)
+                {
+                    BloomModel.BloomSettings bbSettings = new BloomModel.BloomSettings
+                    {
+                        intensity = settings.bloomIntensity,
+                        threshold = settings.bloomThreshold,
+                        softKnee = settings.bloomSoftKnee,
+                        radius = settings.bloomRadius,
+                        antiFlicker = settings.bloomAntiFlicker
+                    };
+
+                    BloomModel.LensDirtSettings blSettings = new BloomModel.LensDirtSettings
+                    {
+                        texture = ___m_Bloom.model.settings.lensDirt.texture,
+                        intensity = settings.bloomLensDirtIntensity
+                    };
+                    BloomModel.Settings bSettings = new BloomModel.Settings
+                    {
+                        bloom = bbSettings,
+                        lensDirt = blSettings
+                    };
+
+                    ___m_Bloom.model.settings = bSettings;
+                }
+                else
+                {
+                    ___m_Bloom.model.settings = defaultBloomSettings;
+                }
             }
         }
     }

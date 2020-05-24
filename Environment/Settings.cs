@@ -480,7 +480,29 @@ namespace Environment
 		public bool colorsShow = false;
 		public bool gradientsShow = false;
 		public bool floatsShow = false;
+		public bool processingShow = false;
+		
+		public bool customVignette = false;
+		public bool customBloom = false;
 
+		public float vignetteColorRed = 0f;
+		public float vignetteColorGreen = 0f;
+		public float vignetteColorBlue = 0f;
+		public float vignetteColorAlpha = 0f;
+		
+		public float vignetteIntensity = 0f;
+		public float vignetteX = 0.5f;
+		public float vignetteY = 0.5f;
+		public float vignetteSmoothness = 1f;
+		public float vignetteRoundness = 0f;
+		public bool vignetteRounded = false;
+
+		internal float bloomIntensity = 0.5f;
+		internal float bloomThreshold = 1.1f;
+		internal float bloomSoftKnee = 0.5f;
+		internal float bloomRadius = 4f;
+		internal bool bloomAntiFlicker = false;
+		internal float bloomLensDirtIntensity = 3f;
 
 		public string ToggleKey = "page up";
 
