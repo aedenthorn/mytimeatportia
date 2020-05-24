@@ -71,6 +71,10 @@ namespace DeeDeeAnywhere
 
             public static void Postfix(WholeMapViewer __instance, GameObject ___layerParent)
             {
+                if (!enabled)
+                {
+                    return;
+                }
                 input = __instance.GetComponent<MapInput>();
             }
 
@@ -81,6 +85,10 @@ namespace DeeDeeAnywhere
         {
             public static void Prefix(MapIconInteractTransfer __instance)
             {
+                if (!enabled)
+                {
+                    return;
+                }
                 IMap imap = AccessTools.FieldRefAccess<MapIconInteract, IMap>(__instance, "curImap");
                 //Dbgl($"{} {imap.GetPos()} {imap.GetHoverInfo()}");
             }
@@ -91,6 +99,10 @@ namespace DeeDeeAnywhere
         {
             public static void Postfix(WholeMapViewer __instance)
             {
+                if (!enabled)
+                {
+                    return;
+                }
                 List<MapIconData> listIconPrefabs = AccessTools.FieldRefAccess<MapViewer, List<MapIconData>>(__instance, "listIconPrefabs");
                 var i = 0;
                 foreach (MapIconData mid in listIconPrefabs)
@@ -108,9 +120,23 @@ namespace DeeDeeAnywhere
         [HarmonyPatch(typeof(WholeMapViewer), "OnDisable")]
         public static class WholeMapViewer_OnDisable_Patch
         {
-            public static void Postfix()
+            public static void Postfix(List<MapIconData> ___listIconPrefabs)
             {
+                if (!enabled)
+                {
+                    return;
+                }
                 MessageManager.Instance.Unsubscribe("UIOtherMapTransfer", new Action<object[]>(JoyStickConfirm));
+
+                for (int i = 0; i < ___listIconPrefabs.Count; i++)
+                {
+                    MapIconData iconData = ___listIconPrefabs[i];
+                    if (iconData.CurIcon is PresetIcon && (iconData.CurIcon as PresetIcon).IsIcon(MapIcon.TRANSFERPOINT))
+                    {
+                        UnityEngine.Object.Destroy(iconData.iconObject.GetComponent<MapIconInteractTransfer>());
+                        UnityEngine.Object.Destroy(iconData.iconObject.GetComponent<Selectable>());
+                    }
+                }
             }
         }
         private static GameObject transLayer;
@@ -120,6 +146,10 @@ namespace DeeDeeAnywhere
 		{
             public static bool Prefix(WholeMapViewer __instance, MapIconData iconData, MapIconInfo icon, float ___curLayerMin, float ___curLayerMax) 
             {
+                if (!enabled)
+                {
+                    return true;
+                }
                 Vector3 fixedIdPos = (Vector3)typeof(MapViewer).GetMethod("GetFixedIdPos", BindingFlags.NonPublic | BindingFlags.Instance).Invoke(__instance, new object[] { iconData });
                 if (fixedIdPos.y <= ___curLayerMin || fixedIdPos.y > ___curLayerMax)
                 {
@@ -141,24 +171,15 @@ namespace DeeDeeAnywhere
             }
         }
 
-        [HarmonyPatch(typeof(WholeMapViewer), "DisableProcess")]
-        public static class WholeMapViewer_DisableProcess_Patch
-        {
-            public static void Prefix(MapIconData iconData)
-            {
-                if (iconData.CurIcon is PresetIcon && (iconData.CurIcon as PresetIcon).IsIcon(MapIcon.TRANSFERPOINT))
-                {
-                    UnityEngine.Object.Destroy(iconData.iconObject.GetComponent<MapIconInteractTransfer>());
-                    UnityEngine.Object.Destroy(iconData.iconObject.GetComponent<Selectable>());
-                }
-            }
-        }
-
         //[HarmonyPatch(typeof(WholeMapViewer), "SetMarkIcon")]
         public static class WholeMapViewer_SetMarkIcon_Patch
         {
             public static bool Prefix()
             {
+                if (!enabled)
+                {
+                    return true;
+                }
                 return false;
             }
         }
@@ -168,6 +189,10 @@ namespace DeeDeeAnywhere
         {
             public static bool Prefix(WholeMapViewer __instance, ref MapIconData iconData, ref MapIconInfo icon)
             {
+                if (!enabled)
+                {
+                    return true;
+                }
                 if (iconData.CurIcon is PresetIcon && (iconData.CurIcon as PresetIcon).IsIcon(MapIcon.TRANSFERPOINT))
                 {
                     iconData.iconObject.GetComponent<Image>().raycastTarget = false;
@@ -195,6 +220,10 @@ namespace DeeDeeAnywhere
         {
             public static bool Prefix(WholeMapViewer __instance, Image image, MapHoverDetail details, bool isDrag, ref Vector2 nearestAim, List<IMap> ___imapShowInfo, List<MapIconData> ___listIconPrefabs)
             {
+                if (!enabled)
+                {
+                    return true;
+                }
                 nearestAim = Vector2.zero;
                 float num = 100f;
                 bool flag = false;
@@ -258,6 +287,10 @@ namespace DeeDeeAnywhere
         {
             public static bool Prefix()
             {
+                if (!enabled)
+                {
+                    return true;
+                }
                 if (Module<ScenarioModule>.Self.CurrentScenarioName == "Main" && Module<PlayerActionModule>.Self.WasAcionPressed(ActionType.ActionMap))
                 {
                     MessageManager.Instance.Dispatch("TransportMap", new object[] { }, DispatchType.IMME, 2f);

@@ -144,12 +144,10 @@ namespace JumpRun
                 if (index == (int)ACType.Jump)
                 {
 
-                    Dbgl("TryAddAction Jump");
                     for (int i = ____runs.Count - 1; i >= 0; i--)
                     {
-                        if ((settings.multiJump && ____acts[____runs[i]] is ACTJump) || (settings.jumpAttack && ____acts[____runs[i]] is ACTAttack))
+                        if ((settings.multiJump && ____acts[____runs[i]] is ACTJump) || (settings.jumpAttack && (____acts[____runs[i]] is ACTAttack)))
                         {
-                            Dbgl("TryAddAction Jump removing");
                             ____acts[i].Reset();
                             ____runs.Remove(i);
                             __instance.StopAll(true);
