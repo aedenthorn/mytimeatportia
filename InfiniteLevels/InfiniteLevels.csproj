@@ -37,56 +37,56 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="0Harmony12">
-      <HintPath>G:\ga\MTAP\Portia_Data\Managed\UnityModManager\0Harmony12.dll</HintPath>
+      <HintPath>..\external\UnityModManager\0Harmony12.dll</HintPath>
     </Reference>
     <Reference Include="Assembly-CSharp">
-      <HintPath>G:\ga\MTAP\Portia_Data\Managed\Assembly-CSharp.dll</HintPath>
+      <HintPath>..\external\Assembly-CSharp.dll</HintPath>
     </Reference>
     <Reference Include="Assembly-CSharp-firstpass">
-      <HintPath>G:\ga\MTAP\Portia_Data\Managed\Assembly-CSharp-firstpass.dll</HintPath>
+      <HintPath>..\external\Assembly-CSharp-firstpass.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine">
-      <HintPath>G:\ga\MTAP\Portia_Data\Managed\UnityEngine.dll</HintPath>
+      <HintPath>..\external\UnityEngine.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.AnimationModule">
-      <HintPath>G:\ga\MTAP\Portia_Data\Managed\UnityEngine.AnimationModule.dll</HintPath>
+      <HintPath>..\external\UnityEngine.AnimationModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.AudioModule">
-      <HintPath>G:\ga\MTAP\Portia_Data\Managed\UnityEngine.AudioModule.dll</HintPath>
+      <HintPath>..\external\UnityEngine.AudioModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.CoreModule">
-      <HintPath>G:\ga\MTAP\Portia_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
+      <HintPath>..\external\UnityEngine.CoreModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.IMGUIModule">
-      <HintPath>G:\ga\MTAP\Portia_Data\Managed\UnityEngine.IMGUIModule.dll</HintPath>
+      <HintPath>..\external\UnityEngine.IMGUIModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.ParticleSystemModule">
-      <HintPath>G:\ga\MTAP\Portia_Data\Managed\UnityEngine.ParticleSystemModule.dll</HintPath>
+      <HintPath>..\external\UnityEngine.ParticleSystemModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.TextRenderingModule">
-      <HintPath>G:\ga\MTAP\Portia_Data\Managed\UnityEngine.TextRenderingModule.dll</HintPath>
+      <HintPath>..\external\UnityEngine.TextRenderingModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.UI">
-      <HintPath>G:\ga\MTAP\Portia_Data\Managed\UnityEngine.UI.dll</HintPath>
+      <HintPath>..\external\UnityEngine.UI.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.UIModule">
-      <HintPath>G:\ga\MTAP\Portia_Data\Managed\UnityEngine.UIModule.dll</HintPath>
+      <HintPath>..\external\UnityEngine.UIModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.UnityWebRequestAudioModule">
-      <HintPath>G:\ga\MTAP\Portia_Data\Managed\UnityEngine.UnityWebRequestAudioModule.dll</HintPath>
+      <HintPath>..\external\UnityEngine.UnityWebRequestAudioModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.UnityWebRequestModule">
-      <HintPath>G:\ga\MTAP\Portia_Data\Managed\UnityEngine.UnityWebRequestModule.dll</HintPath>
+      <HintPath>..\external\UnityEngine.UnityWebRequestModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.UnityWebRequestWWWModule">
-      <HintPath>G:\ga\MTAP\Portia_Data\Managed\UnityEngine.UnityWebRequestWWWModule.dll</HintPath>
+      <HintPath>..\external\UnityEngine.UnityWebRequestWWWModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityModManager">
-      <HintPath>G:\ga\MTAP\Portia_Data\Managed\UnityModManager\UnityModManager.dll</HintPath>
+      <HintPath>..\external\UnityModManager\UnityModManager.dll</HintPath>
     </Reference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>copy "C:\Users\poiqwe\source\repos\PortiaMods\InfiniteLevels\bin\Debug\InfiniteLevels.dll" "G:\ga\MTAP\Mods\InfiniteLevels\"</PostBuildEvent>
+    <PostBuildEvent>call $(SolutionDir)copyDll.bat InfiniteLevels</PostBuildEvent>
   </PropertyGroup>
 </Project>

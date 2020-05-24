@@ -32,13 +32,13 @@
   <ItemGroup>
     <Reference Include="0Harmony12, Version=1.2.0.1, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>G:\ga\My Time at Portia\Portia_Data\Managed\0Harmony12.dll</HintPath>
+      <HintPath>..\external\0Harmony12.dll</HintPath>
     </Reference>
     <Reference Include="Assembly-CSharp">
-      <HintPath>G:\ga\My Time at Portia\Portia_Data\Managed\Assembly-CSharp.dll</HintPath>
+      <HintPath>..\external\Assembly-CSharp.dll</HintPath>
     </Reference>
     <Reference Include="Assembly-CSharp-firstpass">
-      <HintPath>G:\ga\My Time at Portia\Portia_Data\Managed\Assembly-CSharp-firstpass.dll</HintPath>
+      <HintPath>..\external\Assembly-CSharp-firstpass.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -47,28 +47,28 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
     <Reference Include="UnityEngine">
-      <HintPath>G:\ga\My Time at Portia\Portia_Data\Managed\UnityEngine.dll</HintPath>
+      <HintPath>..\external\UnityEngine.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.AnimationModule">
-      <HintPath>G:\ga\My Time at Portia\Portia_Data\Managed\UnityEngine.AnimationModule.dll</HintPath>
+      <HintPath>..\external\UnityEngine.AnimationModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.AudioModule">
-      <HintPath>G:\ga\My Time at Portia\Portia_Data\Managed\UnityEngine.AudioModule.dll</HintPath>
+      <HintPath>..\external\UnityEngine.AudioModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.CoreModule">
-      <HintPath>G:\ga\My Time at Portia\Portia_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
+      <HintPath>..\external\UnityEngine.CoreModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.IMGUIModule">
-      <HintPath>G:\ga\My Time at Portia\Portia_Data\Managed\UnityEngine.IMGUIModule.dll</HintPath>
+      <HintPath>..\external\UnityEngine.IMGUIModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.ParticleSystemModule">
-      <HintPath>G:\ga\My Time at Portia\Portia_Data\Managed\UnityEngine.ParticleSystemModule.dll</HintPath>
+      <HintPath>..\external\UnityEngine.ParticleSystemModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.UI">
-      <HintPath>G:\ga\My Time at Portia\Portia_Data\Managed\UnityEngine.UI.dll</HintPath>
+      <HintPath>..\external\UnityEngine.UI.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.UIModule">
-      <HintPath>G:\ga\My Time at Portia\Portia_Data\Managed\UnityEngine.UIModule.dll</HintPath>
+      <HintPath>..\external\UnityEngine.UIModule.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
