@@ -497,12 +497,12 @@ namespace Environment
 		public float vignetteRoundness = 0f;
 		public bool vignetteRounded = false;
 
-		internal float bloomIntensity = 0.5f;
-		internal float bloomThreshold = 1.1f;
-		internal float bloomSoftKnee = 0.5f;
-		internal float bloomRadius = 4f;
-		internal bool bloomAntiFlicker = false;
-		internal float bloomLensDirtIntensity = 3f;
+		public float bloomIntensity = 0.5f;
+		public float bloomThreshold = 1.1f;
+		public float bloomSoftKnee = 0.5f;
+		public float bloomRadius = 4f;
+		public bool bloomAntiFlicker = false;
+		public float bloomLensDirtIntensity = 3f;
 
 		public string ToggleKey = "page up";
 
