@@ -79,6 +79,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomMerch", "CustomMerch\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenDungeons", "OpenDungeons\OpenDungeons.csproj", "{EE0D6BD7-1FA5-46E5-AF10-E4225E88BE3A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PostProcessing", "PostProcessing\PostProcessing.csproj", "{5AD3331E-8F85-4E91-96F0-C65972137ADA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -237,6 +239,10 @@ Global
 		{EE0D6BD7-1FA5-46E5-AF10-E4225E88BE3A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EE0D6BD7-1FA5-46E5-AF10-E4225E88BE3A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EE0D6BD7-1FA5-46E5-AF10-E4225E88BE3A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5AD3331E-8F85-4E91-96F0-C65972137ADA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5AD3331E-8F85-4E91-96F0-C65972137ADA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5AD3331E-8F85-4E91-96F0-C65972137ADA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5AD3331E-8F85-4E91-96F0-C65972137ADA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
