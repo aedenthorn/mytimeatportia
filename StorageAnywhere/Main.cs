@@ -164,31 +164,47 @@ namespace StorageAnywhere
                 if (!enabled || Module<InputSolutionModule>.Self.CurSolutionType == SolutionType.ColorConfig)
                     return;
 
-                if (Input.GetKeyDown(settings.PrevPageKey) && !Input.GetKey("left shift"))
-                {
-                    ___bagPageTurning.TurnPage(false);
-                }
-                else if (Input.GetKeyDown(settings.NextPageKey) && !Input.GetKey("left shift"))
-                {
-                    ___bagPageTurning.TurnPage(true);
-                }
-
-                UIPageTurning ___storagePageTurning = null;
+                bool shift = Input.GetKey("left shift");
+                bool prevPage = Input.GetKeyDown(settings.PrevPageKey);
+                bool nextPage = Input.GetKeyDown(settings.NextPageKey);
 
                 if (__instance is StoreageUICtr)
                 {
-                    ___storagePageTurning = AccessTools.FieldRefAccess<StoreageUIBase, UIPageTurning>((__instance as StoreageUIBase), "storagePageTurning");
-
                     if (Input.GetKeyDown(settings.PrevStorageKey))
                     {
                         (__instance as StoreageUICtr).SwitchStorage(false);
+                        return;
                     }
                     else if (Input.GetKeyDown(settings.NextStorageKey))
                     {
                         (__instance as StoreageUICtr).SwitchStorage(true);
+                        return;
                     }
                 }
-                else if(__instance is StoreageUIBase)
+
+                if (!shift)
+                {
+                    if (prevPage)
+                    {
+                        ___bagPageTurning.TurnPage(false);
+                    }
+                    else if (nextPage)
+                    {
+                        ___bagPageTurning.TurnPage(true);
+                    }
+                    return;
+                }
+
+
+                if (!prevPage && !nextPage)
+                {
+                    return;
+                }
+
+
+                UIPageTurning ___storagePageTurning = null;
+
+                if (__instance is StoreageUIBase || __instance is StoreageUICtr)
                 {
                     ___storagePageTurning = AccessTools.FieldRefAccess<StoreageUIBase, UIPageTurning>((__instance as StoreageUIBase), "storagePageTurning");
                 }
@@ -204,11 +220,11 @@ namespace StorageAnywhere
 
                 if (___storagePageTurning != null)
                 {
-                    if (Input.GetKeyDown(settings.PrevPageKey) && Input.GetKey("left shift"))
+                    if (prevPage)
                     {
                         ___storagePageTurning.TurnPage(false);
                     }
-                    else if (Input.GetKeyDown(settings.NextPageKey) && Input.GetKey("left shift"))
+                    else if (nextPage)
                     {
                         ___storagePageTurning.TurnPage(true);
                     }
