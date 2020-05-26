@@ -14,6 +14,7 @@ using Pathea.MessageSystem;
 using Pathea.ModuleNs;
 using Pathea.SpawnNs;
 using Pathea.UISystemNs;
+using Pathea.UISystemNs.UIBase;
 using UnityEngine;
 using UnityModManagerNet;
 using static Harmony12.AccessTools;
@@ -58,20 +59,28 @@ namespace StorageAnywhere
 
         private static void OnGUI(UnityModManager.ModEntry modEntry)
         {
-            GUILayout.Label(string.Format("Itembar Switch Key:"), new GUILayoutOption[0]);
+            GUILayout.Label("<b>Itembar Switch Key:</b>", new GUILayoutOption[0]);
             settings.ItemBarSwitchKey = GUILayout.TextField(settings.ItemBarSwitchKey, new GUILayoutOption[0]);
             GUILayout.Space(20);
-            GUILayout.Label(string.Format("Open Storage Key:"), new GUILayoutOption[0]);
+            GUILayout.Label("<b>Open Storage Key:</b>", new GUILayoutOption[0]);
             settings.OpenStorageKey = GUILayout.TextField(settings.OpenStorageKey, new GUILayoutOption[0]);
             GUILayout.Space(20);
-            GUILayout.Label(string.Format("Open Factory Storage Key:"), new GUILayoutOption[0]);
+            GUILayout.Label("<b>Open Factory Storage Key:</b>", new GUILayoutOption[0]);
             settings.OpenFactoryKey = GUILayout.TextField(settings.OpenFactoryKey, new GUILayoutOption[0]);
             GUILayout.Space(20);
-            GUILayout.Label(string.Format("Switch to Prev Storage Key:"), new GUILayoutOption[0]);
+            GUILayout.Label("<b>Switch to Prev Storage Key:</b>", new GUILayoutOption[0]);
             settings.PrevStorageKey = GUILayout.TextField(settings.PrevStorageKey, new GUILayoutOption[0]);
             GUILayout.Space(20);
-            GUILayout.Label(string.Format("Switch to Next Storage Key:"), new GUILayoutOption[0]);
+            GUILayout.Label("<b>Switch to Next Storage Key:</b>", new GUILayoutOption[0]);
             settings.NextStorageKey = GUILayout.TextField(settings.NextStorageKey, new GUILayoutOption[0]);
+            GUILayout.Space(20);
+            GUILayout.Label("<b>Last Page Key:</b>", new GUILayoutOption[0]);
+            settings.PrevPageKey = GUILayout.TextField(settings.PrevPageKey, new GUILayoutOption[0]);
+            GUILayout.Label("Use shift to change storage page", new GUILayoutOption[0]);
+            GUILayout.Space(20);
+            GUILayout.Label("<b>Next Page Key:</b>", new GUILayoutOption[0]);
+            settings.NextPageKey = GUILayout.TextField(settings.NextPageKey, new GUILayoutOption[0]);
+            GUILayout.Label("Use shift to change storage page", new GUILayoutOption[0]);
 
         }
 
@@ -150,23 +159,61 @@ namespace StorageAnywhere
         [HarmonyPatch(typeof(PackageUIBase), "Update")]
         static class StoreageUICtr_Update_Patch
         {
-            static void Postfix(PackageUIBase __instance)
+            static void Postfix(PackageUIBase __instance, UIPageTurning ___bagPageTurning)
             {
-                if (!enabled || UIStateMgr.Instance.currentState.type != UIStateMgr.StateType.Storeage || !(__instance is StoreageUICtr))
+                if (!enabled || Module<InputSolutionModule>.Self.CurSolutionType == SolutionType.ColorConfig)
                     return;
 
-                if (Input.GetKeyDown(settings.PrevStorageKey))
+                if (Input.GetKeyDown(settings.PrevPageKey) && !Input.GetKey("left shift"))
                 {
-                    (__instance as StoreageUICtr).SwitchStorage(false);
+                    ___bagPageTurning.TurnPage(false);
                 }
-                else if (Input.GetKeyDown(settings.NextStorageKey))
+                else if (Input.GetKeyDown(settings.NextPageKey) && !Input.GetKey("left shift"))
                 {
-                    (__instance as StoreageUICtr).SwitchStorage(true);
+                    ___bagPageTurning.TurnPage(true);
                 }
 
+                UIPageTurning ___storagePageTurning = null;
+
+                if (__instance is StoreageUICtr)
+                {
+                    ___storagePageTurning = AccessTools.FieldRefAccess<StoreageUIBase, UIPageTurning>((__instance as StoreageUIBase), "storagePageTurning");
+
+                    if (Input.GetKeyDown(settings.PrevStorageKey))
+                    {
+                        (__instance as StoreageUICtr).SwitchStorage(false);
+                    }
+                    else if (Input.GetKeyDown(settings.NextStorageKey))
+                    {
+                        (__instance as StoreageUICtr).SwitchStorage(true);
+                    }
+                }
+                else if(__instance is StoreageUIBase)
+                {
+                    ___storagePageTurning = AccessTools.FieldRefAccess<StoreageUIBase, UIPageTurning>((__instance as StoreageUIBase), "storagePageTurning");
+                }
+                else if(__instance is PackageExchangeAutoSortUICtr || __instance is PackageExchangeUICtr)
+                {
+                    ___storagePageTurning = AccessTools.FieldRefAccess<PackageExchangeUICtr, UIPageTurning>((__instance as PackageExchangeUICtr), "storagePageTurning");
+
+                }
+                else if(__instance is Store_Npc_UI)
+                {
+                    ___storagePageTurning = AccessTools.FieldRefAccess<Store_Npc_UI, UIPageTurning>((__instance as Store_Npc_UI), "storePageTurning");
+                }
+
+                if (___storagePageTurning != null)
+                {
+                    if (Input.GetKeyDown(settings.PrevPageKey) && Input.GetKey("left shift"))
+                    {
+                        ___storagePageTurning.TurnPage(false);
+                    }
+                    else if (Input.GetKeyDown(settings.NextPageKey) && Input.GetKey("left shift"))
+                    {
+                        ___storagePageTurning.TurnPage(true);
+                    }
+                }
             }
         }
-
-
     }
 }

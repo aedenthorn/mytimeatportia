@@ -14,7 +14,7 @@ namespace Environment
     {
         private static Settings settings;
         private static bool enabled;
-        private static bool isDebug = true;
+        private static bool isDebug = false;
         private static float labelWidth = 80f;
         private static float indentSpace = 30f;
 

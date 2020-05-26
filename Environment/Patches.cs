@@ -267,7 +267,6 @@ namespace Environment
             {
                 if(__instance.profile != null && !defaultPostProcessingSet)
                 {
-                    Dbgl("setting default pp");
                     defaultVignetteSettings = __instance.profile.vignette.settings;
                     defaultBloomSettings = __instance.profile.bloom.settings;
                     defaultPostProcessingSet = true;
