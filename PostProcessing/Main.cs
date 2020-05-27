@@ -1,4 +1,5 @@
 ﻿using Harmony12;
+using Hont.ExMethod.Collection;
 using NovaEnv;
 using Pathea.WeatherNs;
 using System;
@@ -28,6 +29,21 @@ namespace PostProcessing
             "Medium",
             "Large",
             "Very Large"
+        };
+
+        private static string[] fxaaPresets = new string[] {
+            "Extreme Performance",
+			"Performance",
+			"Default",
+			"Quality",
+			"Extreme Quality"
+        };
+
+        private static Dictionary<string,int> sampleCounts = new Dictionary<string, int> {
+            { "Lowest",3 },
+            { "Low",6 },
+            { "Medium",10 },
+            { "High",16 },
         };
 
         public static void Dbgl(string str = "", bool pref = true)
@@ -426,6 +442,106 @@ namespace PostProcessing
 
                     GUILayout.Label(new GUIContent(string.Format("Contrast <b>{0:F2}</b> ", settings.colorGradingContrast), "Expands or shrinks the overall range of tonal values."), new GUILayoutOption[0]);
                     settings.colorGradingContrast = GUILayout.HorizontalSlider((float)settings.colorGradingContrast * 100f, 0f, 100f) / 100f;
+
+                    GUILayout.Space(10f);
+
+
+                    GUILayout.EndVertical();
+                    GUILayout.EndHorizontal();
+
+                }
+
+                GUILayout.Space(10f);
+
+
+                settings.customAO = GUILayout.Toggle(settings.customAO, "<b>Use Custom Ambient Occlusion</b>", new GUILayoutOption[0]);
+                if (settings.customAO)
+                {
+                    GUILayout.Space(10f);
+                    GUILayout.BeginHorizontal();
+                    GUILayout.Space(indentSpace);
+                    GUILayout.BeginVertical();
+
+                    GUILayout.Label(new GUIContent(string.Format("Intensity <b>{0:F2}</b> ", settings.AOIntensity), "Degree of darkness produced by the effect."), new GUILayoutOption[0]);
+                    settings.AOIntensity = GUILayout.HorizontalSlider((float)settings.AOIntensity * 100f, 0f, 400f) / 100f;
+
+                    GUILayout.Space(10f);
+
+
+                    GUILayout.Label(new GUIContent(string.Format("Radius <b>{0:F2}</b> ", settings.AORadius), "Radius of sample points, which affects extent of darkened areas."), new GUILayoutOption[0]);
+                    settings.AORadius = GUILayout.HorizontalSlider((float)settings.AORadius * 10000f, 1f, 10000) / 10000f;
+
+                    GUILayout.Space(10f);
+
+
+                    GUILayout.Label(new GUIContent(string.Format("Sample Count <b>{0:F2}</b> ", sampleCounts.Keys.ToArray()[settings.AOSampleCount]), "Number of sample points, which affects quality and performance."), new GUILayoutOption[0]);
+                    settings.AOSampleCount = (int)GUILayout.HorizontalSlider((float)settings.AOSampleCount, 0f, 3f);
+
+                    GUILayout.Space(10f);
+
+
+                    settings.AODownsampling = GUILayout.Toggle(settings.AODownsampling, new GUIContent("Downsample", "Halves the resolution of the effect to increase performance at the cost of visual quality."), new GUILayoutOption[0]);
+                    GUILayout.Space(10f);
+
+                    settings.AOForceForwardCompatibility = GUILayout.Toggle(settings.AOForceForwardCompatibility, new GUIContent("Force Forward Compatibility", "Forces compatibility with Forward rendered objects when working with the Deferred rendering path."), new GUILayoutOption[0]);
+                    GUILayout.Space(10f);
+
+                    settings.AOAmbientOnly = GUILayout.Toggle(settings.AOAmbientOnly, new GUIContent("Ambient Only", "Enables the ambient-only mode in that the effect only affects ambient lighting. This mode is only available with the Deferred rendering path and HDR rendering."), new GUILayoutOption[0]);
+                    GUILayout.Space(10f);
+
+                    settings.AOHighPrecision = GUILayout.Toggle(settings.AOHighPrecision, new GUIContent("High Precision", "Toggles the use of a higher precision depth texture with the forward rendering path (may impact performances). Has no effect with the deferred rendering path."), new GUILayoutOption[0]);
+                    GUILayout.Space(10f);
+
+                    GUILayout.EndVertical();
+                    GUILayout.EndHorizontal();
+
+                }
+
+                GUILayout.Space(10f);
+
+
+                settings.customAA = GUILayout.Toggle(settings.customAA, "<b>Use Custom Anti-Aliasing</b>", new GUILayoutOption[0]);
+                if (settings.customAA)
+                {
+                    GUILayout.Space(10f);
+                    GUILayout.BeginHorizontal();
+                    GUILayout.Space(indentSpace);
+                    GUILayout.BeginVertical();
+
+                    settings.AAMethodTaa = !GUILayout.Toggle(!settings.AAMethodTaa, "<b>Use Fxaa Anti-Aliasing</b>", new GUILayoutOption[0]);
+                    settings.AAMethodTaa = GUILayout.Toggle(settings.AAMethodTaa, "<b>Use Taa Anti-Aliasing</b>", new GUILayoutOption[0]);
+
+                    if (settings.AAMethodTaa)
+                    {
+                        GUILayout.Label(new GUIContent(string.Format("Jitter Spread <b>{0:F2}</b> ", settings.AAJitterSpread), "The diameter (in texels) inside which jitter samples are spread. Smaller values result in crisper but more aliased output, while larger values result in more stable but blurrier output."), new GUILayoutOption[0]);
+                        settings.AAJitterSpread = GUILayout.HorizontalSlider((float)settings.AAJitterSpread*100f, 10f, 100f)/100f;
+
+                        GUILayout.Space(10f);
+
+
+                        GUILayout.Label(new GUIContent(string.Format("Sharpen <b>{0:F2}</b> ", settings.AASharpen), "Controls the amount of sharpening applied to the color buffer."), new GUILayoutOption[0]);
+                        settings.AASharpen = GUILayout.HorizontalSlider((float)settings.AASharpen * 100f, 0, 300f)/100f;
+
+                        GUILayout.Space(10f);
+
+
+                        GUILayout.Label(new GUIContent(string.Format("Stationary Blending <b>{0:F2}</b> ", settings.AAStationaryBlending), "The blend coefficient for a stationary fragment. Controls the percentage of history sample blended into the final color."), new GUILayoutOption[0]);
+                        settings.AAStationaryBlending = GUILayout.HorizontalSlider((float)settings.AAStationaryBlending * 100f, 0f, 99f)/100f;
+
+                        GUILayout.Space(10f);
+
+
+                        GUILayout.Label(new GUIContent(string.Format("Motion Blending <b>{0:F2}</b> ", settings.AAMotionBlending), "The blend coefficient for a fragment with significant motion. Controls the percentage of history sample blended into the final color."), new GUILayoutOption[0]);
+                        settings.AAMotionBlending = GUILayout.HorizontalSlider((float)settings.AAMotionBlending * 100f, 0f, 99f)/100f;
+
+                    }
+                    else
+                    {
+                        GUILayout.Label(new GUIContent(string.Format("Fxaa Preset <b>{0}</b> ", fxaaPresets[settings.AAFxaaPreset]), ""), new GUILayoutOption[0]);
+                        settings.AAFxaaPreset = (int)GUILayout.HorizontalSlider((float)settings.AAFxaaPreset, 0f, 4f);
+
+
+                    }
 
                     GUILayout.Space(10f);
 

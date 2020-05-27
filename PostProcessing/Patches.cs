@@ -25,6 +25,8 @@ namespace PostProcessing
         private static MotionBlurModel.Settings defaultMotionBlurSettings;
         private static DepthOfFieldModel.Settings defaultDepthOfFieldSettings;
         private static ColorGradingModel.Settings defaultColorGradingSettings;
+        private static AntialiasingModel.Settings defaultAASettings;
+        private static AmbientOcclusionModel.Settings defaultAOSettings;
 
         [HarmonyPatch(typeof(PostProcessingBehaviour), "OnEnable")]
         static class PostProcessingBehaviour_OnEnable_Patch
@@ -40,6 +42,8 @@ namespace PostProcessing
                     defaultMotionBlurSettings = __instance.profile.motionBlur.settings;
                     defaultDepthOfFieldSettings = __instance.profile.depthOfField.settings;
                     defaultColorGradingSettings = __instance.profile.colorGrading.settings;
+                    defaultAASettings = __instance.profile.antialiasing.settings;
+                    defaultAOSettings = __instance.profile.ambientOcclusion.settings;
                     defaultPostProcessingSet = true;
                 }
             }
@@ -48,9 +52,8 @@ namespace PostProcessing
         [HarmonyPatch(typeof(PostProcessingBehaviour), "OnPreCull")]
         static class PostProcessingBehaviour_OnPreCull_Patch
         {
-            static void Postfix(PostProcessingBehaviour __instance, PostProcessingContext ___m_Context, ref VignetteComponent ___m_Vignette, ref BloomComponent ___m_Bloom, ref EyeAdaptationComponent ___m_EyeAdaptation, ref DepthOfFieldComponent ___m_DepthOfField, ref MotionBlurComponent ___m_MotionBlur, ref ColorGradingComponent ___m_ColorGrading)
+            static void Postfix(ref VignetteComponent ___m_Vignette, ref BloomComponent ___m_Bloom, ref EyeAdaptationComponent ___m_EyeAdaptation, ref DepthOfFieldComponent ___m_DepthOfField, ref MotionBlurComponent ___m_MotionBlur, ref ColorGradingComponent ___m_ColorGrading, ref TaaComponent ___m_Taa, ref FxaaComponent ___m_Fxaa, ref AmbientOcclusionComponent ___m_AmbientOcclusion)
             {
-                PostProcessingContext postProcessingContext = ___m_Context;
 
                 if (enabled && settings.customVignette)
                 {
@@ -153,10 +156,12 @@ namespace PostProcessing
                     };
 
                     ___m_DepthOfField.model.settings = dSettings;
+                    ___m_DepthOfField.model.enabled = true;
                 }
                 else
                 {
                     ___m_DepthOfField.model.settings = defaultDepthOfFieldSettings;
+                    ___m_DepthOfField.model.enabled = false;
                 }
 
                 if (enabled && settings.customColorGrading)
@@ -196,6 +201,69 @@ namespace PostProcessing
                 else
                 {
                     ___m_ColorGrading.model.settings = defaultColorGradingSettings;
+                }
+
+                if (enabled && settings.customAO)
+                {
+                    AmbientOcclusionModel.Settings aSettings = new AmbientOcclusionModel.Settings
+                    {
+                        intensity = settings.AOIntensity,
+                        radius = settings.AORadius,
+                        sampleCount = (AmbientOcclusionModel.SampleCount)sampleCounts.Values.ToArray()[settings.AOSampleCount],
+                        downsampling = settings.AODownsampling,
+                        forceForwardCompatibility = settings.AOForceForwardCompatibility,
+                        ambientOnly = settings.AOAmbientOnly,
+                        highPrecision = settings.AOHighPrecision
+                    };
+
+                    ___m_AmbientOcclusion.model.settings = aSettings;
+                }
+                else
+                {
+                    ___m_AmbientOcclusion.model.settings = defaultAOSettings;
+                }
+
+                if (enabled && settings.customAA)
+                {
+                    AntialiasingModel.FxaaSettings afSettings = new AntialiasingModel.FxaaSettings
+                    {
+                        preset = (AntialiasingModel.FxaaPreset) settings.AAFxaaPreset
+                    };
+
+                    AntialiasingModel.TaaSettings atSettings = new AntialiasingModel.TaaSettings
+                    {
+                        jitterSpread = settings.AAJitterSpread,
+                        sharpen = settings.AASharpen,
+                        stationaryBlending = settings.AAStationaryBlending,
+                        motionBlending = settings.AAMotionBlending
+                    };
+
+                    AntialiasingModel.Settings aSettings = new AntialiasingModel.Settings
+                    {
+                        method = settings.AAMethodTaa?AntialiasingModel.Method.Taa: AntialiasingModel.Method.Fxaa,
+                        fxaaSettings = afSettings,
+                        taaSettings = atSettings
+                    };
+
+                    ___m_Taa.model.settings = aSettings;
+                    ___m_Fxaa.model.settings = aSettings;
+                    if (settings.AAMethodTaa)
+                    {
+                        ___m_Taa.model.enabled = true;
+                        ___m_Fxaa.model.enabled = false;
+                    }
+                    else
+                    {
+                        ___m_Taa.model.enabled = false;
+                        ___m_Fxaa.model.enabled = true;
+                    }
+                }
+                else
+                {
+                    ___m_Taa.model.settings = defaultAASettings;
+                    ___m_Fxaa.model.settings = defaultAASettings;
+                    ___m_Taa.model.enabled = false;
+                    ___m_Fxaa.model.enabled = false;
                 }
             }
         }

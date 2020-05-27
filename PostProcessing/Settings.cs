@@ -10,6 +10,8 @@ namespace PostProcessing
 		public bool customMotionBlur = false;
 		public bool customColorGrading = false;
 		public bool customDepthOfField = false;
+		public bool customAA = false;
+		public bool customAO = false;
 
 		public float vignetteColorRed = 0f;
 		public float vignetteColorGreen = 0f;
@@ -66,6 +68,21 @@ namespace PostProcessing
 		public float colorGradingHueShift = 0f;
 		public float colorGradingSaturation = 1f;
 		public float colorGradingContrast = 1f;
+
+		public bool AAMethodTaa = false;
+		public int AAFxaaPreset = 2;
+		public float AAJitterSpread = 0.75f;
+		public float AASharpen = 0.3f;
+		public float AAStationaryBlending = 0.95f;
+		public float AAMotionBlending = 0.85f;
+
+		public float AOIntensity = 1f;
+		public float AORadius = 0.3f;
+		public int AOSampleCount = 2;
+		public bool AODownsampling = true;
+		public bool AOForceForwardCompatibility = false;
+		public bool AOAmbientOnly = false;
+		public bool AOHighPrecision = false;
 
 		public string ToggleKey = "page down";
 
