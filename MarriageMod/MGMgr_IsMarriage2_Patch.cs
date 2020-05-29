@@ -24,7 +24,7 @@ namespace MarriageMod
                 __result = false;
 
                 int spouseid = GetCurrentSpouse();
-                Debug.LogError("XYZ current spouse is " + spouseid);
+                Dbgl("XYZ current spouse is " + spouseid);
 
                 if (spouseid == 0)
                 {

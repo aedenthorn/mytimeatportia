@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using UnityModManagerNet;
+﻿using UnityModManagerNet;
 
 namespace CustomQuests
 {

@@ -23,7 +23,6 @@ using Pathea.BlackBoardNs;
 using Pathea.OptionNs;
 using System.IO;
 using Pathea.HomeViewerNs;
-using System.Text.RegularExpressions;
 using Pathea.MessageSystem;
 using Pathea.ScenarioNs;
 

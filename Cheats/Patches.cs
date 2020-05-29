@@ -3,6 +3,7 @@ using NovaEnv;
 using Pathea;
 using Pathea.ACT;
 using Pathea.ActorNs;
+using Pathea.AimSystemNs;
 using Pathea.AppearNs;
 using Pathea.Behavior;
 using Pathea.CameraSystemNs;
@@ -167,40 +168,15 @@ namespace Cheats
                 }
             }
         }
-        //[HarmonyPatch(typeof(Intend.TargetItem), "Get")]
+
+        [HarmonyPatch(typeof(Player), "BeginCorrect")]
         static class HomeBedGetupUI_Patch
         {
-            static void Postfix(PlayerAction[] ___actions)
+            static bool Prefix()
             {
-            }
-        }
-
-        [HarmonyPatch(typeof(Intend.TargetItem), "DoAction")]
-        static class a2_Patch
-        {
-            static void Postfix(ref bool __result, IntendBtn actionType, PlayerAction[] ___actions)
-            {
-                Dbgl("intend action type: " + actionType + " " + __result);
-                if(___actions[(int)actionType] == null)
-                    Dbgl("action for type is null");
-
-                foreach (PlayerAction a in ___actions)
-                {
-                    Dbgl("action " + a.ToJson().ToString());
-                }
-
-            }
-        }
-
-        //[HarmonyPatch(typeof(ActorInfo), "Instantiate")]
-        static class ActorInfo_Instantiate_Patch
-        {
-            static void Prefix(ref string ___model)
-            {
-                if(___model == "Actor/Npc_Alice")
-                {
-                    ___model = "Actor/Npc_Phyllis";
-                }
+                Player.Self.actor.motor.MoveByDeltaPos(Vector3.up*2f, true);
+                //typeof(ActorMotor).GetField("velocity").SetValue(Player.Self.actor.motor,Vector3.up*10f);
+                return false;
             }
         }
 

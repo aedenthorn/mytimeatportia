@@ -24,7 +24,7 @@ namespace MarriageMod
                 if (Module<MGMgr>.Self.IsPropose())
                 {
                     __result = ___mNpcID;
-                    Debug.LogError("XYZ Proposing! Current fiance is " + Module<NpcRepository>.Self.GetNpcName(___mNpcID) + " " + ___mNpcID);
+                    Dbgl("XYZ Proposing! Current fiance is " + Module<NpcRepository>.Self.GetNpcName(___mNpcID) + " " + ___mNpcID);
                 }
                 else
                 {
@@ -34,13 +34,13 @@ namespace MarriageMod
                     __result = npcId;
                     if (___mState == MGState.Marriage && npcId == 0)
                     {
-                        Debug.LogError("XYZ Single! No spouse.");
+                        Dbgl("XYZ Single! No spouse.");
                         ___mState = MGState.Single;
                     }
                     else if (___mState == MGState.Single && npcId != 0)
                     {
                         ___mState = MGState.Marriage;
-                        Debug.LogError("XYZ Married! Current spouse is " + Module<NpcRepository>.Self.GetNpcName(___mNpcID) + " " + ___mNpcID);
+                        Dbgl("XYZ Married! Current spouse is " + Module<NpcRepository>.Self.GetNpcName(___mNpcID) + " " + ___mNpcID);
                     }
                 }
                 return false;
