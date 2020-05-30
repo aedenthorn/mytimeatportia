@@ -4,6 +4,9 @@ namespace SaveAnyTime
 {
     public class Settings : UnityModManager.ModSettings
     {
+        public int saveInterval = 0;
+        public bool saveOnSceneChange = false;
+
         public string QuickSaveKey { get; set; } = "f6";
         public string QuickLoadKey { get; set; } = "f7";
 

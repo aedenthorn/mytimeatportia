@@ -10,6 +10,7 @@ namespace SaveAnyTime
         public int FishBowlConsumeHour = -1;
         public int WeatherState = -1;
         public float CurPriceIndex = 1f;
+        public string playerRot;
     }
     public class NPCMeta
     {

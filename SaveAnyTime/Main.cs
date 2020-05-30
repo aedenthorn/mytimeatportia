@@ -1,6 +1,7 @@
 ﻿using Harmony12;
 using Pathea;
 using Pathea.InputSolutionNs;
+using Pathea.MessageSystem;
 using Pathea.ModuleNs;
 using Pathea.PlayerMissionNs;
 using System;
@@ -9,6 +10,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityModManagerNet;
 
 namespace SaveAnyTime
@@ -18,6 +20,7 @@ namespace SaveAnyTime
         private static bool isDebug = true;
 
         private static List<CustomSaveFile> saveFiles = new List<CustomSaveFile>();
+        private static float lastSave = -1f;
 
         public static void Dbgl(string str = "", bool pref = true)
         {
@@ -25,7 +28,9 @@ namespace SaveAnyTime
                 Debug.Log((pref ? "SaveAnyTime " : "") + str);
         }
         public static bool enabled;
-        private static bool isLoading;
+        private static bool isLoading = false;
+        private static bool isSaving = false;
+        private static bool gameLoaded = false;
 
         public static Settings settings { get; private set; }
 
@@ -42,9 +47,35 @@ namespace SaveAnyTime
             var harmony = HarmonyInstance.Create(modEntry.Info.Id);
             harmony.PatchAll(Assembly.GetExecutingAssembly());
             DoBuildSaveList();
+            SceneManager.activeSceneChanged += ChangeScene;
+            MessageManager.Instance.Subscribe("WakeUpScreenEnd", new Action<object[]>(OnWakeUp));
             return true;
         }
 
+        private static void ChangeScene(Scene arg0, Scene arg1)
+        {
+            if(arg1.name != "Game" && settings.saveOnSceneChange)
+            {
+                if (!gameLoaded)
+                {
+                    gameLoaded = true;
+                }
+                else
+                {
+                    DoSaveFile(true);
+                }
+            }
+        }
+
+        private static void OnWakeUp(object[] obj)
+        {
+            resetLastSave();
+        }
+
+        private static void resetLastSave()
+        {
+            lastSave = Time.fixedTime;
+        }
 
         private static void OnSaveGUI(UnityModManager.ModEntry modEntry)
         {
@@ -55,8 +86,19 @@ namespace SaveAnyTime
         {
             GUILayout.Label("Quick Save Key:", new GUILayoutOption[0]);
             settings.QuickSaveKey = GUILayout.TextField(settings.QuickSaveKey, new GUILayoutOption[0]);
+            GUILayout.Space(10f);
             GUILayout.Label("Quick Load Key:", new GUILayoutOption[0]);
             settings.QuickLoadKey = GUILayout.TextField(settings.QuickLoadKey, new GUILayoutOption[0]);
+            GUILayout.Space(10f);
+            GUILayout.Label(settings.saveInterval == 0 ? "Autosave Interval: <b>off</b>" : string.Format("Autosave Interval: <b>every {0:F0} minutes</b> (0 to turn off)", settings.saveInterval), new GUILayoutOption[0]);
+            int saveInterval = (int)GUILayout.HorizontalSlider(settings.saveInterval, 0f, 120f, new GUILayoutOption[0]);
+            if(settings.saveInterval != saveInterval)
+            {
+                resetLastSave();
+                settings.saveInterval = saveInterval;
+            }
+            GUILayout.Space(10f);
+            settings.saveOnSceneChange = GUILayout.Toggle(settings.saveOnSceneChange, "Autosave when changing scenes", new GUILayoutOption[0]);
 
             if (Player.Self != null && Module<Player>.Self != null && Module<Player>.Self.actor != null)
             {
@@ -78,15 +120,12 @@ namespace SaveAnyTime
                     foreach (CustomSaveFile csf in saveFiles)
                     {
                         GUILayout.BeginHorizontal(new GUILayoutOption[0]);
-                        if (GUILayout.Button(csf.saveTitle, new GUILayoutOption[]{
-                    }))
+                        if (GUILayout.Button(csf.saveTitle, new GUILayoutOption[0]))
                         {
                             Singleton<TaskRunner>.Self.StartCoroutine(LoadGameFromArchive(csf.fileName));
                             UnityModManager.UI.Instance.ToggleWindow();
                         }
-                        if (GUILayout.Button("X", new GUILayoutOption[]{
-                        GUILayout.Width(50f)
-                    }))
+                        if (GUILayout.Button("X", new GUILayoutOption[]{GUILayout.Width(50f)}))
                         {
                             DeleteSaveGame(csf.fileName);
                         }
@@ -144,6 +183,13 @@ namespace SaveAnyTime
             {
                 if (!enabled)
                     return;
+
+                if(settings.saveInterval > 0 && lastSave > 0 && Time.fixedTime > lastSave + settings.saveInterval * 60)
+                {
+                    Dbgl("performing auto save");
+                    resetLastSave();
+                    DoSaveFile(true);
+                }
 
                 if (Input.GetKeyDown(settings.QuickSaveKey))
                 {
@@ -223,13 +269,5 @@ namespace SaveAnyTime
                 throw new ArgumentException();
         }
 
-        //[HarmonyPatch(typeof(PlayerMissionMgr), "FreshMissionState")]
-        static class ScenarioModule_PostLoad_Patch
-        {
-            static void Prefix(PlayerMissionMgr __instance)
-            {
-                Dbgl("PlayerMissionMgr FreshState" + __instance.PublishedMission.Count);
-            }
-        }
     }
 }

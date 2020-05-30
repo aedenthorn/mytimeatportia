@@ -6,6 +6,7 @@ using Pathea;
 using Pathea.ActorNs;
 using Pathea.ArchiveNs;
 using Pathea.Behavior;
+using Pathea.CameraSystemNs;
 using Pathea.DLCRewards;
 using Pathea.EG;
 using Pathea.FavorSystemNs;
@@ -51,6 +52,7 @@ namespace SaveAnyTime
                 yield break;
             }
 
+            isLoading = true;
             Dbgl("file exists " + filePath);
             Module<GameConfigModule>.Self.IgnoreCloseDoorAudio = true;
 
@@ -90,6 +92,8 @@ namespace SaveAnyTime
             if (!Singleton<Archive>.Instance.LoadArchive(filePath))
             {
                 Dbgl("Load archive failed:" + filePath);
+                Module<ScenarioModule>.Self.EndLoadEventor -= OnSceneLoaded;
+                isLoading = false;
                 yield break;
             }
 
@@ -104,6 +108,9 @@ namespace SaveAnyTime
         private static void OnSceneLoaded(ScenarioModule.Arg arg)
         {
             Module<ScenarioModule>.Self.EndLoadEventor -= OnSceneLoaded;
+            if (!isLoading)
+                return;
+
             Module<Player>.Self.GamePos = VectorFromString(lastLoadedSave.position);
 
             Dbgl("input solution: " +Module<InputSolutionModule>.Self.CurSolutionType + "");
@@ -245,6 +252,15 @@ namespace SaveAnyTime
                 SaveMeta save = (SaveMeta)reader.Deserialize(file);
                 file.Close();
 
+                Dbgl("Loading Player Meta");
+
+                if(save.playerRot != null)
+                {
+                    string[] rotStrings = save.playerRot.Replace("(", "").Replace(")", "").Replace(" ", "").Split(',');
+                    Quaternion rot = new Quaternion(float.Parse(rotStrings[0]), float.Parse(rotStrings[1]), float.Parse(rotStrings[2]), float.Parse(rotStrings[3]));
+                    Player.Self.GameRot = rot;
+                }
+
                 Dbgl("Loading NPC Meta");
 
                 foreach (NPCMeta npc in save.NPClist)
@@ -347,6 +363,7 @@ namespace SaveAnyTime
                 Dbgl("Problem with meta file: " + ex);
             }
             isLoading = false;
+            resetLastSave();
         }
 
     }

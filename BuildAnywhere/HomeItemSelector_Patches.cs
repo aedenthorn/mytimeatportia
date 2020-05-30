@@ -92,7 +92,7 @@ namespace BuildAnywhere
         {
             static void Postfix(ISelector ___focusSelector, ref HomeTarget __result)
             {
-                if (!enabled)
+                if (!enabled || __result == null)
                     return;
                 if (___focusSelector.GetType() != typeof(FarmViewer) || !outsideUnits.ContainsKey(__result.itemPutInfo.cellIndex))
                 {

@@ -3,6 +3,7 @@ using Hont;
 using Pathea;
 using Pathea.ActorNs;
 using Pathea.ArchiveNs;
+using Pathea.CameraSystemNs;
 using Pathea.HomeNs;
 using Pathea.ModuleNs;
 using Pathea.NpcRepositoryNs;
@@ -15,12 +16,13 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+using UnityEngine;
 
 namespace SaveAnyTime
 {
     public partial class Main
     {
-        private static void DoSaveFile()
+        private static void DoSaveFile(bool auto = false)
         {
             if (Player.Self == null || Module<Player>.Self == null || Module<Player>.Self.actor == null)
                 return;
@@ -39,29 +41,32 @@ namespace SaveAnyTime
                 return;
             }
 
+            isSaving = true;
+
+
             Dbgl("Building save file");
 
             SummaryPlayerIdentity curPlayerIdentity = Module<SummaryModule>.Self.GetCurPlayerIdentity();
             DateTime now = DateTime.Now;
             TimeSpan totalPlayTime = Module<SummaryModule>.Self.GetTotalPlayTime();
             GameDateTime dateTime = Module<TimeManager>.Self.DateTime;
-            Dbgl("Building base name");
+            //Dbgl("Building base name");
             string fileName = (string)Singleton<Archive>.Instance.GetType().GetMethod("GenSaveFileName", BindingFlags.NonPublic | BindingFlags.Instance).Invoke(Singleton<Archive>.Instance, new object[] { curPlayerIdentity, now, dateTime, totalPlayTime });
-            Dbgl(fileName);
+            //Dbgl(fileName);
             string name = Module<Player>.Self.ActorName;
-            Dbgl(name);
+            //Dbgl(name);
             string timeOfDay = $"{dateTime.Hour}h{dateTime.Minute}m";
-            Dbgl(timeOfDay);
+            //Dbgl(timeOfDay);
             string sceneName = Module<ScenarioModule>.Self.CurrentScenarioName;
-            Dbgl(sceneName);
+            //Dbgl(sceneName);
             string position = Module<Player>.Self.GamePos.ToString("F4").Trim(new char[] { '(', ')' });
-            fileName = $"{name}_{fileName}_{timeOfDay}_{sceneName}_{position}";
-            Dbgl(fileName);
+            fileName = $"{name}_{fileName}_{timeOfDay}_{sceneName}_{position}{(auto?"_auto":"")}";
+            //Dbgl(fileName);
             string filePath = Path.Combine(path, fileName);
-            Dbgl(filePath);
-            Singleton<Archive>.Instance.SaveArchive(filePath);
 
             // meta file
+
+            Quaternion playerRot = Player.Self.GameRot;
 
             List<NPCMeta> npcs = new List<NPCMeta>();
             foreach (NpcData data in Module<NpcRepository>.Self.NpcInstanceDatas)
@@ -108,6 +113,7 @@ namespace SaveAnyTime
 
 
             SaveMeta save = new SaveMeta();
+            save.playerRot = playerRot.ToString();
             save.NPClist = npcs;
             save.RideableList = rideables;
             save.StoreList = stores;
@@ -117,12 +123,35 @@ namespace SaveAnyTime
 
             System.Xml.Serialization.XmlSerializer writer = new System.Xml.Serialization.XmlSerializer(typeof(SaveMeta));
 
+
+            Dbgl("Saving file " + filePath);
+
+            Singleton<Archive>.Instance.SaveArchive(filePath);
+
             var path2 = Path.Combine(GetSavesPath(), $"{fileName}.xml");
-            System.IO.FileStream file = System.IO.File.Create(path2);
+            FileStream file = File.Create(path2);
             writer.Serialize(file, save);
             file.Close();
 
+            if (auto)
+            {
+                Dbgl("Getting old autosaves");
+                string createPlayerTime = (string)Singleton<Archive>.Instance.GetType().GetMethod("GenDateFilename", BindingFlags.NonPublic | BindingFlags.Instance).Invoke(Singleton<Archive>.Instance, new object[] { curPlayerIdentity.createPlayerTime });
+                foreach (CustomSaveFile csf in saveFiles)
+                {
+                    if (csf.auto && createPlayerTime == csf.creationTime)
+                    {
+                        var aPath = Path.Combine(GetSavesPath(), $"{csf.fileName}");
+                        File.Delete(aPath);
+                        aPath = Path.Combine(GetSavesPath(), $"{csf.fileName}.xml");
+                        File.Delete(aPath);
+                    }
+                }
+            }
+
             DoBuildSaveList();
+            isSaving = false;
+            resetLastSave();
         }
     }
 }
