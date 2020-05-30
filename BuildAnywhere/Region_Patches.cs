@@ -3,11 +3,13 @@ using Pathea;
 using Pathea.HomeNs;
 using Pathea.ItemSystem;
 using Pathea.ModuleNs;
+using Pathea.ScenarioNs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace BuildAnywhere
 {
@@ -112,9 +114,9 @@ namespace BuildAnywhere
         [HarmonyPatch(typeof(Region), "PutDownDirSafeCheck")]
         static class Region_PutDownDirSafeCheck_Patch
         {
-            static bool Prefix(Region __instance, ref bool __result)
+            static bool Prefix(Region __instance, ref bool __result, ItemHomeSystemUnitCmpt common)
             {
-                if (!enabled)
+                if (!enabled || Module<ScenarioModule>.Self.CurrentScenarioName != "Main" )
                     return true;
 
                 Vector3 pos = Player.Self.GamePos;
@@ -256,11 +258,18 @@ namespace BuildAnywhere
                 if (!enabled)
                     return true;
 
-                Slot slot = unitHandle as Slot;
+                Slot slot = CreateSlotFromRSlot(unitHandle);
 
-
-                if (slot == null || !outsideUnits.ContainsKey(slot.info.cellIndex))
+                if (slot == null)
+                {
+                    Dbgl("slot is null");
                     return true;
+                }
+                if (__instance.IsValidCell(putInfo.cellIndex))
+                {
+                    Dbgl("valid cell");
+                    return true;
+                }
 
                 CellIndex oldSlot = slot.info.cellIndex;
                 slot.info = putInfo;
@@ -287,13 +296,7 @@ namespace BuildAnywhere
                     outsideUnits[slot.info.cellIndex] = slot;
                 }
 
-                ConstructorInfo ci = typeof(Region).GetNestedType("Slot", BindingFlags.NonPublic | BindingFlags.Instance).GetConstructor(new Type[] { });
-                var mySlot = ci.Invoke(new object[] { });
-                mySlot.GetType().GetField("area").SetValue(mySlot, slot.area);
-                mySlot.GetType().GetField("info").SetValue(mySlot, slot.info);
-                mySlot.GetType().GetField("unit").SetValue(mySlot, slot.unit);
-                mySlot.GetType().GetField("unitObjInfo").SetValue(mySlot, slot.unitObjInfo);
-                mySlot.GetType().GetField("immobile").SetValue(mySlot, slot.immobile);
+                var mySlot = CreateRSlotFromSlot(slot);
 
                 typeof(Region).GetMethod("AddSlot", BindingFlags.NonPublic | BindingFlags.Instance).Invoke(__instance, new object[] { mySlot });
                 __result = true;

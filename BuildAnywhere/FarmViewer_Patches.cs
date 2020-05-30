@@ -78,7 +78,7 @@ namespace BuildAnywhere
 
                 var mySlot = AccessTools.FieldRefAccess<Region, List<object>>(itemLayer, "slots").Find((object o) => typeof(Region).GetNestedType("Slot", BindingFlags.NonPublic | BindingFlags.Instance).GetField("unit").GetValue(o) == slot.unit);
 
-                UnitHandle unitHandle = (UnitHandle)slot;
+                UnitHandle unitHandle = (UnitHandle)mySlot;
                 if (unitHandle != null)
                 {
                     typeof(Region).GetMethod("RemoveSlot", BindingFlags.NonPublic | BindingFlags.Instance).Invoke(itemLayer, new object[] { mySlot });

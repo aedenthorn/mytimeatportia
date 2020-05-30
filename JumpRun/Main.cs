@@ -51,10 +51,10 @@ namespace JumpRun
         private static void OnGUI(UnityModManager.ModEntry modEntry)
         {
             GUILayout.Label(string.Format("Jump height multiplier: <b>{0:F1}</b>", settings.JumpHeight), new GUILayoutOption[0]);
-            settings.JumpHeight = GUILayout.HorizontalSlider(settings.JumpHeight*10f, 10f, 50f, new GUILayoutOption[0]) / 10f;
+            settings.JumpHeight = GUILayout.HorizontalSlider(settings.JumpHeight*10f, 1f, 100f, new GUILayoutOption[0]) / 10f;
             GUILayout.Space(10f);
             GUILayout.Label(string.Format("Movement speed multiplier: <b>{0:F1}</b>", settings.MovementSpeed), new GUILayoutOption[0]);
-            settings.MovementSpeed = GUILayout.HorizontalSlider(settings.MovementSpeed * 10f, 10f, 50f, new GUILayoutOption[0]) / 10f;
+            settings.MovementSpeed = GUILayout.HorizontalSlider(settings.MovementSpeed * 1f, 10f, 100f, new GUILayoutOption[0]) / 10f;
             GUILayout.Space(10f);
             settings.multiJump = GUILayout.Toggle(settings.multiJump, "Allow multi-jump", new GUILayoutOption[0]);
             GUILayout.Space(10f);

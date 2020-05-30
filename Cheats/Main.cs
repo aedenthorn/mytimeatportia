@@ -61,6 +61,34 @@ namespace Cheats
             if (assetBundle != null)
             {
             }
+
+
+
+
+            AssetBundle[] bundles = Resources.FindObjectsOfTypeAll(typeof(AssetBundle)) as AssetBundle[];
+
+            string output = "";
+            foreach(AssetBundle bundle in bundles)
+            {
+                if(bundle.name.Contains("referenced_anim_controller"))
+                {
+                    UnityEngine.Object[] clips = bundle.LoadAllAssets();
+                    foreach(UnityEngine.Object clip in clips)
+                    {
+                        output += $"{clip.name}\r\n";
+                        if (clip.name == "Swimming")
+                        {
+                            swimClip = (AnimationClip)clip;
+                            break;
+                        }
+                    }
+                    break;
+                }
+            }
+            Dbgl(output);
+
+
+
             */
 
             //string[] names = { "Emily", "Nora", "Phyllis", "Ginger", "Sonia", };

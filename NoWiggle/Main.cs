@@ -16,7 +16,7 @@ namespace NoWiggle
         public static void Dbgl(string str = "", bool pref = true)
         {
             if (isDebug)
-                Debug.Log((pref ? "JumpRun " : "") + str);
+                Debug.Log((pref ? "NoWiggle " : "") + str);
         }
 
         private static void Load(UnityModManager.ModEntry modEntry)

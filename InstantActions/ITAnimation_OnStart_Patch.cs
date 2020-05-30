@@ -13,7 +13,7 @@ namespace InstantActions
         {
             static void Postfix(ITAnimation __instance, SharedString ___ikName, SharedString ___hugAnimName)
             {
-                Dbgl("ikName: " + ___ikName.Value+ " hugAnimName: "+ ___hugAnimName.Value);
+                //Dbgl("ikName: " + ___ikName.Value+ " hugAnimName: "+ ___hugAnimName.Value);
 
                 MessageManager.Instance.Subscribe("InteractAnimEnd", new Action<object[]>(delegate (object[] o)
                 {

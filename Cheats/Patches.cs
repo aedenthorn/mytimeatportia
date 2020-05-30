@@ -156,6 +156,7 @@ namespace Cheats
             }
         }
 
+
         //[HarmonyPatch(typeof(Player), "TriggerAction")]
         static class ScenarioModule_PostLoad_Patch
         {
@@ -169,16 +170,6 @@ namespace Cheats
             }
         }
 
-        [HarmonyPatch(typeof(Player), "BeginCorrect")]
-        static class HomeBedGetupUI_Patch
-        {
-            static bool Prefix()
-            {
-                Player.Self.actor.motor.MoveByDeltaPos(Vector3.up*2f, true);
-                //typeof(ActorMotor).GetField("velocity").SetValue(Player.Self.actor.motor,Vector3.up*10f);
-                return false;
-            }
-        }
 
         //[HarmonyPatch(typeof(ActorEquip), "ApplyCloth")]
         static class ActorEquip_ApplyCloth_Patch

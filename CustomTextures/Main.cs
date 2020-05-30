@@ -1,5 +1,6 @@
 ﻿using Harmony12;
 using Pathea.ActorNs;
+using Pathea.AppearNs;
 using Pathea.ModuleNs;
 using Pathea.NpcAppearNs;
 using System;
@@ -14,15 +15,16 @@ namespace CustomTextures
 {
     public partial class Main
     {
-            
-        private static bool isDebug = false;
+
+        private static bool isDebug = true;
         private static Dictionary<int, Texture2D> customTextures = new Dictionary<int, Texture2D>();
         private static Dictionary<int, Dictionary<int, Texture2D>> customTexturesSupp = new Dictionary<int, Dictionary<int, Texture2D>>();
+        private static Dictionary<string, Texture2D> customTexturesMisc = new Dictionary<string, Texture2D>();
 
         public static void Dbgl(string str = "", bool pref = true)
         {
             if (isDebug)
-                Debug.Log((pref ? "Custom NPCs " : "") + str);
+                Debug.Log((pref ? "Custom Textures " : "") + str);
         }
         public static bool enabled;
 
@@ -65,7 +67,7 @@ namespace CustomTextures
                 if (pattern.IsMatch(fileName))
                 {
                     int id = int.Parse(fileName.Substring(0, fileName.Length - 4));
-                    Dbgl($"got file at path: {file}");
+                    Dbgl($"got simple texture at path: {file}");
                     Texture2D tex = new Texture2D(2, 2);
                     byte[] imageData = File.ReadAllBytes(file);
                     tex.LoadImage(imageData);
@@ -73,7 +75,7 @@ namespace CustomTextures
                 }
                 else if (pattern2.IsMatch(fileName))
                 {
-                    Dbgl($"got file at path: {file}");
+                    Dbgl($"got partial texture at path: {file}");
                     string name = fileName.Substring(0, fileName.Length - 4);
                     int id = int.Parse(name.Substring(0, 7));
                     int idx = int.Parse(name.Substring(8));
@@ -88,6 +90,14 @@ namespace CustomTextures
                     {
                         customTexturesSupp.Add(id, new Dictionary<int, Texture2D>() { { idx, tex } });
                     }
+                }
+                else
+                {
+                    Dbgl($"got misc texture at path: {file}");
+                    Texture2D tex = new Texture2D(2, 2);
+                    byte[] imageData = File.ReadAllBytes(file);
+                    tex.LoadImage(imageData);
+                    customTexturesMisc.Add(fileName.Substring(0, fileName.Length - 4), tex);
                 }
             }
         }
@@ -117,7 +127,7 @@ namespace CustomTextures
         private static void ReloadTextures()
         {
             LoadCustomTextures();
-            foreach (KeyValuePair<int,Texture2D> kvp in customTextures)
+            foreach (KeyValuePair<int, Texture2D> kvp in customTextures)
             {
                 Actor actor = Module<ActorMgr>.Self.Get(kvp.Key);
                 if (actor == null)
@@ -136,7 +146,7 @@ namespace CustomTextures
                     }
                 }
             }
-            foreach(KeyValuePair<int, Dictionary<int,Texture2D>> kvp in customTexturesSupp)
+            foreach (KeyValuePair<int, Dictionary<int, Texture2D>> kvp in customTexturesSupp)
             {
                 Actor actor = Module<ActorMgr>.Self.Get(kvp.Key);
                 if (actor == null)
@@ -184,7 +194,7 @@ namespace CustomTextures
                     {
                         if (unit == null || unit.smrs == null)
                             continue;
-                        Dbgl($"got mesh for: {___m_Actor.ActorName}");
+                        //Dbgl($"got mesh for: {___m_Actor.ActorName}");
                         unit.smrs[0].material.mainTexture = customTextures[___m_Actor.InstanceId];
                     }
                 }
@@ -195,16 +205,40 @@ namespace CustomTextures
                     {
                         if (unit == null || unit.smrs == null)
                             continue;
-                        Dbgl($"getting mesh for: {___m_Actor.ActorName} at {i}");
+                        //Dbgl($"getting mesh for: {___m_Actor.ActorName} at {i}");
                         if (customTexturesSupp[___m_Actor.InstanceId].ContainsKey(i))
                         {
-                            Dbgl($"got mesh for: {___m_Actor.ActorName} at {i}");
+                            //Dbgl($"got mesh for: {___m_Actor.ActorName} at {i}");
                             unit.smrs[0].material.mainTexture = customTexturesSupp[___m_Actor.InstanceId][i];
                         }
                         i++;
                     }
                 }
-                
+
+            }
+        }
+
+
+        [HarmonyPatch(typeof(AppearTarget), "BuildMesh", new Type[] { typeof(List<AppearUnit>), typeof(AppearData), typeof(AppearUnit), typeof(string) })]
+        static class BuildMesh1_Patch
+        {
+            static void Prefix(AppearTarget __instance, AppearData appearData, ref List<AppearUnit> units)
+            {
+                //Dbgl($"Building player mesh");
+
+                if (!enabled)
+                    return;
+
+                for (int i = 0; i < units.Count; i++)
+                {
+                    string name = units[i].name;
+                    Dbgl($"appear part name: {name}");
+                    if (customTexturesMisc.ContainsKey(name))
+                    {
+                        Dbgl("Got texture!");
+                        units[i].Smr.material.mainTexture = customTexturesMisc[name];
+                    }
+                }
             }
         }
     }

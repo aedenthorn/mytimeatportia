@@ -16,7 +16,7 @@ namespace BuildAnywhere
         //public static Settings settings { get; private set; }
         public static bool enabled;
 
-        private static readonly bool isDebug = true;
+        private static readonly bool isDebug = false;
         private static Dictionary<CellIndex, Slot> outsideUnits = new Dictionary<CellIndex, Slot>();
 
         public static void Dbgl(string str = "", bool pref = true)
@@ -115,7 +115,7 @@ namespace BuildAnywhere
         }
 
 
-        private static object CreateSlotFromSlot(Slot slot)
+        private static object CreateRSlotFromSlot(Slot slot)
         {
             ConstructorInfo ci = typeof(Region).GetNestedType("Slot", BindingFlags.NonPublic | BindingFlags.Instance).GetConstructor(new Type[] { });
             var mySlot = ci.Invoke(new object[] { });
@@ -125,6 +125,19 @@ namespace BuildAnywhere
             mySlot.GetType().GetField("unitObjInfo").SetValue(mySlot, slot.unitObjInfo);
             mySlot.GetType().GetField("immobile").SetValue(mySlot, slot.immobile);
             return mySlot;
+        }
+        private static Slot CreateSlotFromRSlot(object mySlot)
+        {
+            Slot slot = new Slot
+            {
+                area = (Area) mySlot.GetType().GetField("area").GetValue(mySlot),
+                info = (ItemPutInfo) mySlot.GetType().GetField("info").GetValue(mySlot),
+                unit = (Unit) mySlot.GetType().GetField("unit").GetValue(mySlot),
+                unitObjInfo = (UnitObjInfo) mySlot.GetType().GetField("unitObjInfo").GetValue(mySlot),
+                immobile = (bool) mySlot.GetType().GetField("immobile").GetValue(mySlot)
+
+            };
+            return slot;
         }
 
 

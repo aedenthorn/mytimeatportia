@@ -85,12 +85,13 @@ namespace BuildAnywhere
                 if (unitViewer != null)
                 {
                     Unit unitByCell = outsideUnits[info.cellIndex].unit;
+
                     unitViewer.SetUnit(unitByCell);
                     typeof(RegionViewer).GetMethod("SetRegionName", BindingFlags.NonPublic | BindingFlags.Instance).Invoke(__instance, new object[] { unitViewer });
 
                     if (!unitByCell.immobile && !(unitByCell is FloorCell))
                     {
-                        MethodInfo method = typeof(FarmViewer).GetMethod("TakeUpHomeItem", BindingFlags.NonPublic | BindingFlags.Instance);
+                        MethodInfo method = __instance.GetType().GetMethod("TakeUpHomeItem", BindingFlags.NonPublic | BindingFlags.Instance);
                         Action<Unit> action = (Action<Unit>)Delegate.CreateDelegate(typeof(Action<Unit>), __instance, method);
                         unitViewer.InitHomeItemThing(action);
                     }

@@ -1,29 +1,18 @@
 ﻿using Harmony12;
-using Pathea;
-using Pathea.DungeonModuleNs;
-using Pathea.ItemDropNs;
-using Pathea.ItemSystem;
-using Pathea.ModuleNs;
-using Pathea.ScenarioNs;
-using Pathea.StoreNs;
-using Pathea.TreasureRevealerNs;
 using SimpleJSON;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityModManagerNet;
-using static Harmony12.AccessTools;
 
 namespace WeaponMod
 {
     public partial class Main
     {
-        private static bool isDebug = true;
+        private static bool isDebug = false;
 
         public static void Dbgl(string str = "", bool pref = true)
         {
