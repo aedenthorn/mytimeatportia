@@ -1,38 +1,14 @@
-﻿using BehaviorDesigner.Runtime;
-using Ccc;
-using Harmony12;
-using Hont;
+﻿using Harmony12;
 using Pathea;
-using Pathea.ActorNs;
-using Pathea.ArchiveNs;
-using Pathea.Behavior;
-using Pathea.DLCRewards;
-using Pathea.EG;
-using Pathea.FavorSystemNs;
-using Pathea.HomeNs;
-using Pathea.HomeViewerNs;
 using Pathea.InputSolutionNs;
 using Pathea.ModuleNs;
-using Pathea.NpcRepositoryNs;
 using Pathea.PlayerMissionNs;
-using Pathea.RiderAdapterNs;
-using Pathea.RiderNs;
-using Pathea.ScenarioNs;
-using Pathea.ScreenMaskNs;
-using Pathea.StoreNs;
-using Pathea.SummaryNs;
-using Pathea.Times;
-using Pathea.TipsNs;
-using Pathea.UISystemNs;
-using Pathea.WeatherNs;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityModManagerNet;
 
 namespace SaveAnyTime
@@ -247,7 +223,7 @@ namespace SaveAnyTime
                 throw new ArgumentException();
         }
 
-        [HarmonyPatch(typeof(PlayerMissionMgr), "FreshMissionState")]
+        //[HarmonyPatch(typeof(PlayerMissionMgr), "FreshMissionState")]
         static class ScenarioModule_PostLoad_Patch
         {
             static void Prefix(PlayerMissionMgr __instance)

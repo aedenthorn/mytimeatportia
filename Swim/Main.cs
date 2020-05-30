@@ -34,7 +34,6 @@ namespace Swim
         private static bool startSwim = false;
         private static bool swimming = false;
         private static int animFrame = 0;
-        private static AnimationClip swimClip;
 
         private static void Load(UnityModManager.ModEntry modEntry)
         {
@@ -61,15 +60,24 @@ namespace Swim
 
         private static void OnGUI(UnityModManager.ModEntry modEntry)
         {
+            settings.doSwim = GUILayout.Toggle(settings.doSwim, "Enable Swimming (turn this off to simply disable water)", new GUILayoutOption[0]);
+            GUILayout.Space(10f);
+            settings.animateSwim = GUILayout.Toggle(settings.animateSwim, "Play Swim Animation", new GUILayoutOption[0]);
+            GUILayout.Space(10f);
+            GUILayout.Label(string.Format("Bob Magnitude: <b>{0:F2}</b>", settings.bobMagnitude), new GUILayoutOption[0]);
+            settings.bobMagnitude = GUILayout.HorizontalSlider(settings.bobMagnitude * 100f, 0f, 100f, new GUILayoutOption[0]) / 100f;
         }
 
         [HarmonyPatch(typeof(Player), "BeginCorrect")]
         static class Player_BeginCorrect_Patch
         {
-
-
             static bool Prefix()
             {
+                if (!enabled)
+                    return true;
+
+                if (!settings.doSwim)
+                    return false;
                 if (!swimming)
                 {
                     swimming = true;
@@ -86,7 +94,9 @@ namespace Swim
             float seconds = Time.fixedTime;
             while (Time.fixedTime - seconds < 1f)
             {
-                if(animFrame++ > 50)
+                if (!enabled)
+                    yield break;
+                if (settings.animateSwim && animFrame++ > 50)
                 {
                     animFrame = 0;
                     typeof(ActorMotor).GetMethod("PlayAnimation", BindingFlags.NonPublic | BindingFlags.Instance, null, new Type[] { typeof(string), typeof(float) }, new ParameterModifier[0]).Invoke(Player.Self.actor.motor, new object[] { "FlyStart", 0.1f });
@@ -102,9 +112,10 @@ namespace Swim
 
                 Vector3 pos = Player.Self.GamePos;
                 //pos.y = 25f + (float)Math.Sin(height / 10f) / 5f;
-                Vector3 newPos = new Vector3(0, (25f+(float) Math.Sin(height/10f)/3f)-pos.y, 0);
+                float bob = (float)Math.Sin(height / 10f) / 3f * settings.bobMagnitude;
+                Vector3 newPos = new Vector3(0, 25f + bob - pos.y, 0);
 
-                if (Module<PlayerActionModule>.Self.IsAcionPressed(ActionType.ActionMoveForward))
+                if (Module<PlayerActionModule>.Self.IsAcionPressed(ActionType.ActionMoveForward) || Module<PlayerActionModule>.Self.IsAcionPressed(ActionType.ActionMoveLeft) || Module<PlayerActionModule>.Self.IsAcionPressed(ActionType.ActionMoveRight) || Module<PlayerActionModule>.Self.IsAcionPressed(ActionType.ActionMoveBack))
                 {
                     Vector3 forward = Player.Self.actor.transform.forward;
                     forward.x *= 0.1f;
