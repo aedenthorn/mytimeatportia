@@ -25,7 +25,7 @@ namespace InstantActions
                     ItemObject curUseItem = Module<Player>.Self.bag.itemBar.GetCurUseItem();
                     if (curUseItem != null)
                     {
-                        Debug.Log(curUseItem.ItemBase.Name);
+                        //Debug.Log(curUseItem.ItemBase.Name);
                         if (curUseItem.ItemBase.HasInteractTag(1))
                         {
                             ___cookMachine.AddMat(curUseItem.ItemDataId);

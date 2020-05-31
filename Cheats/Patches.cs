@@ -1,4 +1,5 @@
 ﻿using Harmony12;
+using Hont.ExMethod.Collection;
 using NovaEnv;
 using Pathea;
 using Pathea.ACT;
@@ -16,6 +17,7 @@ using Pathea.HomeViewerNs;
 using Pathea.InputSolutionNs;
 using Pathea.IntendNs;
 using Pathea.ItemSystem;
+using Pathea.LightMgr;
 using Pathea.Missions;
 using Pathea.ModuleNs;
 using Pathea.NpcInstanceNs;
@@ -23,6 +25,7 @@ using Pathea.OptionNs;
 using Pathea.RiderNs;
 using Pathea.ScenarioNs;
 using Pathea.StageNs;
+using Pathea.SwitchNs;
 using Pathea.UISystemNs;
 using Pathea.UISystemNs.Grid;
 using Pathea.UISystemNs.MainMenu.MissionUI;
@@ -111,12 +114,40 @@ namespace Cheats
         }
 
 
-        //[HarmonyPatch(typeof(SceneItemManager), "Create")]
+        //[HarmonyPatch(typeof(LightManager), "OpenLight")]
         static class rmm2_Patch
         {
-            static void Prefix(string path)
+            static void Postfix(int groupID)
             {
-                Dbgl($"creating: {path}");
+                GameObject[] lightsObject = LightGroupData.GetLightsObject(groupID);
+                for (int i = 0; i < lightsObject.Length; i++)
+                {
+                    Light componentInChildren = lightsObject[i].GetComponentInChildren<Light>();
+                    if (componentInChildren)
+                    {
+                        componentInChildren.shadows = LightShadows.Hard;
+                        componentInChildren.shadowStrength = 1f;
+                        componentInChildren.shadowBias = 0.05f;
+                        componentInChildren.shadowNormalBias = 0.4f;
+                        componentInChildren.shadowNearPlane = 0.2f;
+                        componentInChildren.shadowResolution = UnityEngine.Rendering.LightShadowResolution.VeryHigh;
+                        componentInChildren.shadowCustomResolution = -1;
+                    }
+                    MatSwitch componentInChildren2 = lightsObject[i].GetComponentInChildren<MatSwitch>();
+                    if (componentInChildren2)
+                    {
+                        Material[] nightMats = FieldRefAccess<MatSwitch, Material[]>(componentInChildren2, "nightMats");
+                        for(int j = 0; j < nightMats.Length; j++)
+                        {
+                            //Color c = nightMats[j].GetColor("_Emissions");
+                            //nightMats[j].SetColor("_Emissions", c * 2f);
+                        }
+                    }
+                    EffectSwitch componentInChildren3 = lightsObject[i].GetComponentInChildren<EffectSwitch>();
+                    if (componentInChildren3)
+                    {
+                    }
+                }
             }
         }
 
