@@ -49,6 +49,10 @@
     <Reference Include="UnityEngine.CoreModule">
       <HintPath>..\external\UnityEngine.CoreModule.dll</HintPath>
     </Reference>
+    <Reference Include="UnityEngine.IMGUIModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\external\UnityEngine.IMGUIModule.dll</HintPath>
+    </Reference>
     <Reference Include="UnityEngine.PhysicsModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\external\UnityEngine.PhysicsModule.dll</HintPath>
@@ -70,6 +74,7 @@
     <Compile Include="RegionViewer_Patches.cs" />
     <Compile Include="FarmViewer_Patches.cs" />
     <Compile Include="Region_Patches.cs" />
+    <Compile Include="Settings.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

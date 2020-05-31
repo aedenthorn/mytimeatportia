@@ -365,6 +365,17 @@ namespace CustomTextures
             }
         }
 
+        [HarmonyPatch(typeof(HomeItemSelector), "ShowPreviewObj")]
+        static class HomeItemSelector_ShowPreviewObj_Patch
+        {
+            static void Postfix(Area ___area, ref GameObject ___previewGameObj)
+            {
+                if (!enabled || ___area == null || ___previewGameObj == null)
+                    return;
+                FixOneTexture(___previewGameObj);
+            }
+        }
+
         private static void FixOneTexture(GameObject go)
         {
             if (go == null)
@@ -373,7 +384,7 @@ namespace CustomTextures
             foreach (MeshRenderer mr in mrs)
             {
                 string name = mr.name;
-                if (customTexturesMisc.ContainsKey(name) && mr.material && mr.material.HasProperty("_MainTex"))
+                if (customTexturesMisc.ContainsKey(name) && mr.material && mr.material.HasProperty("_MainTex") && mr.material.mainTexture != null)
                 {
                     Dbgl($"Changing texture for {name}");
                     mr.material.mainTexture = customTexturesMisc[name];
@@ -384,6 +395,12 @@ namespace CustomTextures
         private static void DumpObjectNames()
         {
             Scene scene = SceneManager.GetActiveScene();
+
+            if(scene == null)
+            {
+                Dbgl("scene is null");
+                return;
+            }
 
             List<string> meshTextures = new List<string>();
 
@@ -398,7 +415,7 @@ namespace CustomTextures
                 NpcAppearUnit unit = Singleton<ResMgr>.Instance.LoadSyncByType<NpcAppearUnit>(AssetType.NpcAppear, path);
                 foreach (SkinnedMeshRenderer mr in unit.smrs)
                 {
-                    if (mr.material && mr.material.HasProperty("_MainTex"))
+                    if (mr.material && mr.material.HasProperty("_MainTex") && mr.material.mainTexture != null)
                     {
                         string mt = $"mesh name: {mr.name} texture name: {mr.material.mainTexture.name}";
                         if (!meshTextures.Contains(mt))
@@ -412,6 +429,9 @@ namespace CustomTextures
 
             names += string.Join("\r\n\t", meshTextures.ToArray()) + "\r\n\r\n";
             meshTextures.Clear();
+
+            Dbgl("got dlc actor meshes");
+
             /*
             names += $"Non-DLC actor mesh and texture names for scene {scene.name}:\r\n\r\n";
 
@@ -435,9 +455,9 @@ namespace CustomTextures
             foreach (GameObject obj in gameObjects)
             {
                 MeshRenderer[] mrs = obj.GetComponentsInChildren<MeshRenderer>();
-                foreach(MeshRenderer mr in mrs)
+                foreach (MeshRenderer mr in mrs)
                 {
-                    if (mr.material && mr.material.HasProperty("_MainTex"))
+                    if (mr.material && mr.material.HasProperty("_MainTex") && mr.material.mainTexture != null)
                     {
                         string mt = $"mesh name: {mr.name} texture name: {mr.material.mainTexture.name}";
                         if (!meshTextures.Contains(mt))
@@ -448,6 +468,9 @@ namespace CustomTextures
                     }
                 }
             }
+
+
+            Dbgl("got scene objects");
 
 
             if (scene.name == "Main")
@@ -465,7 +488,7 @@ namespace CustomTextures
                     MeshRenderer[] mrs = go.GetComponentsInChildren<MeshRenderer>();
                     foreach (MeshRenderer mr in mrs)
                     {
-                        if (mr.material && mr.material.HasProperty("_MainTex"))
+                        if (mr.material && mr.material.HasProperty("_MainTex") && mr.material.mainTexture != null)
                         {
                             string mt = $"mesh name: {mr.name} texture name: {mr.material.mainTexture.name}";
                             if (!meshTextures.Contains(mt))
@@ -495,7 +518,7 @@ namespace CustomTextures
                         MeshRenderer[] mrs = go.GetComponentsInChildren<MeshRenderer>();
                         foreach (MeshRenderer mr in mrs)
                         {
-                            if (mr.material && mr.material.HasProperty("_MainTex"))
+                            if (mr.material && mr.material.HasProperty("_MainTex") && mr.material.mainTexture != null)
                             {
                                 string mt = $"mesh name: {mr.name} texture name: {mr.material.mainTexture.name}";
                                 if (!meshTextures.Contains(mt))
@@ -508,7 +531,7 @@ namespace CustomTextures
                 }
             }
             names += $"Scene mesh and texture names for scene {scene.name}:\r\n\r\n\t"+ string.Join("\r\n\t", meshTextures.ToArray());
-            Dbgl(names);
+            Debug.Log(names);
         }
     }
 }

@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{D73851A6-4FD0-4F46-801E-62653EA8DE35}</ProjectGuid>
+    <ProjectGuid>{B570AB9C-9772-4B73-94B1-29CA818AB9FE}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Swim</RootNamespace>
-    <AssemblyName>Swim</AssemblyName>
+    <RootNamespace>PlantMod</RootNamespace>
+    <AssemblyName>PlantMod</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
@@ -31,8 +31,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="0Harmony12, Version=1.2.0.1, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="0Harmony-1.2">
+      <HintPath>..\external\0Harmony-1.2.dll</HintPath>
+    </Reference>
+    <Reference Include="0Harmony12">
       <HintPath>..\external\UnityModManager\0Harmony12.dll</HintPath>
     </Reference>
     <Reference Include="Assembly-CSharp">
@@ -100,6 +102,6 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>call $(SolutionDir)copyDll.bat Swim</PostBuildEvent>
+    <PostBuildEvent>call $(SolutionDir)copyDll.bat PlantMod</PostBuildEvent>
   </PropertyGroup>
 </Project>

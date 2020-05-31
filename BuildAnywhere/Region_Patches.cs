@@ -1,4 +1,5 @@
 ﻿using Harmony12;
+using NovaEnv;
 using Pathea;
 using Pathea.HomeNs;
 using Pathea.ItemSystem;
@@ -119,7 +120,6 @@ namespace BuildAnywhere
                 if (!enabled || Module<ScenarioModule>.Self.CurrentScenarioName != "Main" )
                     return true;
 
-                Vector3 pos = Player.Self.GamePos;
                 __result = true;
                 return false;
             }
@@ -161,6 +161,11 @@ namespace BuildAnywhere
                         __result = false;
                         return false;
                     }
+                }
+                if (settings.allowOverlapInWorkshop)
+                {
+                    __result = false;
+                    return false;
                 }
                 return true;
             }

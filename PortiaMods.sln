@@ -89,6 +89,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Swim", "Swim\Swim.csproj", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lights", "Lights\Lights.csproj", "{4EB52C83-C76D-4174-B5DA-6A9FB682718A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlantMod", "PlantMod\PlantMod.csproj", "{B570AB9C-9772-4B73-94B1-29CA818AB9FE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -267,6 +269,10 @@ Global
 		{4EB52C83-C76D-4174-B5DA-6A9FB682718A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4EB52C83-C76D-4174-B5DA-6A9FB682718A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4EB52C83-C76D-4174-B5DA-6A9FB682718A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B570AB9C-9772-4B73-94B1-29CA818AB9FE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B570AB9C-9772-4B73-94B1-29CA818AB9FE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B570AB9C-9772-4B73-94B1-29CA818AB9FE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B570AB9C-9772-4B73-94B1-29CA818AB9FE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

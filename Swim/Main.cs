@@ -1,5 +1,5 @@
 ﻿using Harmony12;
-using static Harmony.AccessTools;
+using static Harmony12.AccessTools;
 using Pathea;
 using Pathea.ACT;
 using Pathea.ModuleNs;
@@ -30,7 +30,7 @@ namespace Swim
                 Debug.Log((pref ? "Swim " : "") + str);
         }
 
-        private static int height = 0;
+        private static int count = 0;
         private static bool startSwim = false;
         private static bool swimming = false;
         private static int animFrame = 0;
@@ -64,8 +64,14 @@ namespace Swim
             GUILayout.Space(10f);
             settings.animateSwim = GUILayout.Toggle(settings.animateSwim, "Play Swim Animation", new GUILayoutOption[0]);
             GUILayout.Space(10f);
+            GUILayout.Label(string.Format("Swim Speed: <b>{0:F2}</b>", settings.swimSpeed), new GUILayoutOption[0]);
+            settings.swimSpeed = GUILayout.HorizontalSlider(settings.swimSpeed * 100f, 1f, 1000f, new GUILayoutOption[0]) / 100f;
+            GUILayout.Space(10f);
             GUILayout.Label(string.Format("Bob Magnitude: <b>{0:F2}</b>", settings.bobMagnitude), new GUILayoutOption[0]);
             settings.bobMagnitude = GUILayout.HorizontalSlider(settings.bobMagnitude * 100f, 0f, 100f, new GUILayoutOption[0]) / 100f;
+            GUILayout.Space(10f);
+            GUILayout.Label(string.Format("Bob Speed: <b>{0:F2}</b>", settings.bobSpeed), new GUILayoutOption[0]);
+            settings.bobSpeed = GUILayout.HorizontalSlider(settings.bobSpeed * 100f, 1f, 200f, new GUILayoutOption[0]) / 100f;
         }
 
         [HarmonyPatch(typeof(Player), "BeginCorrect")]
@@ -80,6 +86,7 @@ namespace Swim
                     return false;
                 if (!swimming)
                 {
+                    count = 0;
                     swimming = true;
                     Singleton<TaskRunner>.Self.StartCoroutine(Swim());
                 }
@@ -111,16 +118,55 @@ namespace Swim
                 }
 
                 Vector3 pos = Player.Self.GamePos;
-                //pos.y = 25f + (float)Math.Sin(height / 10f) / 5f;
-                float bob = (float)Math.Sin(height / 10f) / 3f * settings.bobMagnitude;
-                Vector3 newPos = new Vector3(0, 25f + bob - pos.y, 0);
+
+                float height = 25f;
+                if (pos.x > 665f && pos.z > -185f && pos.x < 866f && pos.z < -100f) // wf river one S
+                {
+                    height = 85f;
+                }
+                else if (pos.x > 665f && pos.z > -100f && pos.x < 866f && pos.z < -68f) // wf river one N
+                {
+                    height = 85.5f;
+                }
+                else if (pos.x > 665f && pos.z > -68f && pos.x < 866f && pos.z < 61f) // wf river one N
+                {
+                    height = 86f;
+                }
+                else if (pos.x > 866f && pos.z < 252f && pos.z > -47f) // wf river 2
+                {
+                    height = 127f;
+                }
+                else if (pos.x > 905f && pos.z < -398f && pos.z > -554f) // desert
+                {
+                    height = 73f;
+                }
+                else if (pos.x < -288f && pos.z > -242f && pos.z < 12f && pos.x > -590f) // balloon
+                {
+                    height = 58f;
+                }
+                else if (pos.x < -705f && pos.z > -314f && pos.z < -127f) // western plateau
+                {
+                    height = 69f;
+                }
+                else if (pos.x > 314f && pos.x < 448f && pos.z > 10f && pos.z < 167f) //wasteland
+                {
+                    height = 25f;
+                }
+                else if (pos.z > 179f) // north
+                {
+                    height = 73f;
+                }
+                    //pos.y = 25f + (float)Math.Sin(height / 10f) / 5f;
+                
+                float bob = (float)Math.Sin(settings.bobSpeed * count / 10f) / 3f * settings.bobMagnitude;
+                Vector3 newPos = new Vector3(0, height + bob - pos.y, 0);
 
                 if (Module<PlayerActionModule>.Self.IsAcionPressed(ActionType.ActionMoveForward) || Module<PlayerActionModule>.Self.IsAcionPressed(ActionType.ActionMoveLeft) || Module<PlayerActionModule>.Self.IsAcionPressed(ActionType.ActionMoveRight) || Module<PlayerActionModule>.Self.IsAcionPressed(ActionType.ActionMoveBack))
                 {
                     Vector3 forward = Player.Self.actor.transform.forward;
-                    forward.x *= 0.1f;
+                    forward.x *= 0.2f * settings.swimSpeed;
                     forward.y = 0f;
-                    forward.z *= 0.1f;
+                    forward.z *= 0.2f * settings.swimSpeed;
                     newPos += forward;
                 }
 
@@ -131,7 +177,7 @@ namespace Swim
                 Player.Self.actor.motor.MoveByDeltaPos(newPos);
                 //CameraManager.Instance.ExecuteUpdate();
 
-                height++;
+                count++;
                 yield return new WaitForEndOfFrame();
             }
             swimming = false;

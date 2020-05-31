@@ -1,6 +1,8 @@
 ﻿using Harmony12;
+using Pathea;
 using Pathea.HomeNs;
 using Pathea.HomeViewerNs;
+using Pathea.LightMgr;
 using Pathea.ModuleNs;
 using Pathea.ScenarioNs;
 using System;
@@ -153,6 +155,9 @@ namespace Lights
 
         private static void RefreshOneLight(GameObject go)
         {
+            if (go == null)
+                return;
+
             Light light = go.GetComponentInChildren<Light>();
             if (light)
             {
@@ -178,15 +183,33 @@ namespace Lights
             }
         }
 
-        [HarmonyPatch(typeof(RegionViewer), "CreateGameObj", new Type[] { typeof(string), typeof(Area), typeof(ItemPutInfo), typeof(bool) })]
-        static class RegionViewer_CreateGameObj_Patch
+        [HarmonyPatch(typeof(RegionViewer), "CreateUnitGameObj")]
+        static class RegionViewer_CreateUnitGameObj_Patch
         {
-            static void Postfix(ref GameObject __result)
+            static void Postfix(UnitObjInfo objInfo)
+            {
+                if (!enabled)
+                    return;
+                Singleton<TaskRunner>.Instance.RunDelayTask(0.005f, true, delegate ()
+                {
+                    RefreshOneLight(objInfo.go);
+                });
+            }
+        }
+
+        //[HarmonyPatch(typeof(LightManager), "OpenLight")]
+        static class LightManager_OpenLight_Patch
+        {
+            static void Postfix(int groupID)
             {
 
                 if (!enabled)
                     return;
-                RefreshOneLight(__result);
+                GameObject[] lightsObject = LightGroupData.GetLightsObject(groupID);
+                for (int i = 0; i < lightsObject.Length; i++)
+                {
+                    RefreshOneLight(lightsObject[i]);
+                }
             }
         }
     }

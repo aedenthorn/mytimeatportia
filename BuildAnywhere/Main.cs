@@ -17,6 +17,7 @@ namespace BuildAnywhere
         //public static Settings settings { get; private set; }
         public static bool enabled;
 
+        public static Settings settings;
         private static readonly bool isDebug = false;
         private static Dictionary<CellIndex, Slot> outsideUnits = new Dictionary<CellIndex, Slot>();
 
@@ -28,7 +29,7 @@ namespace BuildAnywhere
 
         private static void Load(UnityModManager.ModEntry modEntry)
         {
-            //settings = Settings.Load<Settings>(modEntry);
+            settings = Settings.Load<Settings>(modEntry);
 
             modEntry.OnGUI = OnGUI;
             modEntry.OnSaveGUI = OnSaveGUI;
@@ -52,6 +53,7 @@ namespace BuildAnywhere
 
         private static void OnGUI(UnityModManager.ModEntry modEntry)
         {
+            settings.allowOverlapInWorkshop = GUILayout.Toggle(settings.allowOverlapInWorkshop, "Allow overlap in workshop", new GUILayoutOption[0]);
         }
         private static Vector3 GetValidPos(Vector3 pos)
         {

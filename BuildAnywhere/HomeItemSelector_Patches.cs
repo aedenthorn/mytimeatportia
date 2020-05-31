@@ -89,6 +89,18 @@ namespace BuildAnywhere
                 return false;
             }
         }
+
+        //[HarmonyPatch(typeof(HomeItemSelector), "ShowAreaFocus")]
+        static class HomeItemSelector_ShowAreaFocus_Patch
+        {
+            static void Postfix(ref bool ___areaValid, Area ___area)
+            {
+                if (!enabled || Module<ScenarioModule>.Self.CurrentScenarioName != "Main" || ___area == null || !settings.allowOverlapInWorkshop)
+                    return;
+                ___areaValid = true;
+            }
+        }
+
         [HarmonyPatch(typeof(HomeItemSelector), "FetchTarget")]
         static class HomeItemSelector_FetchTarget_Patch
         {
