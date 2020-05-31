@@ -151,8 +151,9 @@ namespace BuildAnywhere
         {
             static bool Prefix(Region __instance, Area area, ref bool __result)
             {
-                if (!enabled)
+                if (!enabled || Module<ScenarioModule>.Self.CurrentScenarioName != "Main")
                     return true;
+
                 for (int i = 0; i < area.Length; i++)
                 {
                     if (!__instance.IsValidCell(area[i]))
@@ -170,7 +171,7 @@ namespace BuildAnywhere
         {
             static bool Prefix(Region __instance, Area area, ref bool __result)
             {
-                if (!enabled)
+                if (!enabled || Module<ScenarioModule>.Self.CurrentScenarioName != "Main")
                     return true;
                 __result = true;
                 return false;
@@ -182,7 +183,7 @@ namespace BuildAnywhere
         {
             static bool Prefix(ref bool __result)
             {
-                if (!enabled)
+                if (!enabled || Module<ScenarioModule>.Self.CurrentScenarioName != "Main")
                     return true;
                 __result = true;
                 return false;
@@ -194,7 +195,7 @@ namespace BuildAnywhere
         {
             static bool Prefix(ref bool __result, CellIndex index, ref string reason)
             {
-                if (!enabled || !outsideUnits.ContainsKey(index))
+                if (!enabled || Module<ScenarioModule>.Self.CurrentScenarioName != "Main" || !outsideUnits.ContainsKey(index))
                     return true;
 
                 __result = false;
@@ -208,7 +209,7 @@ namespace BuildAnywhere
         {
             static bool Prefix(Region __instance, ref ItemObject __result, CellIndex index)
             {
-                if (!enabled)
+                if (!enabled || Module<ScenarioModule>.Self.CurrentScenarioName != "Main")
                     return true;
 
                 if (outsideUnits.ContainsKey(index))
@@ -255,7 +256,7 @@ namespace BuildAnywhere
         {
             static bool Prefix(Region __instance, ref bool __result, UnitHandle unitHandle, ItemPutInfo putInfo, bool changed, bool autoReverseDirProtect = false)
             {
-                if (!enabled)
+                if (!enabled || Module<ScenarioModule>.Self.CurrentScenarioName != "Main")
                     return true;
 
                 Slot slot = CreateSlotFromRSlot(unitHandle);

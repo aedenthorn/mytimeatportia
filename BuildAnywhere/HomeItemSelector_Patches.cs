@@ -3,6 +3,8 @@ using Pathea.AimSystemNs;
 using Pathea.HomeNs;
 using Pathea.HomeViewerNs;
 using Pathea.ItemSystem;
+using Pathea.ModuleNs;
+using Pathea.ScenarioNs;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -17,7 +19,7 @@ namespace BuildAnywhere
         {
             static void Postfix(HomeItemSelector __instance, Area ___area, ref ISelector ___focusSelector, ref GameObject ___previewGameObj)
             {
-                if (!(___focusSelector is FarmViewer) || ___area == null || ___previewGameObj == null)
+                if (!enabled || !(___focusSelector is FarmViewer) || ___area == null || ___previewGameObj == null || Module<ScenarioModule>.Self.CurrentScenarioName != "Main")
                     return;
 
                 Vector3 vector2 = GetValidPos(___previewGameObj.transform.position);
@@ -47,7 +49,7 @@ namespace BuildAnywhere
         {
             static bool Prefix(HomeItemSelector __instance, Vector3 pos, Rotation newPlayerRotation, bool includeLockArea, List<SelectorItem> ___selectorItems, ItemHomeSystemUnitCmpt ___systemCmpt, ItemObject ___previewItem, PreviewItemType ___previewItemType)
             {
-                if (!enabled)
+                if (!enabled || Module<ScenarioModule>.Self.CurrentScenarioName != "Main")
                     return true;
                 CellIndex newIndex = CellIndex.Invalid;
                 string newFocusWallName = null;
@@ -92,7 +94,7 @@ namespace BuildAnywhere
         {
             static void Postfix(ISelector ___focusSelector, ref HomeTarget __result)
             {
-                if (!enabled || __result == null)
+                if (!enabled || Module<ScenarioModule>.Self.CurrentScenarioName != "Main" || __result == null)
                     return;
                 if (___focusSelector.GetType() != typeof(FarmViewer) || !outsideUnits.ContainsKey(__result.itemPutInfo.cellIndex))
                 {

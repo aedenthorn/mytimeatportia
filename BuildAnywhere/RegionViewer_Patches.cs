@@ -1,6 +1,8 @@
 ﻿using Harmony12;
 using Pathea.HomeNs;
 using Pathea.HomeViewerNs;
+using Pathea.ModuleNs;
+using Pathea.ScenarioNs;
 using System;
 using System.Reflection;
 using UnityEngine;
@@ -16,7 +18,7 @@ namespace BuildAnywhere
         {
             static void Postfix(RegionViewer __instance, UnitObjInfo objInfo)
             {
-                if (!enabled || !(__instance is FarmViewer))
+                if (!enabled || Module<ScenarioModule>.Self.CurrentScenarioName != "Main" || !(__instance is FarmViewer))
                     return;
                 Vector3 pos = objInfo.go.transform.position;
                 pos = GetValidPos(pos);
@@ -33,7 +35,7 @@ namespace BuildAnywhere
         {
             static void Postfix(RegionViewer __instance, ref Vector3 worldPos, ref float dis, ref CellIndex __result, float ___ceilWidth)
             {
-                if (!enabled || !(__instance is FarmViewer))
+                if (!enabled || Module<ScenarioModule>.Self.CurrentScenarioName != "Main" || !(__instance is FarmViewer))
                     return;
                 Vector3 vector = GetValidPos(worldPos);
                 if (vector != Vector3.zero)
@@ -52,7 +54,7 @@ namespace BuildAnywhere
         {
             static void Postfix(RegionViewer __instance, ItemPutInfo info, ref Transform transform)
             {
-                if (!enabled || !(__instance is FarmViewer) || !outsideUnits.ContainsKey(info.cellIndex))
+                if (!enabled || Module<ScenarioModule>.Self.CurrentScenarioName != "Main" || !(__instance is FarmViewer) || !outsideUnits.ContainsKey(info.cellIndex))
                     return;
 
                 Vector3 vector = GetValidPos(transform.position);
@@ -70,7 +72,7 @@ namespace BuildAnywhere
             static bool Prefix(RegionViewer __instance, string path, Area area, ItemPutInfo info, ref GameObject __result, bool isFloorLayer)
             {
 
-                if (!enabled || !outsideUnits.ContainsKey(info.cellIndex))
+                if (!enabled || Module<ScenarioModule>.Self.CurrentScenarioName != "Main" || !outsideUnits.ContainsKey(info.cellIndex))
                     return true;
 
 
@@ -113,7 +115,7 @@ namespace BuildAnywhere
         {
             static void Prefix(ISelector __instance, ref bool includeLockArea)
             {
-                if (!enabled || !(__instance is FarmViewer))
+                if (!enabled || Module<ScenarioModule>.Self.CurrentScenarioName != "Main" || !(__instance is FarmViewer))
                     return;
                 includeLockArea = true;
             }

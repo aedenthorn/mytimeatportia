@@ -2,6 +2,7 @@
 using Pathea.HomeNs;
 using Pathea.HomeViewerNs;
 using Pathea.ModuleNs;
+using Pathea.ScenarioNs;
 using Pathea.UISystemNs;
 using System;
 using System.Collections.Generic;
@@ -94,7 +95,7 @@ namespace BuildAnywhere
         {
             static bool Prefix(UnitViewer __instance, MatColorConfig[] ___configs, ref int __result)
             {
-                if (!enabled)
+                if (!enabled || Module<ScenarioModule>.Self.CurrentScenarioName != "Main")
                     return true;
                 try
                 {
