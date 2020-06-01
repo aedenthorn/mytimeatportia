@@ -21,9 +21,9 @@ namespace BuildAnywhere
         [HarmonyPatch(typeof(Region), "GetUnitByCell")]
         static class Region_GetUnitByCell_Patch
         {
-            static bool Prefix(Region __instance, CellIndex index, ref Unit __result)
+            static bool Prefix(Region __instance, CellIndex index, ref Unit __result, HomeRegionType ___regionType)
             {
-                if (!enabled)
+                if (!enabled || ___regionType != HomeRegionType.Farm)
                     return true;
                 if (!__instance.IsValidCell(index))
                 {
@@ -42,9 +42,9 @@ namespace BuildAnywhere
         [HarmonyPatch(typeof(Region), "GetItemByCellIndex")]
         static class Region_GetItemByCellIndex_Patch
         {
-            static bool Prefix(Region __instance, CellIndex index, ref ItemObject __result)
+            static bool Prefix(Region __instance, CellIndex index, ref ItemObject __result, HomeRegionType ___regionType)
             {
-                if (!enabled)
+                if (!enabled || ___regionType != HomeRegionType.Farm)
                     return true;
                 if (!__instance.IsValidCell(index))
                 {
@@ -65,9 +65,9 @@ namespace BuildAnywhere
         //[HarmonyPatch(typeof(Region), "GetUnitPutInfo")]
         static class Region_GetUnitPutInfo_Patch
         {
-            static bool Prefix(Unit item, ref ItemPutInfo __result)
+            static bool Prefix(Unit item, ref ItemPutInfo __result, HomeRegionType ___regionType)
             {
-                if (!enabled)
+                if (!enabled || ___regionType != HomeRegionType.Farm)
                     return true;
 
                 Slot slot = outsideUnits.Values.ToList().Find((Slot e) => e.unit == item);
@@ -84,30 +84,34 @@ namespace BuildAnywhere
         [HarmonyPatch(typeof(Region), "PutDownUnit")]
         static class Region_PutDownUnit_Patch
         {
-            static void Prefix(Region __instance, Unit unit, ItemPutInfo info, ItemObject item, bool immobile, int fromArchive = -1)
+            static void Prefix(Region __instance, Unit unit, ItemPutInfo info, ItemObject item, bool immobile, HomeRegionType ___regionType, int fromArchive = -1)
             {
-                if (!enabled)
+                if (!enabled || ___regionType != HomeRegionType.Farm || __instance.IsValidCell(info.cellIndex))
                     return;
-                if (!__instance.IsValidCell(info.cellIndex))
-                {
-                    ItemHomeSystemUnitCmpt component = item.GetComponent<ItemHomeSystemUnitCmpt>();
-                    Area area = Module<UnitFactory>.Self.GetArea(info.cellIndex, info.areaRot, component, component.Rotate > 0, fromArchive);
+                ItemHomeSystemUnitCmpt component = item.GetComponent<ItemHomeSystemUnitCmpt>();
+                Area area = Module<UnitFactory>.Self.GetArea(info.cellIndex, info.areaRot, component, component.Rotate > 0, fromArchive);
 
-                    Slot slot = new Slot
-                    {
-                        unit = unit,
-                        info = info,
-                        immobile = immobile,
-                        unitObjInfo = new UnitObjInfo(item, area)
-                    };
-                    if (outsideUnits.ContainsKey(info.cellIndex))
-                    {
-                        outsideUnits[info.cellIndex] = slot;
-                    }
-                    else
-                    {
-                        outsideUnits.Add(info.cellIndex, slot);
-                    }
+                Slot slot = new Slot
+                {
+                    unit = unit,
+                    info = info,
+                    immobile = immobile,
+                    unitObjInfo = new UnitObjInfo(item, area)
+                };
+                if (outsideUnits.ContainsKey(info.cellIndex))
+                {
+                    outsideUnits[info.cellIndex] = slot;
+                }
+                else
+                {
+                    outsideUnits.Add(info.cellIndex, slot);
+                }
+            }
+            static void Postfix(ItemPutInfo info, ref bool __result)
+            {
+                if (!__result)
+                {
+                    Dbgl($"couldn't put down unit");
                 }
             }
         }
@@ -115,9 +119,9 @@ namespace BuildAnywhere
         [HarmonyPatch(typeof(Region), "PutDownDirSafeCheck")]
         static class Region_PutDownDirSafeCheck_Patch
         {
-            static bool Prefix(Region __instance, ref bool __result, ItemHomeSystemUnitCmpt common)
+            static bool Prefix(Region __instance, ref bool __result, HomeRegionType ___regionType)
             {
-                if (!enabled || Module<ScenarioModule>.Self.CurrentScenarioName != "Main" )
+                if (!enabled || ___regionType != HomeRegionType.Farm)
                     return true;
 
                 __result = true;
@@ -128,9 +132,9 @@ namespace BuildAnywhere
         [HarmonyPatch(typeof(Region), "SetSlot")]
         static class Region_SetSlot_Patch
         {
-            static bool Prefix(Region __instance, Area area)
+            static bool Prefix(Region __instance, Area area, HomeRegionType ___regionType)
             {
-                if (!enabled)
+                if (!enabled || ___regionType != HomeRegionType.Farm)
                     return true;
                 for (int i = 0; i < area.Length; i++)
                 {
@@ -149,9 +153,9 @@ namespace BuildAnywhere
         [HarmonyPatch(typeof(Region), "HasUnit", new Type[] { typeof(Area) })]
         static class Region_HasUnit_Patch
         {
-            static bool Prefix(Region __instance, Area area, ref bool __result)
+            static bool Prefix(Region __instance, Area area, ref bool __result, HomeRegionType ___regionType)
             {
-                if (!enabled || Module<ScenarioModule>.Self.CurrentScenarioName != "Main")
+                if (!enabled || ___regionType != HomeRegionType.Farm)
                     return true;
 
                 for (int i = 0; i < area.Length; i++)
@@ -174,9 +178,9 @@ namespace BuildAnywhere
         [HarmonyPatch(typeof(Region), "IsUnlocked", new Type[] { typeof(Area) })]
         static class Region_IsUnlocked_Patch
         {
-            static bool Prefix(Region __instance, Area area, ref bool __result)
+            static bool Prefix(ref bool __result, HomeRegionType ___regionType)
             {
-                if (!enabled || Module<ScenarioModule>.Self.CurrentScenarioName != "Main")
+                if (!enabled || ___regionType != HomeRegionType.Farm)
                     return true;
                 __result = true;
                 return false;
@@ -186,9 +190,9 @@ namespace BuildAnywhere
         [HarmonyPatch(typeof(Region), "IsUnlocked", new Type[] { typeof(CellIndex) })]
         static class Region_IsUnlocked_Patch2
         {
-            static bool Prefix(ref bool __result)
+            static bool Prefix(ref bool __result, HomeRegionType ___regionType)
             {
-                if (!enabled || Module<ScenarioModule>.Self.CurrentScenarioName != "Main")
+                if (!enabled || ___regionType != HomeRegionType.Farm)
                     return true;
                 __result = true;
                 return false;
@@ -198,9 +202,9 @@ namespace BuildAnywhere
         [HarmonyPatch(typeof(Region), "IsLockTakeUp")]
         static class Region_IsLockTakeUp_Patch
         {
-            static bool Prefix(ref bool __result, CellIndex index, ref string reason)
+            static bool Prefix(ref bool __result, CellIndex index, ref string reason, HomeRegionType ___regionType)
             {
-                if (!enabled || Module<ScenarioModule>.Self.CurrentScenarioName != "Main" || !outsideUnits.ContainsKey(index))
+                if (!enabled || ___regionType != HomeRegionType.Farm || !outsideUnits.ContainsKey(index))
                     return true;
 
                 __result = false;
@@ -212,56 +216,52 @@ namespace BuildAnywhere
         [HarmonyPatch(typeof(Region), "TakeUpItem")]
         static class Region_TakeUpItem_Patch
         {
-            static bool Prefix(Region __instance, ref ItemObject __result, CellIndex index)
+            static bool Prefix(Region __instance, ref ItemObject __result, CellIndex index, HomeRegionType ___regionType)
             {
-                if (!enabled || Module<ScenarioModule>.Self.CurrentScenarioName != "Main")
+                if (!enabled || ___regionType != HomeRegionType.Farm || !outsideUnits.ContainsKey(index))
                     return true;
 
-                if (outsideUnits.ContainsKey(index))
+                Slot slot = outsideUnits[index];
+
+                if (slot.unit != null)
                 {
-                    Slot slot = outsideUnits[index];
-
-                    if (slot.unit != null)
+                    if (slot.unit.IsLimitCount)
                     {
-                        if (slot.unit.IsLimitCount)
+                        typeof(Region).GetProperty("LimitUnitCount").SetValue(__instance, (int)typeof(Region).GetProperty("LimitUnitCount").GetValue(__instance, null)-1,null);
+                    }
+                    slot.unit.TakeUp(delegate (int id, int number)
+                    {
+                        if (id >= 0)
                         {
-                            typeof(Region).GetProperty("LimitUnitCount").SetValue(__instance, (int)typeof(Region).GetProperty("LimitUnitCount").GetValue(__instance, null)-1,null);
+                            Module<Player>.Self.bag.AddItem(id, number, true, AddItemMode.Default);
                         }
-                        slot.unit.TakeUp(delegate (int id, int number)
+                        else
                         {
-                            if (id >= 0)
-                            {
-                                Module<Player>.Self.bag.AddItem(id, number, true, AddItemMode.Default);
-                            }
-                            else
-                            {
-                                Module<Player>.Self.bag.ChangeMoney(number, true, 0);
-                            }
-                        });
-                    }
-
-                    var mySlot = AccessTools.FieldRefAccess<Region, List<object>>(__instance, "slots").Find((object o) => typeof(Region).GetNestedType("Slot", BindingFlags.NonPublic | BindingFlags.Instance).GetField("unit").GetValue(o) == slot.unit);
-                    if(mySlot != null)
-                    {
-                        typeof(Region).GetMethod("RemoveSlot", BindingFlags.NonPublic | BindingFlags.Instance).Invoke(__instance, new object[] { mySlot });
-                    }
-                    if (slot.unit != null && slot.unit.NeedUpdate)
-                    {
-                        Module<HomeUnitUpdater>.Self.RemoveUpdateableUnit(slot.unit);
-                    }
-                    outsideUnits.Remove(index);
-                    __result = slot.unitObjInfo.Item;
-                    return false;
+                            Module<Player>.Self.bag.ChangeMoney(number, true, 0);
+                        }
+                    });
                 }
-                return true;
+
+                var mySlot = AccessTools.FieldRefAccess<Region, List<object>>(__instance, "slots").Find((object o) => typeof(Region).GetNestedType("Slot", BindingFlags.NonPublic | BindingFlags.Instance).GetField("unit").GetValue(o) == slot.unit);
+                if(mySlot != null)
+                {
+                    typeof(Region).GetMethod("RemoveSlot", BindingFlags.NonPublic | BindingFlags.Instance).Invoke(__instance, new object[] { mySlot });
+                }
+                if (slot.unit != null && slot.unit.NeedUpdate)
+                {
+                    Module<HomeUnitUpdater>.Self.RemoveUpdateableUnit(slot.unit);
+                }
+                outsideUnits.Remove(index);
+                __result = slot.unitObjInfo.Item;
+                return false;
             }
         }
         [HarmonyPatch(typeof(Region), "PutbackUnitHandle")]
         static class Region_PutbackUnitHandle_Patch
         {
-            static bool Prefix(Region __instance, ref bool __result, UnitHandle unitHandle, ItemPutInfo putInfo, bool changed, bool autoReverseDirProtect = false)
+            static bool Prefix(Region __instance, ref bool __result, UnitHandle unitHandle, ItemPutInfo putInfo, bool changed, HomeRegionType ___regionType)
             {
-                if (!enabled || Module<ScenarioModule>.Self.CurrentScenarioName != "Main")
+                if (!enabled || ___regionType != HomeRegionType.Farm)
                     return true;
 
                 Slot slot = CreateSlotFromRSlot(unitHandle);
@@ -293,7 +293,7 @@ namespace BuildAnywhere
                 slot.area = area;
                 slot.unitObjInfo = new UnitObjInfo(slot.unitObjInfo.Item, area);
                 outsideUnits.Remove(oldSlot);
-                if (outsideUnits.ContainsKey(slot.info.cellIndex))
+                if (!outsideUnits.ContainsKey(slot.info.cellIndex))
                 {
                     outsideUnits.Add(slot.info.cellIndex,slot);
                 }

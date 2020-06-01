@@ -17,9 +17,9 @@ namespace BuildAnywhere
         [HarmonyPatch(typeof(HomeItemSelector), "ShowPreviewObj")]
         static class HomeItemSelector_ShowPreviewObj_Patch
         {
-            static void Postfix(HomeItemSelector __instance, Area ___area, ref ISelector ___focusSelector, ref GameObject ___previewGameObj)
+            static void Postfix(HomeItemSelector __instance, Area ___area, ref ISelector ___focusSelector, ref GameObject ___previewGameObj, ItemHomeSystemUnitCmpt ___systemCmpt)
             {
-                if (!enabled || !(___focusSelector is FarmViewer) || ___area == null || ___previewGameObj == null || Module<ScenarioModule>.Self.CurrentScenarioName != "Main")
+                if (!enabled || !(___focusSelector is FarmViewer) || ___area == null || ___previewGameObj == null || (___systemCmpt != null && !___systemCmpt.ContainsRegionType(HomeRegionType.Farm)))
                     return;
 
                 Vector3 vector2 = GetValidPos(___previewGameObj.transform.position);

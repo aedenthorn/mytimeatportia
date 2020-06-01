@@ -18,7 +18,7 @@ namespace BuildAnywhere
         public static bool enabled;
 
         public static Settings settings;
-        private static readonly bool isDebug = false;
+        private static readonly bool isDebug = true;
         private static Dictionary<CellIndex, Slot> outsideUnits = new Dictionary<CellIndex, Slot>();
 
         public static void Dbgl(string str = "", bool pref = true)
@@ -37,6 +37,7 @@ namespace BuildAnywhere
 
             var harmony = HarmonyInstance.Create(modEntry.Info.Id);
             harmony.PatchAll(Assembly.GetExecutingAssembly());
+
         }
 
 

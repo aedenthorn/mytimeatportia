@@ -2,13 +2,13 @@
     "Releases":
     [
 		{"Id": "AlwaysOpen", "Version": "0.1.0"},
-		{"Id": "BuildAnywhere", "Version": "0.2.3"},
+		{"Id": "BuildAnywhere", "Version": "0.2.4"},
 		{"Id": "ChangeClothes", "Version": "0.2.4"},
 		{"Id": "ChineseVoice", "Version": "0.1.0"},
 		{"Id": "CustomizePlayer", "Version": "0.1.1"},
 		{"Id": "CustomMerch", "Version": "0.1.0"},
 		{"Id": "CustomQuests", "Version": "0.1.0"},
-		{"Id": "CustomTextures", "Version": "0.7.2"},
+		{"Id": "CustomTextures", "Version": "0.7.3"},
 		{"Id": "DeeDeeAnywhere", "Version": "0.1.3"},
 		{"Id": "DialogueEdit", "Version": "0.1.0"},
 		{"Id": "Environment", "Version": "0.3.3"},
@@ -28,6 +28,7 @@
 		{"Id": "MusicBox", "Version": "0.4.0"},
 		{"Id": "NoWiggle", "Version": "0.1.0"},
 		{"Id": "PennyComeBack", "Version": "0.1.0"},
+		{"Id": "PlantMod", "Version": "0.2.1"},
 		{"Id": "PostProcessing", "Version": "0.2.0"},
 		{"Id": "SaveAnyTime", "Version": "0.9.0"},
 		{"Id": "Swim", "Version": "0.2.0"},

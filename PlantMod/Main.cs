@@ -1,13 +1,11 @@
 ﻿using Harmony12;
-using Hont.ExMethod.Collection;
-using NovaEnv;
+using Hont;
 using Pathea.HomeNs;
-using Pathea.WeatherNs;
+using Pathea.UISystemNs;
 using System;
-using System.Collections.Generic;
 using System.Reflection;
+using TMPro;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityModManagerNet;
 
 namespace PlantMod
@@ -63,9 +61,9 @@ namespace PlantMod
         [HarmonyPatch(typeof(NutrientContainerUnit), "ChangeNutrient")]
         static class NutrientContainerUnit_ChangeNutrient_Patch
         {
-            static void Prefix(ref float value)
+            static void Prefix(NutrientContainerUnit __instance, ref float value)
             {
-                if (!enabled || value > 0)
+                if (!enabled || __instance.GetType() != typeof(PlantingBoxUnit) || value > 0)
                     return;
 
                 value *= settings.nutrientConsumeMult;
@@ -84,5 +82,43 @@ namespace PlantMod
             }
         }
 
+        [HarmonyPatch(typeof(PlantingBoxInfoUI), "FreshGrowDisplay")]
+        static class PlantingBoxInfoUI_FreshGrowDisplay_Patch
+        {
+            static void Postfix(PlantingBoxInfoUI __instance, bool isInit, ref TextMeshProUGUI ___progText, bool ___isEnable, bool ___riped, bool ___isBadSeason, GameTimeSpan ___timeToRipe)
+            {
+                if (!enabled)
+                    return;
+                if (!isInit)
+                {
+                    if (!__instance.enabled)
+                    {
+                        return;
+                    }
+                    if (!___isEnable)
+                    {
+                        return;
+                    }
+                }
+
+                GameTimeSpan gts = new GameTimeSpan((long)Math.Round(___timeToRipe.Ticks/settings.plantGrowMult));
+
+                if (!___riped && !___isBadSeason && gts.TotalDays <= 99.0)
+                {
+                    if (gts.TotalDays < 1)
+                    {
+                        ___progText.text = string.Format(TextMgr.GetStr(100373, -1), gts.Hours, gts.Minutes);
+                    }
+                    else if (gts.TotalDays < 2)
+                    {
+                        ___progText.text = string.Format($"{TextMgr.GetStr(100972, -1)} {TextMgr.GetStr(100373, -1)}", (int)gts.TotalDays, gts.Hours, gts.Minutes).Replace("(s)","").Replace("(e)","");
+                    }
+                    else
+                    {
+                        ___progText.text = string.Format($"{TextMgr.GetStr(100972, -1)} {TextMgr.GetStr(100373, -1)}", (int)gts.TotalDays, gts.Hours, gts.Minutes).Replace("(s)","s").Replace("(e)", "e");
+                    }
+                }
+            }
+        }
     }
 }
