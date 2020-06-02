@@ -6,12 +6,10 @@ using Pathea.MessageSystem;
 using Pathea.ModuleNs;
 using Pathea.ScenarioNs;
 using Pathea.UISystemNs;
-using Pathea.UISystemNs.MainMenu;
+using PatheaScriptExt;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityModManagerNet;
@@ -207,6 +205,10 @@ namespace DeeDeeAnywhere
                     (iconData.iconObject as MapIconPoolSprite).SetRaycastTarget(true);
                     if (iconData.iconObject.gameObject.GetComponent<MapIconInteractTransfer>() == null)
                     {
+                        int tranId = Singleton<TransferTransIdDataBase>.Self.GetTranId((iconData.imap as SceneItemTransfer_IMap).SItem.ID);
+                        string name = (tranId <= 0) ? string.Empty : TextMgr.GetStr(tranId, -1);
+                        //Dbgl($"name: {name} pos: {iconData.imap.GetPos()}");
+
                         iconData.iconObject.gameObject.AddComponent<MapIconInteractTransfer>().SetImap(iconData.imap);
                         iconData.iconObject.gameObject.AddComponent<Selectable>();
                     }
@@ -215,7 +217,7 @@ namespace DeeDeeAnywhere
             }
         }
 
-        [HarmonyPatch(typeof(WholeMapViewer), "ShowDetails")]
+        //[HarmonyPatch(typeof(WholeMapViewer), "ShowDetails")]
         public static class WholeMapViewer_ShowDetails_Patch
         {
             public static bool Prefix(WholeMapViewer __instance, Image image, MapHoverDetail details, bool isDrag, ref Vector2 nearestAim, List<IMap> ___imapShowInfo, List<MapIconData> ___listIconPrefabs)
@@ -257,6 +259,15 @@ namespace DeeDeeAnywhere
                                     {
                                         flag = true;
                                         curTransfer = component;
+
+                                        Dbgl(rect.ToString());
+
+                                        IMap imap = AccessTools.FieldRefAccess<MapIconInteractTransfer, IMap>(component, "curImap");
+
+                                        int tranId = Singleton<TransferTransIdDataBase>.Self.GetTranId((imap as SceneItemTransfer_IMap).SItem.ID);
+                                        string name = (tranId <= 0) ? string.Empty : TextMgr.GetStr(tranId, -1);
+                                        //Dbgl($"name: {name} pos: {imap.GetPos()}");
+
                                         break;
                                     }
                                 }
@@ -266,7 +277,7 @@ namespace DeeDeeAnywhere
                 }
                 if (!flag)
                 {
-                    curTransfer = null;
+                    return true;
                 }
                 details.Fresh(___imapShowInfo);
                 return false;
@@ -295,6 +306,7 @@ namespace DeeDeeAnywhere
                 if (Module<ScenarioModule>.Self.CurrentScenarioName == "Main" && Module<PlayerActionModule>.Self.WasAcionPressed(ActionType.ActionMap))
                 {
                     MessageManager.Instance.Dispatch("TransportMap", new object[] { }, DispatchType.IMME, 2f);
+                    curTransfer = null;
                     return false;
                 }
                 return true;
