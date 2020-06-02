@@ -33,7 +33,7 @@ namespace ShippingBin
 
         public override string GetContent()
         {
-            string text = TextMgr.GetStr(contentId, -1) + "\r\n\r\n"+money;
+            string text = "<b>"+TextMgr.GetStr(103556, -1) + "</b>\r\n\r\n" + TextMgr.GetStr(contentId, -1) + "\r\n\r\n"+money;
 
             return text;
         }
