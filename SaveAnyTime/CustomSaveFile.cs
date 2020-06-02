@@ -41,7 +41,7 @@
                 this.auto = list[list.Length - 1] == "auto";
                 this.saveTimeFormatted = string.Format("{0}-{1}-{2} at {3}:{4}:{5}", saveTime.Substring(6, 2), saveTime.Substring(4, 2), saveTime.Substring(0, 4), saveTime.Substring(9, 2), saveTime.Substring(11, 2), saveTime.Substring(13, 2));
                 this.dateFormatted = string.Format("Year {0}, Month {1}, Day {2}", date.Split('Y')[0], date.Split('Y')[1].Split('M')[0], date.Split('Y')[1].Split('M')[1].Split('D')[0]);
-                this.saveTitle = string.Format("{0} at {1}:{2:00} on {3} in {4} ({5}saved on {6})", name, hour, minute, dateFormatted, sceneName, (auto?"auto":""), saveTimeFormatted);
+                this.saveTitle = string.Format("{0} at {1}:{2:00} on {3} in {4} ({5}saved on {6})", name, hour, (minute.Length == 1?"0":"")+minute, dateFormatted, sceneName, (auto?"auto":""), saveTimeFormatted);
             }
             catch
             {

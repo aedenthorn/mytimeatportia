@@ -1,5 +1,6 @@
 ﻿using Harmony12;
 using Pathea;
+using Pathea.Behavior;
 using Pathea.InputSolutionNs;
 using Pathea.MapNs;
 using Pathea.MessageSystem;
@@ -139,7 +140,7 @@ namespace DeeDeeAnywhere
         }
         private static GameObject transLayer;
 
-        //[HarmonyPatch(typeof(WholeMapViewer), "FreshMapIconCondition")]
+        [HarmonyPatch(typeof(WholeMapViewer), "FreshMapIconCondition")]
         public static class WholeMapViewer_FreshMapIconCondition_Patch
 		{
             public static bool Prefix(WholeMapViewer __instance, MapIconData iconData, MapIconInfo icon, float ___curLayerMin, float ___curLayerMax) 
@@ -148,23 +149,15 @@ namespace DeeDeeAnywhere
                 {
                     return true;
                 }
-                Vector3 fixedIdPos = (Vector3)typeof(MapViewer).GetMethod("GetFixedIdPos", BindingFlags.NonPublic | BindingFlags.Instance).Invoke(__instance, new object[] { iconData });
-                if (fixedIdPos.y <= ___curLayerMin || fixedIdPos.y > ___curLayerMax)
-                {
-                    typeof(MapViewer).GetMethod("HideIcon", BindingFlags.NonPublic | BindingFlags.Instance).Invoke(__instance, new object[] { iconData, icon });
-                }
                 PresetIcon presetIcon = icon as PresetIcon;
-                if (icon.HasInfo(MapType.Transport) && presetIcon != null)
+                if (icon.HasInfo(MapType.Transport) && presetIcon != null && presetIcon.IsIcon(MapIcon.TRANSFERPOINT))
                 {
-                    GameObject parent = (!presetIcon.IsIcon(MapIcon.TRANSFERPOINT)) ? (GameObject)typeof(MapViewer).GetMethod("GetIconLayerParent", BindingFlags.NonPublic | BindingFlags.Instance).Invoke(__instance, new object[] { icon.GetIconLayer() }) : transLayer;
+                    GameObject parent = (GameObject)typeof(MapViewer).GetMethod("GetIconLayerParent", BindingFlags.NonPublic | BindingFlags.Instance).Invoke(__instance, new object[] { icon.GetIconLayer() });
                     typeof(MapViewer).GetMethod("ShowIcon", BindingFlags.NonPublic | BindingFlags.Instance).Invoke(__instance, new object[] { iconData, parent, icon });
                     typeof(WholeMapViewer).GetMethod("SetIconRectTrans", BindingFlags.NonPublic | BindingFlags.Instance).Invoke(__instance, new object[] { iconData, icon });
+                    return false;
                 }
-                else
-                {
-                    typeof(MapViewer).GetMethod("HideIcon", BindingFlags.NonPublic | BindingFlags.Instance).Invoke(__instance, new object[] { iconData, icon });
-                }
-                return false;
+                return true;
 
             }
         }
@@ -205,13 +198,14 @@ namespace DeeDeeAnywhere
                     (iconData.iconObject as MapIconPoolSprite).SetRaycastTarget(true);
                     if (iconData.iconObject.gameObject.GetComponent<MapIconInteractTransfer>() == null)
                     {
-                        int tranId = Singleton<TransferTransIdDataBase>.Self.GetTranId((iconData.imap as SceneItemTransfer_IMap).SItem.ID);
-                        string name = (tranId <= 0) ? string.Empty : TextMgr.GetStr(tranId, -1);
-                        //Dbgl($"name: {name} pos: {iconData.imap.GetPos()}");
 
-                        iconData.iconObject.gameObject.AddComponent<MapIconInteractTransfer>().SetImap(iconData.imap);
+                        iconData.iconObject.gameObject.AddComponent<MapIconInteractTransfer>();
                         iconData.iconObject.gameObject.AddComponent<Selectable>();
                     }
+                    iconData.iconObject.gameObject.GetComponent<MapIconInteractTransfer>().SetImap(iconData.imap);
+                    int tranId = Singleton<TransferTransIdDataBase>.Self.GetTranId((iconData.imap as SceneItemTransfer_IMap).SItem.ID);
+                    string name = (tranId <= 0) ? string.Empty : TextMgr.GetStr(tranId, -1);
+                    Dbgl($"name: {name} pos: {iconData.imap.GetPos()}");
                 }
                 return false;
             }
@@ -310,6 +304,27 @@ namespace DeeDeeAnywhere
                     return false;
                 }
                 return true;
+            }
+        }
+
+        [HarmonyPatch(typeof(MapIconInteractTransfer), "GetQuestion")]
+        public static class MapIconInteractTransfer_GetQuestion
+        {
+            public static bool Prefix(MapIconInteractTransfer __instance, IMap ___curImap, ref string __result)
+            {
+                if (!enabled)
+                {
+                    return true;
+                }
+
+                int busStopTransferTime = Module<SceneItemManager>.Self.GetBusStopTransferTime(___curImap);
+                int num = busStopTransferTime / 60;
+                int num2 = busStopTransferTime - num * 60;
+
+                int tranId = Singleton<TransferTransIdDataBase>.Self.GetTranId((___curImap as SceneItemTransfer_IMap).SItem.ID);
+                string name = (tranId <= 0) ? string.Empty : TextMgr.GetStr(tranId, -1);
+                __result = string.Format($"<b>{name}</b>\r\n"+TextMgr.GetStr(91200043, -1), num.ToString(), num2.ToString(), Module<SceneItemManager>.Self.GetBusStopTransferMoney(___curImap));
+                return false;
             }
         }
     }

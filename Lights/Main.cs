@@ -55,7 +55,7 @@ namespace Lights
         {
             if (Module<ScenarioModule>.Self != null && Module<ScenarioModule>.Self.CurrentScenarioName == "Main")
             {
-                RefreshWorkshopLights();
+                RefreshAllLights(SceneManager.GetActiveScene());
             }
 
         }
@@ -71,24 +71,31 @@ namespace Lights
             settings.Save(modEntry);
             if (Module<ScenarioModule>.Self != null && Module<ScenarioModule>.Self.CurrentScenarioName == "Main")
             {
-                RefreshWorkshopLights();
+                RefreshAllLights(SceneManager.GetActiveScene());
             }
         }
 
         private static void OnGUI(UnityModManager.ModEntry modEntry)
         {
-            GUILayout.Label(string.Format("Lamp Light Range: <b>{0:F1}</b>", settings.lampLightRange), new GUILayoutOption[0]);
-            settings.lampLightRange = GUILayout.HorizontalSlider(settings.lampLightRange * 10f, 0f, 10000f, new GUILayoutOption[0]) / 10f;
+            settings.showWorkshopSettings = GUILayout.Toggle(settings.showWorkshopSettings, "Workshop Light Settings", new GUILayoutOption[0]);
             GUILayout.Space(10f);
-            GUILayout.Label(string.Format("Lamp Light Intensity: <b>{0:F2}</b>", settings.lampLightIntensity), new GUILayoutOption[0]);
-            settings.lampLightIntensity = GUILayout.HorizontalSlider(settings.lampLightIntensity * 100f, 0f, 1000f, new GUILayoutOption[0]) / 100f;
-            GUILayout.Space(10f);
-            GUILayout.Label(string.Format("Lamp Bounce Intensity: <b>{0:F2}</b>", settings.lampBounceIntensity), new GUILayoutOption[0]);
-            settings.lampBounceIntensity = GUILayout.HorizontalSlider(settings.lampBounceIntensity * 100f, 0f, 1000f, new GUILayoutOption[0]) / 100f;
-            GUILayout.Space(10f);
-            GUILayout.Label(string.Format("Lamp Light Color"), new GUILayoutOption[0]);
-            GUILayout.BeginHorizontal();
-            GUILayout.Space(20f);
+            if (settings.showWorkshopSettings)
+            {
+                GUILayout.BeginHorizontal();
+                GUILayout.Space(40f);
+                GUILayout.BeginVertical();
+                GUILayout.Label(string.Format("Workshop Lamp Light Range: <b>{0:F1}</b>", settings.lampLightRange), new GUILayoutOption[0]);
+                settings.lampLightRange = GUILayout.HorizontalSlider(settings.lampLightRange * 10f, 0f, 10000f, new GUILayoutOption[0]) / 10f;
+                GUILayout.Space(10f);
+                GUILayout.Label(string.Format("Workshop Lamp Light Intensity: <b>{0:F2}</b>", settings.lampLightIntensity), new GUILayoutOption[0]);
+                settings.lampLightIntensity = GUILayout.HorizontalSlider(settings.lampLightIntensity * 100f, 0f, 1000f, new GUILayoutOption[0]) / 100f;
+                GUILayout.Space(10f);
+                GUILayout.Label(string.Format("Workshop Lamp Bounce Intensity: <b>{0:F2}</b>", settings.lampBounceIntensity), new GUILayoutOption[0]);
+                settings.lampBounceIntensity = GUILayout.HorizontalSlider(settings.lampBounceIntensity * 100f, 0f, 1000f, new GUILayoutOption[0]) / 100f;
+                GUILayout.Space(10f);
+                GUILayout.Label(string.Format("Workshop Lamp Light Color"), new GUILayoutOption[0]);
+                GUILayout.BeginHorizontal();
+                GUILayout.Space(20f);
                 GUILayout.BeginVertical();
                 GUILayout.BeginHorizontal();
                 GUILayout.Label(string.Format("Red: <b>{0:F2}</b> ", settings.lampColorR), new GUILayoutOption[] { GUILayout.Width(labelWidth) });
@@ -105,29 +112,129 @@ namespace Lights
                 settings.lampColorB = GUILayout.HorizontalSlider((float)settings.lampColorB * 100f, 0, 100f) / 100f;
                 GUILayout.EndHorizontal();
                 GUILayout.EndVertical();
-            GUILayout.EndHorizontal();
+                GUILayout.EndHorizontal();
 
-            GUILayout.Space(20f);
+                GUILayout.Space(20f);
 
-            settings.lampsCastShadows = GUILayout.Toggle(settings.lampsCastShadows, "Lamps Cast Shadows", new GUILayoutOption[0]);
+                settings.lampsCastShadows = GUILayout.Toggle(settings.lampsCastShadows, "Workshop Lamps Cast Shadows", new GUILayoutOption[0]);
+                GUILayout.Space(10f);
+                if (settings.lampsCastShadows)
+                {
+                    GUILayout.BeginHorizontal();
+                    GUILayout.Space(40f);
+                    GUILayout.BeginVertical();
+
+                    GUILayout.Label(string.Format("Workshop Lamp Shadow Strength: <b>{0:F2}</b>", settings.lampShadowStrength), new GUILayoutOption[0]);
+                    settings.lampShadowStrength = GUILayout.HorizontalSlider(settings.lampShadowStrength * 100f, 0f, 100f, new GUILayoutOption[0]) / 100f;
+                    GUILayout.Space(10f);
+                    GUILayout.Label(string.Format("Workshop Lamp Shadow Near Plane: <b>{0:F1}</b>", settings.lampShadowNearPlane), new GUILayoutOption[0]);
+                    settings.lampShadowNearPlane = GUILayout.HorizontalSlider(settings.lampShadowNearPlane * 10f, 1f, 100f, new GUILayoutOption[0]) / 10f;
+                    GUILayout.Space(10f);
+                    GUILayout.Label(string.Format("Workshop Lamp Shadow Bias: <b>{0:F2}</b>", settings.lampShadowBias), new GUILayoutOption[0]);
+                    settings.lampShadowBias = GUILayout.HorizontalSlider(settings.lampShadowBias * 100f, 0f, 200f, new GUILayoutOption[0]) / 100f;
+                    GUILayout.Space(10f);
+                    GUILayout.Label(string.Format("Workshop Lamp Shadow Normal Bias: <b>{0:F2}</b>", settings.lampShadowNormalBias), new GUILayoutOption[0]);
+                    settings.lampShadowNormalBias = GUILayout.HorizontalSlider(settings.lampShadowNormalBias * 100f, 0f, 300f, new GUILayoutOption[0]) / 100f;
+                    GUILayout.Space(10f);
+                    GUILayout.Label(string.Format("Workshop Lamp Shadow Resolution: <b>{0}</b>", shadowResolutions[settings.lampShadowResolution + 1]), new GUILayoutOption[0]);
+                    settings.lampShadowResolution = (int)GUILayout.HorizontalSlider(settings.lampShadowResolution, -1f, 3f, new GUILayoutOption[0]);
+                    GUILayout.Space(10f);
+
+                    GUILayout.EndVertical();
+                    GUILayout.EndHorizontal();
+
+                }
+                GUILayout.EndVertical();
+                GUILayout.EndHorizontal();
+
+            }
+
+
             GUILayout.Space(10f);
-            if (settings.lampsCastShadows)
+
+            settings.showSceneSettings = GUILayout.Toggle(settings.showSceneSettings, "Scene Light Settings", new GUILayoutOption[0]);
+            GUILayout.Space(10f);
+            if (settings.showSceneSettings)
             {
-                GUILayout.Label(string.Format("Lamp Shadow Strength: <b>{0:F2}</b>", settings.lampShadowStrength), new GUILayoutOption[0]);
-                settings.lampShadowStrength = GUILayout.HorizontalSlider(settings.lampShadowStrength * 100f, 0f, 100f, new GUILayoutOption[0]) / 100f;
+                GUILayout.BeginHorizontal();
+                GUILayout.Space(40f);
+                GUILayout.BeginVertical();
+
+
+                settings.customStreetlightLights = GUILayout.Toggle(settings.customStreetlightLights, "Customize Scene Lights", new GUILayoutOption[0]);
                 GUILayout.Space(10f);
-                GUILayout.Label(string.Format("Lamp Shadow Near Plane: <b>{0:F1}</b>", settings.lampShadowNearPlane), new GUILayoutOption[0]);
-                settings.lampShadowNearPlane = GUILayout.HorizontalSlider(settings.lampShadowNearPlane * 10f, 1f, 100f, new GUILayoutOption[0]) / 10f;
+                if (settings.customStreetlightLights)
+                {
+                    GUILayout.BeginHorizontal();
+                    GUILayout.Space(40f);
+                    GUILayout.BeginVertical();
+
+                    GUILayout.Label(string.Format("Scene Light Light Range: <b>{0:F1}</b>", settings.streetlightLightRange), new GUILayoutOption[0]);
+                    settings.streetlightLightRange = GUILayout.HorizontalSlider(settings.streetlightLightRange * 10f, 0f, 10000f, new GUILayoutOption[0]) / 10f;
+                    GUILayout.Space(10f);
+                    GUILayout.Label(string.Format("Scene Light Light Intensity: <b>{0:F2}</b>", settings.streetlightLightIntensity), new GUILayoutOption[0]);
+                    settings.streetlightLightIntensity = GUILayout.HorizontalSlider(settings.streetlightLightIntensity * 100f, 0f, 1000f, new GUILayoutOption[0]) / 100f;
+                    GUILayout.Space(10f);
+                    GUILayout.Label(string.Format("Scene Light Bounce Intensity: <b>{0:F2}</b>", settings.streetlightBounceIntensity), new GUILayoutOption[0]);
+                    settings.streetlightBounceIntensity = GUILayout.HorizontalSlider(settings.streetlightBounceIntensity * 100f, 0f, 1000f, new GUILayoutOption[0]) / 100f;
+                    GUILayout.Space(10f);
+                    GUILayout.Label(string.Format("Scene Light Light Color"), new GUILayoutOption[0]);
+                    GUILayout.BeginHorizontal();
+                    GUILayout.Space(40f);
+                    GUILayout.BeginVertical();
+                    GUILayout.BeginHorizontal();
+                    GUILayout.Label(string.Format("Red: <b>{0:F2}</b> ", settings.streetlightColorR), new GUILayoutOption[] { GUILayout.Width(labelWidth) });
+                    settings.streetlightColorR = GUILayout.HorizontalSlider((float)settings.streetlightColorR * 100f, 0, 100f) / 100f;
+                    GUILayout.EndHorizontal();
+                    GUILayout.Space(10f);
+                    GUILayout.BeginHorizontal();
+                    GUILayout.Label(string.Format("Green: <b>{0:F2}</b> ", settings.streetlightColorG), new GUILayoutOption[] { GUILayout.Width(labelWidth) });
+                    settings.streetlightColorG = GUILayout.HorizontalSlider((float)settings.streetlightColorG * 100f, 0, 100f) / 100f;
+                    GUILayout.EndHorizontal();
+                    GUILayout.Space(10f);
+                    GUILayout.BeginHorizontal();
+                    GUILayout.Label(string.Format("Blue: <b>{0:F2}</b> ", settings.streetlightColorB), new GUILayoutOption[] { GUILayout.Width(labelWidth) });
+                    settings.streetlightColorB = GUILayout.HorizontalSlider((float)settings.streetlightColorB * 100f, 0, 100f) / 100f;
+                    GUILayout.EndHorizontal();
+                    GUILayout.EndVertical();
+                    GUILayout.EndHorizontal();
+
+                    GUILayout.EndVertical();
+                    GUILayout.EndHorizontal();
+
+                }
+                GUILayout.Space(20f);
+
+                settings.streetlightsCastShadows = GUILayout.Toggle(settings.streetlightsCastShadows, "Scene Lights Cast Shadows", new GUILayoutOption[0]);
                 GUILayout.Space(10f);
-                GUILayout.Label(string.Format("Lamp Shadow Bias: <b>{0:F2}</b>", settings.lampShadowBias), new GUILayoutOption[0]);
-                settings.lampShadowBias = GUILayout.HorizontalSlider(settings.lampShadowBias * 100f, 0f, 200f, new GUILayoutOption[0]) / 100f;
-                GUILayout.Space(10f);
-                GUILayout.Label(string.Format("Lamp Shadow Normal Bias: <b>{0:F2}</b>", settings.lampShadowNormalBias), new GUILayoutOption[0]);
-                settings.lampShadowNormalBias = GUILayout.HorizontalSlider(settings.lampShadowNormalBias * 100f, 0f, 300f, new GUILayoutOption[0]) / 100f;
-                GUILayout.Space(10f);
-                GUILayout.Label(string.Format("Lamp Shadow Resolution: <b>{0}</b>", shadowResolutions[settings.lampShadowResolution+1]), new GUILayoutOption[0]);
-                settings.lampShadowResolution = (int)GUILayout.HorizontalSlider(settings.lampShadowResolution, -1f, 3f, new GUILayoutOption[0]);
-                GUILayout.Space(10f);
+                if (settings.streetlightsCastShadows)
+                {
+                    GUILayout.BeginHorizontal();
+                    GUILayout.Space(40f);
+                    GUILayout.BeginVertical();
+
+                    GUILayout.Label(string.Format("Scene Light Shadow Strength: <b>{0:F2}</b>", settings.streetlightShadowStrength), new GUILayoutOption[0]);
+                    settings.streetlightShadowStrength = GUILayout.HorizontalSlider(settings.streetlightShadowStrength * 100f, 0f, 100f, new GUILayoutOption[0]) / 100f;
+                    GUILayout.Space(10f);
+                    GUILayout.Label(string.Format("Scene Light Shadow Near Plane: <b>{0:F1}</b>", settings.streetlightShadowNearPlane), new GUILayoutOption[0]);
+                    settings.streetlightShadowNearPlane = GUILayout.HorizontalSlider(settings.streetlightShadowNearPlane * 10f, 1f, 100f, new GUILayoutOption[0]) / 10f;
+                    GUILayout.Space(10f);
+                    GUILayout.Label(string.Format("Scene Light Shadow Bias: <b>{0:F2}</b>", settings.streetlightShadowBias), new GUILayoutOption[0]);
+                    settings.streetlightShadowBias = GUILayout.HorizontalSlider(settings.streetlightShadowBias * 100f, 0f, 200f, new GUILayoutOption[0]) / 100f;
+                    GUILayout.Space(10f);
+                    GUILayout.Label(string.Format("Scene Light Shadow Normal Bias: <b>{0:F2}</b>", settings.streetlightShadowNormalBias), new GUILayoutOption[0]);
+                    settings.streetlightShadowNormalBias = GUILayout.HorizontalSlider(settings.streetlightShadowNormalBias * 100f, 0f, 300f, new GUILayoutOption[0]) / 100f;
+                    GUILayout.Space(10f);
+                    GUILayout.Label(string.Format("Scene Light Shadow Resolution: <b>{0}</b>", shadowResolutions[settings.streetlightShadowResolution + 1]), new GUILayoutOption[0]);
+                    settings.streetlightShadowResolution = (int)GUILayout.HorizontalSlider(settings.streetlightShadowResolution, -1f, 3f, new GUILayoutOption[0]);
+                    GUILayout.Space(10f);
+
+                    GUILayout.EndVertical();
+                    GUILayout.EndHorizontal();
+                }
+
+                GUILayout.EndVertical();
+                GUILayout.EndHorizontal();
             }
         }
 
@@ -135,25 +242,40 @@ namespace Lights
         {
             if (!enabled || arg1.name != "Main")
                 return;
-            RefreshWorkshopLights();
+            RefreshAllLights(arg1);
         }
 
-        private static void RefreshWorkshopLights()
+        private static void RefreshAllLights(Scene scene)
         {
             LayeredRegion layeredRegion = (LayeredRegion)typeof(FarmModule).GetField("layeredRegion", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(Module<FarmModule>.Self);
             Region itemLayer = (Region)typeof(LayeredRegion).GetField("itemLayer", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(layeredRegion);
             List<object> slots = AccessTools.FieldRefAccess<Region, List<object>>(itemLayer, "slots");
 
+            List<GameObject> workshopLights = new List<GameObject>();
             foreach (object slot in slots)
             {
                 UnitObjInfo unitObjInfo = (UnitObjInfo)slot.GetType().GetField("unitObjInfo").GetValue(slot);
                 GameObject go = unitObjInfo.go;
-                RefreshOneLight(go);
-
+                if(go.GetComponentInChildren<Light>() != null)
+                {
+                    workshopLights.Add(go);
+                    RefreshOneWorkshopLight(go);
+                }
+            }
+            if (settings.customStreetlightLights)
+            {
+                GameObject[] gameObjects = scene.GetRootGameObjects();
+                foreach (GameObject obj in gameObjects)
+                {
+                    if (!workshopLights.Contains(obj))
+                    {
+                        RefreshOneStreetLight(obj);
+                    }
+                }
             }
         }
 
-        private static void RefreshOneLight(GameObject go)
+        private static void RefreshOneWorkshopLight(GameObject go)
         {
             if (go == null)
                 return;
@@ -182,6 +304,40 @@ namespace Lights
                 light.color = new Color(settings.lampColorR, settings.lampColorG, settings.lampColorB);
             }
         }
+        
+        private static void RefreshOneStreetLight(GameObject go)
+        {
+            if (go == null)
+                return;
+
+            Light[] lights = go.GetComponentsInChildren<Light>();
+            foreach(Light light in lights)
+            {
+                if (!settings.streetlightsCastShadows)
+                {
+                    light.shadows = LightShadows.None;
+                    return;
+                }
+                else
+                {
+                    light.shadows = LightShadows.Soft;
+                    light.shadowStrength = settings.streetlightShadowStrength;
+                    light.shadowBias = settings.streetlightShadowBias;
+                    light.shadowNormalBias = settings.streetlightShadowNormalBias;
+                    light.shadowNearPlane = settings.streetlightShadowNearPlane;
+                    light.shadowResolution = (UnityEngine.Rendering.LightShadowResolution)settings.streetlightShadowResolution;
+                    light.shadowCustomResolution = -1;
+                }
+                Dbgl("range: " + light.range);
+                Dbgl("intensity: " + light.intensity);
+                Dbgl("bounceIntensity: " + light.bounceIntensity);
+
+                light.range = settings.streetlightLightRange;
+                light.intensity = settings.streetlightLightIntensity;
+                light.bounceIntensity = settings.streetlightBounceIntensity;
+                light.color = new Color(settings.streetlightColorR, settings.streetlightColorG, settings.streetlightColorB);
+            }
+        }
 
         [HarmonyPatch(typeof(RegionViewer), "CreateUnitGameObj")]
         static class RegionViewer_CreateUnitGameObj_Patch
@@ -192,7 +348,7 @@ namespace Lights
                     return;
                 Singleton<TaskRunner>.Instance.RunDelayTask(0.005f, true, delegate ()
                 {
-                    RefreshOneLight(objInfo.go);
+                    RefreshOneWorkshopLight(objInfo.go);
                 });
             }
         }
@@ -208,7 +364,7 @@ namespace Lights
                 GameObject[] lightsObject = LightGroupData.GetLightsObject(groupID);
                 for (int i = 0; i < lightsObject.Length; i++)
                 {
-                    RefreshOneLight(lightsObject[i]);
+                    RefreshOneWorkshopLight(lightsObject[i]);
                 }
             }
         }
