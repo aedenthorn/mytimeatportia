@@ -235,6 +235,12 @@ namespace Cheats
             UnityEngine.Event e = UnityEngine.Event.current;
 
 
+            if (GUILayout.Button("Starlight", new GUILayoutOption[]{
+                        GUILayout.Width(150f)
+                    }))
+            {
+                Module<ScenarioModule>.Self.TransferToScenario("StarlightIsland");
+            }
             if (GUILayout.Button("Teleport", new GUILayoutOption[]{
                         GUILayout.Width(150f)
                     }))

@@ -14,6 +14,7 @@ using System.Collections;
 using Hont;
 using Pathea.CameraSystemNs;
 using Pathea.InputSolutionNs;
+using Pathea.ScenarioNs;
 
 namespace Swim
 {
@@ -120,44 +121,54 @@ namespace Swim
                 Vector3 pos = Player.Self.GamePos;
 
                 float height = 25f;
-                if (pos.x > 665f && pos.z > -185f && pos.x < 866f && pos.z < -100f) // wf river one S
+
+                if(Module<ScenarioModule>.Self.CurrentScenarioName == "Main")
                 {
-                    height = 85f;
+
+                    if (pos.x > 665f && pos.z > -185f && pos.x < 866f && pos.z < -100f) // wf river one S
+                    {
+                        height = 85f;
+                    }
+                    else if (pos.x > 665f && pos.z > -100f && pos.x < 866f && pos.z < -68f) // wf river one N
+                    {
+                        height = 85.5f;
+                    }
+                    else if (pos.x > 665f && pos.z > -68f && pos.x < 866f && pos.z < 61f) // wf river one N
+                    {
+                        height = 86f;
+                    }
+                    else if (pos.x > 866f && pos.z < 252f && pos.z > -47f) // wf river 2
+                    {
+                        height = 127f;
+                    }
+                    else if (pos.x > 905f && pos.z < -398f && pos.z > -554f) // desert
+                    {
+                        height = 73f;
+                    }
+                    else if (pos.x < -288f && pos.z > -242f && pos.z < 12f && pos.x > -590f) // balloon
+                    {
+                        height = 58f;
+                    }
+                    else if (pos.x < -705f && pos.z > -314f && pos.z < -127f) // western plateau
+                    {
+                        height = 69f;
+                    }
+                    else if (pos.x > 314f && pos.x < 448f && pos.z > 10f && pos.z < 167f) //wasteland
+                    {
+                        height = 25f;
+                    }
+                    else if (pos.z > 179f) // north
+                    {
+                        height = 73f;
+                    }
                 }
-                else if (pos.x > 665f && pos.z > -100f && pos.x < 866f && pos.z < -68f) // wf river one N
+                else if (Module<ScenarioModule>.Self.CurrentScenarioName == "StarlightIsland")
                 {
-                    height = 85.5f;
+                    height = 99.4f;
                 }
-                else if (pos.x > 665f && pos.z > -68f && pos.x < 866f && pos.z < 61f) // wf river one N
-                {
-                    height = 86f;
-                }
-                else if (pos.x > 866f && pos.z < 252f && pos.z > -47f) // wf river 2
-                {
-                    height = 127f;
-                }
-                else if (pos.x > 905f && pos.z < -398f && pos.z > -554f) // desert
-                {
-                    height = 73f;
-                }
-                else if (pos.x < -288f && pos.z > -242f && pos.z < 12f && pos.x > -590f) // balloon
-                {
-                    height = 58f;
-                }
-                else if (pos.x < -705f && pos.z > -314f && pos.z < -127f) // western plateau
-                {
-                    height = 69f;
-                }
-                else if (pos.x > 314f && pos.x < 448f && pos.z > 10f && pos.z < 167f) //wasteland
-                {
-                    height = 25f;
-                }
-                else if (pos.z > 179f) // north
-                {
-                    height = 73f;
-                }
-                    //pos.y = 25f + (float)Math.Sin(height / 10f) / 5f;
-                
+
+                //pos.y = 25f + (float)Math.Sin(height / 10f) / 5f;
+
                 float bob = (float)Math.Sin(settings.bobSpeed * count / 10f) / 3f * settings.bobMagnitude;
                 Vector3 newPos = new Vector3(0, height + bob - pos.y, 0);
 
