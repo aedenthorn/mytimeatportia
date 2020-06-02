@@ -253,7 +253,7 @@ namespace DeeDeeAnywhere
                                 {
                                     ___imapShowInfo.Add(___listIconPrefabs[i].imap);
                                     MapIconInteractTransfer component = ___listIconPrefabs[i].iconObject.GetComponent<MapIconInteractTransfer>();
-                                    if (component != null)
+                                    if (component != null && curTransfer == null && Input.GetMouseButton(0))
                                     {
                                         flag = true;
                                         curTransfer = component;
@@ -278,6 +278,7 @@ namespace DeeDeeAnywhere
             if (curTransfer != null)
             {
                 curTransfer.OnPointerClick(null);
+                curTransfer = null;
             }
         }
 
