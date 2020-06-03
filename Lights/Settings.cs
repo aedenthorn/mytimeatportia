@@ -25,12 +25,12 @@ namespace Lights
 
         public bool customStreetlightLights = false;
 
-        public float streetlightLightIntensityMult = 1.3f;
-        public float streetlightLightRangeMult = 10.0f;
-        public float streetlightBounceIntensityMult = 1.0f;
-        public float streetlightColorRMult = 0.978f;
-        public float streetlightColorGMult = 0.813f;
-        public float streetlightColorBMult = 0.518f;
+        public float streetlightLightIntensityMult = 0;
+        public float streetlightLightRangeMult = 0;
+        public float streetlightBounceIntensityMult = 0;
+        public float streetlightColorRMult = 0;
+        public float streetlightColorGMult = 0;
+        public float streetlightColorBMult = 0;
 
         public bool streetlightsCastShadows = true;
         public float streetlightShadowNearPlane = 1.0f;

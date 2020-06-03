@@ -63,7 +63,8 @@ namespace CustomMerch
                     return;
                 if (___generalProduct == null)
                 {
-                    return;
+                    ___generalProduct = new string[0];
+                    ___generalProductData = new SaleProductData[0];
                 }
                 int i = ___generalProduct.Length;
 

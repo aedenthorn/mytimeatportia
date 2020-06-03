@@ -18,7 +18,7 @@ namespace CustomMerch
         public static void Dbgl(string str = "", bool pref = true)
         {
             if (isDebug)
-                Debug.Log((pref ? "WeaponMod " : "") + str);
+                Debug.Log((pref ? "CustomMerch " : "") + str);
         }
         public static bool enabled;
         public static Settings settings { get; private set; }
