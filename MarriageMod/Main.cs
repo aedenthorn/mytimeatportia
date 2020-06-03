@@ -456,14 +456,14 @@ namespace MarriageMod
                 if (currentTime < nextKissTime)
                     break;
 
-                if (!a.CanInteract || a.InBattle || !a.Visible || a.IsActionRunning(ACType.Sleep) || a.IsActionRunning(ACType.Sit) || a.IsActionRunning(ACType.Conversation) || a.IsActionRunning(ACType.Interact) || kissingSpouses.ContainsKey(a.InstanceId) || Module<EGMgr>.Self.IsEngagementEvent(a.InstanceId) || a.OnBus || a.IsInteractive())
+                if (!a.CanInteract || a.InBattle || !a.Visible || a.RiderState == Pathea.RiderNs.RiderState.RideOn || a.IsActionRunning(ACType.Sleep) || a.IsActionRunning(ACType.Sit) || a.IsActionRunning(ACType.Conversation) || a.IsActionRunning(ACType.Interact) || kissingSpouses.ContainsKey(a.InstanceId) || Module<EGMgr>.Self.IsEngagementEvent(a.InstanceId) || a.OnBus || a.IsInteractive())
                 {
                     continue; 
                 }
                 Vector3 pos1 = a.gamePos;
                 foreach (Actor ao in aSpouseList)
                 {
-                    if (ao.InstanceId == a.InstanceId || !ao.CanInteract || ao.InBattle || !ao.Visible || ao.IsActionRunning(ACType.Sleep) || ao.IsActionRunning(ACType.Sit) || ao.IsActionRunning(ACType.Conversation) || ao.IsActionRunning(ACType.Interact) || kissingSpouses.ContainsKey(ao.InstanceId) || Module<EGMgr>.Self.IsEngagementEvent(ao.InstanceId) || ao.OnBus || ao.IsInteractive())
+                    if (ao.InstanceId == a.InstanceId || !ao.CanInteract || ao.InBattle || !ao.Visible || a.RiderState == Pathea.RiderNs.RiderState.RideOn || ao.IsActionRunning(ACType.Sleep) || ao.IsActionRunning(ACType.Sit) || ao.IsActionRunning(ACType.Conversation) || ao.IsActionRunning(ACType.Interact) || kissingSpouses.ContainsKey(ao.InstanceId) || Module<EGMgr>.Self.IsEngagementEvent(ao.InstanceId) || ao.OnBus || ao.IsInteractive())
                     {
                         continue;
                     }

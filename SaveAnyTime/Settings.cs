@@ -4,6 +4,7 @@ namespace SaveAnyTime
 {
     public class Settings : UnityModManager.ModSettings
     {
+        public int maxAutoSaves = 1;
         public int saveInterval = 0;
         public bool saveOnSceneChange = false;
 

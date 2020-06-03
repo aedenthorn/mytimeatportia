@@ -137,15 +137,21 @@ namespace SaveAnyTime
             {
                 Dbgl("Getting old autosaves");
                 string createPlayerTime = (string)Singleton<Archive>.Instance.GetType().GetMethod("GenDateFilename", BindingFlags.NonPublic | BindingFlags.Instance).Invoke(Singleton<Archive>.Instance, new object[] { curPlayerIdentity.createPlayerTime });
+
+                List<string> autoFiles = new List<string>();
                 foreach (CustomSaveFile csf in saveFiles)
                 {
                     if (csf.auto && createPlayerTime == csf.creationTime)
                     {
-                        var aPath = Path.Combine(GetSavesPath(), $"{csf.fileName}");
-                        File.Delete(aPath);
-                        aPath = Path.Combine(GetSavesPath(), $"{csf.fileName}.xml");
-                        File.Delete(aPath);
+                        autoFiles.Add(Path.Combine(GetSavesPath(), $"{csf.fileName}"));
                     }
+                }
+                int del = 0;
+                while(autoFiles.Count - del >= settings.maxAutoSaves)
+                {
+                    File.Delete(autoFiles[del]);
+                    File.Delete(autoFiles[del] +".xml");
+                    del++;
                 }
             }
 

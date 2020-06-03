@@ -97,6 +97,12 @@ namespace SaveAnyTime
                 resetLastSave();
                 settings.saveInterval = saveInterval;
             }
+
+            GUILayout.Space(10f);
+
+            GUILayout.Label(string.Format("Max auto saves: <b>{0}</b>", settings.maxAutoSaves), new GUILayoutOption[0]);
+            settings.maxAutoSaves = (int)GUILayout.HorizontalSlider(settings.maxAutoSaves, 1f, 20f, new GUILayoutOption[0]);
+
             GUILayout.Space(10f);
             settings.saveOnSceneChange = GUILayout.Toggle(settings.saveOnSceneChange, "Autosave when changing scenes", new GUILayoutOption[0]);
 
@@ -158,18 +164,7 @@ namespace SaveAnyTime
 
             if (Input.GetKeyDown(settings.QuickLoadKey) && saveFiles.Count > 0 && !isLoading)
             {
-                List<string> files = new List<string>();
-                foreach (CustomSaveFile csf in saveFiles)
-                {
-                    files.Add(csf.fileName);
-                }
-                files.Sort(delegate (string x, string y)
-                {
-                    string datex = x.Split('_')[2];
-                    string datey = y.Split('_')[2];
-                    return datex.CompareTo(datey);
-                });
-                string fileName = files[files.Count - 1];
+                string fileName = saveFiles[saveFiles.Count - 1].fileName;
                 Dbgl($"Quick load {fileName}");
                 isLoading = true;
                 Singleton<TaskRunner>.Self.StartCoroutine(LoadGameFromArchive(fileName));
@@ -238,6 +233,13 @@ namespace SaveAnyTime
                     saveFiles.Add(csf);
                 }
             }
+            saveFiles.Sort(delegate (CustomSaveFile x, CustomSaveFile y)
+            {
+                string datex = x.fileName.Split('_')[2];
+                string datey = y.fileName.Split('_')[2];
+                return datex.CompareTo(datey);
+            });
+
         }
 
         private static string GetSavesPath()

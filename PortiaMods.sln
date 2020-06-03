@@ -93,6 +93,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlantMod", "PlantMod\PlantM
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShippingBin", "ShippingBin\ShippingBin.csproj", "{38B52668-D947-4F71-B615-0494EF7DB075}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UMMFreeze", "UMMFreeze\UMMFreeze.csproj", "{C99DFD3A-CC38-4404-AB4A-B1D44A938CBC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -279,6 +281,10 @@ Global
 		{38B52668-D947-4F71-B615-0494EF7DB075}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{38B52668-D947-4F71-B615-0494EF7DB075}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{38B52668-D947-4F71-B615-0494EF7DB075}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C99DFD3A-CC38-4404-AB4A-B1D44A938CBC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C99DFD3A-CC38-4404-AB4A-B1D44A938CBC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C99DFD3A-CC38-4404-AB4A-B1D44A938CBC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C99DFD3A-CC38-4404-AB4A-B1D44A938CBC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
