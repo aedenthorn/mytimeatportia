@@ -101,6 +101,50 @@ namespace Cheats
             {
                 Module<Player>.Self.bag.ChangeMoney(100000, true, 0);
             }
+            if (Input.GetKeyDown("."))
+            {
+                Module<Player>.Self.bag.AddItem(ItemObject.CreateItem(1001300, 1), true);
+                Module<Player>.Self.bag.AddItem(ItemObject.CreateItem(1001301, 1), true);
+                Module<Player>.Self.bag.AddItem(ItemObject.CreateItem(3044001, 1), true);
+                Module<Player>.Self.bag.AddItem(ItemObject.CreateItem(3044002, 1), true);
+                Module<Player>.Self.bag.AddItem(ItemObject.CreateItem(3044003, 1), true);
+                Module<Player>.Self.bag.AddItem(ItemObject.CreateItem(3044004, 1), true);
+                Module<Player>.Self.bag.AddItem(ItemObject.CreateItem(4000328, 1), true);
+                //Module<Player>.Self.bag.AddItem(ItemObject.CreateItem(5000028, 1), true);
+                //Module<Player>.Self.bag.AddItem(ItemObject.CreateItem(5000029, 1), true);
+                //Module<Player>.Self.bag.AddItem(ItemObject.CreateItem(5000131, 1), true);
+                //Module<Player>.Self.bag.AddItem(ItemObject.CreateItem(5010004, 1), true);
+                Module<Player>.Self.bag.AddItem(ItemObject.CreateItem(6000002, 1), true);
+                Module<Player>.Self.bag.AddItem(ItemObject.CreateItem(6000019, 1), true);
+                Module<Player>.Self.bag.AddItem(ItemObject.CreateItem(6000020, 1), true);
+                Module<Player>.Self.bag.AddItem(ItemObject.CreateItem(6000021, 1), true);
+                Module<Player>.Self.bag.AddItem(ItemObject.CreateItem(6000024, 1), true);
+                Module<Player>.Self.bag.AddItem(ItemObject.CreateItem(6000025, 1), true);
+                Module<Player>.Self.bag.AddItem(ItemObject.CreateItem(6000026, 1), true);
+                Module<Player>.Self.bag.AddItem(ItemObject.CreateItem(6000027, 1), true);
+                Module<Player>.Self.bag.AddItem(ItemObject.CreateItem(6000028, 1), true);
+                Module<Player>.Self.bag.AddItem(ItemObject.CreateItem(6000029, 1), true);
+                Module<Player>.Self.bag.AddItem(ItemObject.CreateItem(6000030, 1), true);
+                Module<Player>.Self.bag.AddItem(ItemObject.CreateItem(7000008, 1), true);
+                Module<Player>.Self.bag.AddItem(ItemObject.CreateItem(7000023, 1), true);
+                Module<Player>.Self.bag.AddItem(ItemObject.CreateItem(7010001, 1), true);
+                Module<Player>.Self.bag.AddItem(ItemObject.CreateItem(7010002, 1), true);
+                Module<Player>.Self.bag.AddItem(ItemObject.CreateItem(7010003, 1), true);
+                Module<Player>.Self.bag.AddItem(ItemObject.CreateItem(7010005, 1), true);
+                Module<Player>.Self.bag.AddItem(ItemObject.CreateItem(7010006, 1), true);
+                Module<Player>.Self.bag.AddItem(ItemObject.CreateItem(7010007, 1), true);
+                Module<Player>.Self.bag.AddItem(ItemObject.CreateItem(7010008, 1), true);
+                Module<Player>.Self.bag.AddItem(ItemObject.CreateItem(7010009, 1), true);
+                Module<Player>.Self.bag.AddItem(ItemObject.CreateItem(7010010, 1), true);
+                Module<Player>.Self.bag.AddItem(ItemObject.CreateItem(8000010, 1), true);
+                Module<Player>.Self.bag.AddItem(ItemObject.CreateItem(8000028, 1), true);
+                Module<Player>.Self.bag.AddItem(ItemObject.CreateItem(8010001, 1), true);
+                Module<Player>.Self.bag.AddItem(ItemObject.CreateItem(8010002, 1), true);
+                Module<Player>.Self.bag.AddItem(ItemObject.CreateItem(8010003, 1), true);
+                Module<Player>.Self.bag.AddItem(ItemObject.CreateItem(8010004, 1), true);
+                Module<Player>.Self.bag.AddItem(ItemObject.CreateItem(8020008, 1), true);
+                Module<Player>.Self.bag.AddItem(ItemObject.CreateItem(8020009, 1), true);
+            }
         }
 
         private static void OnLoadGame()
@@ -448,6 +492,8 @@ namespace Cheats
                     }
                     if (false)
                     {
+
+
                         Module<Player>.Self.bag.AddItem(ItemObject.CreateItem(7000041, 100), true);
                         Module<Player>.Self.bag.AddItem(ItemObject.CreateItem(8000019, 100), true);
                         Module<Player>.Self.bag.ChangeMoney(100000, true, 0);
@@ -467,10 +513,9 @@ namespace Cheats
 
 
 
-                if (false)
+                if (true)
                 {
-                    Module<Player>.Self.bag.AddItem(ItemObject.CreateItem(7000041, 100), true);
-                    Module<Player>.Self.bag.AddItem(ItemObject.CreateItem(8000019, 100), true);
+
                 }
 
                 //relationId = FavorRelationshipId.SoulMate;

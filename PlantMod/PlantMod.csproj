@@ -96,9 +96,11 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Patches.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Settings.cs" />
+    <Compile Include="StoreItem.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

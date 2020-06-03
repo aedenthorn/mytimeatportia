@@ -5,6 +5,7 @@ namespace PlantMod
     {
         public float nutrientConsumeMult = 1f;
         public float plantGrowMult = 1f;
+        public bool ignoreSeasons = false;
 
 
         public override void Save(UnityModManager.ModEntry modEntry)

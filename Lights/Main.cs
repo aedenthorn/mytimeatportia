@@ -29,7 +29,7 @@ namespace Lights
             "Very High"
         };
 
-        private static readonly bool isDebug = true;
+        private static readonly bool isDebug = false;
 
         public static void Dbgl(string str = "", bool pref = true)
         {
@@ -169,32 +169,32 @@ namespace Lights
                     GUILayout.Space(40f);
                     GUILayout.BeginVertical();
 
-                    GUILayout.Label(string.Format("Scene Light Light Range: <b>{0:F1}</b>", settings.streetlightLightRange), new GUILayoutOption[0]);
-                    settings.streetlightLightRange = GUILayout.HorizontalSlider(settings.streetlightLightRange * 10f, 0f, 10000f, new GUILayoutOption[0]) / 10f;
+                    GUILayout.Label(string.Format("Scene Light Light Range Mult: <b>{0:F1}</b>", settings.streetlightLightRangeMult), new GUILayoutOption[0]);
+                    settings.streetlightLightRangeMult = GUILayout.HorizontalSlider(settings.streetlightLightRangeMult * 100f, -100f, 100f, new GUILayoutOption[0]) / 100f;
                     GUILayout.Space(10f);
-                    GUILayout.Label(string.Format("Scene Light Light Intensity: <b>{0:F2}</b>", settings.streetlightLightIntensity), new GUILayoutOption[0]);
-                    settings.streetlightLightIntensity = GUILayout.HorizontalSlider(settings.streetlightLightIntensity * 100f, 0f, 1000f, new GUILayoutOption[0]) / 100f;
+                    GUILayout.Label(string.Format("Scene Light Light Intensity Mult: <b>{0:F2}</b>", settings.streetlightLightIntensityMult), new GUILayoutOption[0]);
+                    settings.streetlightLightIntensityMult = GUILayout.HorizontalSlider(settings.streetlightLightIntensityMult * 100f, -100f, 100f, new GUILayoutOption[0]) / 100f;
                     GUILayout.Space(10f);
-                    GUILayout.Label(string.Format("Scene Light Bounce Intensity: <b>{0:F2}</b>", settings.streetlightBounceIntensity), new GUILayoutOption[0]);
-                    settings.streetlightBounceIntensity = GUILayout.HorizontalSlider(settings.streetlightBounceIntensity * 100f, 0f, 1000f, new GUILayoutOption[0]) / 100f;
+                    GUILayout.Label(string.Format("Scene Light Bounce Intensity Mult: <b>{0:F2}</b>", settings.streetlightBounceIntensityMult), new GUILayoutOption[0]);
+                    settings.streetlightBounceIntensityMult = GUILayout.HorizontalSlider(settings.streetlightBounceIntensityMult * 100f, -100f, 100f, new GUILayoutOption[0]) / 100f;
                     GUILayout.Space(10f);
                     GUILayout.Label(string.Format("Scene Light Light Color"), new GUILayoutOption[0]);
                     GUILayout.BeginHorizontal();
                     GUILayout.Space(40f);
                     GUILayout.BeginVertical();
                     GUILayout.BeginHorizontal();
-                    GUILayout.Label(string.Format("Red: <b>{0:F2}</b> ", settings.streetlightColorR), new GUILayoutOption[] { GUILayout.Width(labelWidth) });
-                    settings.streetlightColorR = GUILayout.HorizontalSlider((float)settings.streetlightColorR * 100f, 0, 100f) / 100f;
+                    GUILayout.Label(string.Format("Red Mult: <b>{0:F2}</b> ", settings.streetlightColorRMult), new GUILayoutOption[] { GUILayout.Width(labelWidth) });
+                    settings.streetlightColorRMult = GUILayout.HorizontalSlider((float)settings.streetlightColorRMult * 100f, -100f, 100f) / 100f;
                     GUILayout.EndHorizontal();
                     GUILayout.Space(10f);
                     GUILayout.BeginHorizontal();
-                    GUILayout.Label(string.Format("Green: <b>{0:F2}</b> ", settings.streetlightColorG), new GUILayoutOption[] { GUILayout.Width(labelWidth) });
-                    settings.streetlightColorG = GUILayout.HorizontalSlider((float)settings.streetlightColorG * 100f, 0, 100f) / 100f;
+                    GUILayout.Label(string.Format("Green Mult: <b>{0:F2}</b> ", settings.streetlightColorGMult), new GUILayoutOption[] { GUILayout.Width(labelWidth) });
+                    settings.streetlightColorGMult = GUILayout.HorizontalSlider((float)settings.streetlightColorGMult * 100f, -100f, 100f) / 100f;
                     GUILayout.EndHorizontal();
                     GUILayout.Space(10f);
                     GUILayout.BeginHorizontal();
-                    GUILayout.Label(string.Format("Blue: <b>{0:F2}</b> ", settings.streetlightColorB), new GUILayoutOption[] { GUILayout.Width(labelWidth) });
-                    settings.streetlightColorB = GUILayout.HorizontalSlider((float)settings.streetlightColorB * 100f, 0, 100f) / 100f;
+                    GUILayout.Label(string.Format("Blue Mult: <b>{0:F2}</b> ", settings.streetlightColorBMult), new GUILayoutOption[] { GUILayout.Width(labelWidth) });
+                    settings.streetlightColorBMult = GUILayout.HorizontalSlider((float)settings.streetlightColorBMult * 100f, -100f, 100f) / 100f;
                     GUILayout.EndHorizontal();
                     GUILayout.EndVertical();
                     GUILayout.EndHorizontal();
@@ -328,14 +328,14 @@ namespace Lights
                     light.shadowResolution = (UnityEngine.Rendering.LightShadowResolution)settings.streetlightShadowResolution;
                     light.shadowCustomResolution = -1;
                 }
-                Dbgl("range: " + light.range);
-                Dbgl("intensity: " + light.intensity);
-                Dbgl("bounceIntensity: " + light.bounceIntensity);
 
-                light.range = settings.streetlightLightRange;
-                light.intensity = settings.streetlightLightIntensity;
-                light.bounceIntensity = settings.streetlightBounceIntensity;
-                light.color = new Color(settings.streetlightColorR, settings.streetlightColorG, settings.streetlightColorB);
+                light.range += + (settings.streetlightLightRangeMult < 0 ? settings.streetlightLightRangeMult * light.range : (1000f - light.range)*settings.streetlightLightRangeMult);
+                light.intensity += (settings.streetlightLightIntensityMult < 0 ? settings.streetlightLightIntensityMult * light.intensity : (10f - light.intensity) * settings.streetlightLightIntensityMult);
+                light.bounceIntensity += (settings.streetlightBounceIntensityMult < 0 ? settings.streetlightBounceIntensityMult * light.bounceIntensity: (10f - light.bounceIntensity) * settings.streetlightBounceIntensityMult);
+                float r = (settings.streetlightColorRMult < 0 ? settings.streetlightColorRMult * light.color.r : (1f - light.color.r) * settings.streetlightColorRMult);
+                float g = (settings.streetlightColorGMult < 0 ? settings.streetlightColorGMult * light.color.g : (1f - light.color.g) * settings.streetlightColorGMult);
+                float b = (settings.streetlightColorBMult < 0 ? settings.streetlightColorBMult * light.color.b : (1f - light.color.b) * settings.streetlightColorBMult);
+                light.color = new Color(r,g,b, light.color.a);
             }
         }
 

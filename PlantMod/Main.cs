@@ -1,8 +1,13 @@
 ﻿using Harmony12;
 using Hont;
+using Pathea;
 using Pathea.HomeNs;
+using Pathea.ItemSystem;
+using Pathea.ModuleNs;
+using Pathea.StoreNs;
 using Pathea.UISystemNs;
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using TMPro;
 using UnityEngine;
@@ -14,7 +19,7 @@ namespace PlantMod
     {
         private static Settings settings;
         private static bool enabled;
-        private static bool isDebug = false;
+        private static bool isDebug = true;
 
         public static void Dbgl(string str = "", bool pref = true)
         {
@@ -43,10 +48,17 @@ namespace PlantMod
         private static void OnGUI(UnityModManager.ModEntry modEntry)
         {
             GUILayout.Label(string.Format("Plant Growth Speed Multiplier: <b>{0:F1}x</b>", settings.plantGrowMult), new GUILayoutOption[0]);
-            settings.plantGrowMult = GUILayout.HorizontalSlider(settings.plantGrowMult * 10f, 0f, 1000f, new GUILayoutOption[0]) / 10f;
+            settings.plantGrowMult = GUILayout.HorizontalSlider(settings.plantGrowMult * 10f, 0f, 10000f, new GUILayoutOption[0]) / 10f;
             GUILayout.Space(10f);
             GUILayout.Label(string.Format("Nutrient Consumption Multiplier: <b>{0:F2}</b>", settings.nutrientConsumeMult), new GUILayoutOption[0]);
             settings.nutrientConsumeMult = GUILayout.HorizontalSlider(settings.nutrientConsumeMult * 100f, 0f, 1000f, new GUILayoutOption[0]) / 100f;
+            GUILayout.Space(10f);
+            bool ignoreSeasons = GUILayout.Toggle(settings.ignoreSeasons, "Ignore Seasons", new GUILayoutOption[0]);
+            if(settings.ignoreSeasons != ignoreSeasons)
+            {
+                settings.ignoreSeasons = ignoreSeasons;
+                SetIgnoreSeasons(ignoreSeasons);
+            }
             GUILayout.Space(10f);
         }
 
@@ -58,67 +70,51 @@ namespace PlantMod
             return true; // Permit or not.
         }
 
-        [HarmonyPatch(typeof(NutrientContainerUnit), "ChangeNutrient")]
-        static class NutrientContainerUnit_ChangeNutrient_Patch
+        private static void SetIgnoreSeasons(bool ignore)
         {
-            static void Prefix(NutrientContainerUnit __instance, ref float value)
+            List<SeedItemConfData> seedDataList;
+            if (ignore)
             {
-                if (!enabled || __instance.GetType() != typeof(PlantingBoxUnit) || value > 0)
-                    return;
-
-                value *= settings.nutrientConsumeMult;
-
-            }
-        }
-        [HarmonyPatch(typeof(Plant), "CalculateGrowSeconds")]
-        static class PlantingBoxUnit_Grow_Patch
-        {
-            static void Prefix(ref float second)
-            {
-                if (!enabled)
-                    return;
-
-                second *= settings.plantGrowMult;
-            }
-        }
-
-        [HarmonyPatch(typeof(PlantingBoxInfoUI), "FreshGrowDisplay")]
-        static class PlantingBoxInfoUI_FreshGrowDisplay_Patch
-        {
-            static void Postfix(PlantingBoxInfoUI __instance, bool isInit, ref TextMeshProUGUI ___progText, bool ___isEnable, bool ___riped, bool ___isBadSeason, GameTimeSpan ___timeToRipe)
-            {
-                if (!enabled)
-                    return;
-                if (!isInit)
+                seedDataList = AccessTools.FieldRefAccess<ItemDataMgr, List<SeedItemConfData>>(Module<ItemDataMgr>.Self, "seedDataList");
+                for (int i = 0; i < seedDataList.Count; i++)
                 {
-                    if (!__instance.enabled)
+                    seedDataList[i].growthRate = new int[] { 10, 10, 10, 10 };
+                    if(seedDataList[i].fruitGrowthRate.Length == 4)
                     {
-                        return;
-                    }
-                    if (!___isEnable)
-                    {
-                        return;
+                        seedDataList[i].fruitGrowthRate = new int[] { 10, 10, 10, 10 };
                     }
                 }
+                AccessTools.FieldRefAccess<ItemDataMgr, List<SeedItemConfData>>(Module<ItemDataMgr>.Self, "seedDataList") = seedDataList;
+            }
+            else
+            {
+                SqliteDataReader reader = LocalDb.cur.ReadFullTable("Item_seed");
+                seedDataList = DbReader.Read<SeedItemConfData>(reader, 20);
+            }
+            ModifyPlants(ref seedDataList);
+            AccessTools.FieldRefAccess<ItemDataMgr, List<SeedItemConfData>>(Module<ItemDataMgr>.Self, "seedDataList") = seedDataList;
+        }
 
-                GameTimeSpan gts = new GameTimeSpan((long)Math.Round(___timeToRipe.Ticks/settings.plantGrowMult));
-
-                if (!___riped && !___isBadSeason && gts.TotalDays <= 99.0)
+        private static void ModifyPlants(ref List<SeedItemConfData> seedDataList)
+        {
+            for(int i = 0; i < seedDataList.Count; i++)
+            {
+                switch (seedDataList[i].ID)
                 {
-                    if (gts.TotalDays < 1)
-                    {
-                        ___progText.text = string.Format(TextMgr.GetStr(100373, -1), gts.Hours, gts.Minutes);
-                    }
-                    else if (gts.TotalDays < 2)
-                    {
-                        ___progText.text = string.Format($"{TextMgr.GetStr(100972, -1)} {TextMgr.GetStr(100373, -1)}", (int)gts.TotalDays, gts.Hours, gts.Minutes).Replace("(s)","").Replace("(e)","");
-                    }
-                    else
-                    {
-                        ___progText.text = string.Format($"{TextMgr.GetStr(100972, -1)} {TextMgr.GetStr(100373, -1)}", (int)gts.TotalDays, gts.Hours, gts.Minutes).Replace("(s)","s").Replace("(e)", "e");
-                    }
+                    case 6000019: // lemon
+                        seedDataList[i].plantName = 270368;
+                        seedDataList[i].dropHarvestId = 119;
+                        break;
                 }
+                seedDataList[i].GenerateInfo();
             }
         }
+
+        private static int productId = 7300;
+        private static List<StoreItem> storeItems = new List<StoreItem>
+        {
+            new StoreItem(6000019,productId++,20,-1,"-1",1)
+        };
+
     }
 }
