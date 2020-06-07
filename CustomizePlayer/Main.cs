@@ -96,7 +96,17 @@ namespace CustomizePlayer
             lastScenario = Module<ScenarioModule>.Self.CurrentScenarioName;
             lastPosition = Module<Player>.Self.actor.gamePos;
             lastRotation = Module<Player>.Self.actor.gameRot.eulerAngles;
-            Module<ScenarioModule>.Self.LoadScenario("custom", 0, false, null);
+
+            string ls = "custom";
+
+
+            Module<ScenarioModule>.Self.LoadScenario(new PortalData
+            {
+                fromScenario = ls,
+                toScenario = "custom",
+                disableJsonData = false,
+            }, null);
+
             MessageManager.Instance.Dispatch("PlayerEditUI", new object[]
             {
                     true
