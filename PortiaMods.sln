@@ -97,6 +97,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UMMFreeze", "UMMFreeze\UMMF
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CookingMachine", "CookingMachine\CookingMachine.csproj", "{B096B212-BD66-4D48-B27E-AAE36F2D5FFB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FarmAnimals", "FarmAnimals\FarmAnimals.csproj", "{0BD0B28D-9672-4ADD-9558-2317673C52DA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Television", "Television\Television.csproj", "{2A22EEE4-3941-4346-AE27-BBB1B2469F4D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -291,6 +295,14 @@ Global
 		{B096B212-BD66-4D48-B27E-AAE36F2D5FFB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B096B212-BD66-4D48-B27E-AAE36F2D5FFB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B096B212-BD66-4D48-B27E-AAE36F2D5FFB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0BD0B28D-9672-4ADD-9558-2317673C52DA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0BD0B28D-9672-4ADD-9558-2317673C52DA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0BD0B28D-9672-4ADD-9558-2317673C52DA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0BD0B28D-9672-4ADD-9558-2317673C52DA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2A22EEE4-3941-4346-AE27-BBB1B2469F4D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2A22EEE4-3941-4346-AE27-BBB1B2469F4D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2A22EEE4-3941-4346-AE27-BBB1B2469F4D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2A22EEE4-3941-4346-AE27-BBB1B2469F4D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -4,6 +4,7 @@ using Pathea.CompoundSystem;
 using Pathea.HomeNs;
 using Pathea.ItemSystem;
 using Pathea.ModuleNs;
+using System;
 using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
@@ -75,34 +76,41 @@ namespace CookingMachine
                 List<CookMenuData> datas = Singleton<CookMenuMgr>.Instance.DataList;
                 foreach(CookMenuData data in datas)
                 {
-                    CompoundItemData cid = cidd;
-                    cid.ID = start++;
-                    cid.NameID = Module<ItemDataMgr>.Self.GetItemNameId(data.Food);
-                    cid.ItemID = data.Food;
-                    cid.BookId = start2++;
-                    if (data.Mats.Count > 0 && ItemObject.CreateItem(data.Mats[0].ID) != null)
+                    try 
                     {
-                        cid.RequireItem1 = data.Mats[0].ID;
-                        cid.RequireItemNum1 = data.Mats[0].Num;
-                        if (data.Mats.Count > 1 && ItemObject.CreateItem(data.Mats[1].ID) != null)
+                        CompoundItemData cid = cidd;
+                        cid.ID = start++;
+                        cid.NameID = Module<ItemDataMgr>.Self.GetItemNameId(data.Food);
+                        cid.ItemID = data.Food;
+                        cid.BookId = start2++;
+                        if (data.Mats.Count > 0 && ItemObject.CreateItem(data.Mats[0].ID) != null)
                         {
-                            cid.RequireItem2 = data.Mats[1].ID;
-                            cid.RequireItemNum2 = data.Mats[1].Num;
-                            if (data.Mats.Count > 2 && ItemObject.CreateItem(data.Mats[2].ID) != null)
+                            cid.RequireItem1 = data.Mats[0].ID;
+                            cid.RequireItemNum1 = data.Mats[0].Num;
+                            if (data.Mats.Count > 1 && ItemObject.CreateItem(data.Mats[1].ID) != null)
                             {
-                                cid.RequireItem3 = data.Mats[2].ID;
-                                cid.RequireItemNum3 = data.Mats[2].Num;
+                                cid.RequireItem2 = data.Mats[1].ID;
+                                cid.RequireItemNum2 = data.Mats[1].Num;
+                                if (data.Mats.Count > 2 && ItemObject.CreateItem(data.Mats[2].ID) != null)
+                                {
+                                    cid.RequireItem3 = data.Mats[2].ID;
+                                    cid.RequireItemNum3 = data.Mats[2].Num;
+                                }
                             }
                         }
+                        else
+                        {
+                            continue;
+                        }
+                        Dbgl("adding to " + (int)cidd.CompoundType);
+                        CompoundItem ci = new CompoundItem(cid);
+                        ___m_compoundTable[(int)cidd.CompoundType].AddItem(ci);
+                        //___sourceData.Add(cid);
                     }
-                    else
+                    catch (Exception ex)
                     {
-                        continue;
+                        Dbgl("exception: " + ex);
                     }
-                    Dbgl("adding to "+ (int)cidd.CompoundType);
-                    CompoundItem ci = new CompoundItem(cid);
-                    ___m_compoundTable[(int)cidd.CompoundType].AddItem(ci);
-                    //___sourceData.Add(cid);
                 }
             }
 
