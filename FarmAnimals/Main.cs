@@ -1,18 +1,14 @@
 ﻿using Harmony12;
+using Hont.ExMethod.Collection;
 using Pathea;
-using Pathea.ACT;
-using Pathea.ModuleNs;
+using Pathea.AnimalFarmNs;
+using Pathea.HomeNs;
+using Pathea.TipsNs;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-using Pathea.ActorNs;
 using UnityEngine;
 using UnityModManagerNet;
-using static Pathea.ActorMotor;
-using Pathea.AnimalFarmNs;
-using Pathea.HomeNs;
-using Hont.ExMethod.Collection;
-using Pathea.TipsNs;
 
 namespace FarmAnimals
 {
@@ -189,7 +185,7 @@ namespace FarmAnimals
                         {
                             string name = TextMgr.GetStr(AnimalData.GetDataByDataId(kvp.Key).NameId, -1);
                             Dbgl($"sending tips ui");
-                            Singleton<TipsMgr>.Instance.SendSystemTip($"A {name} gave birth!");
+                            Singleton<TipsMgr>.Instance.SendSystemTip($"{(kvp.Value > 1 ? kvp.Value + " " + name + "s" : "A " + name)} gave birth!");
                         }
                     }
                     return false;

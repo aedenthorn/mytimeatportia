@@ -93,7 +93,7 @@ namespace ShippingBin
             int gols = 0;
             foreach (IdCount idc in items)
             {
-                int g = (int)Math.Round(Module<ItemDataMgr>.Self.GetItemSellPrice(idc.id) * idc.count * Module<StoreManagerV40>.Self.CurPriceIndex);
+                int g = (int)Math.Round(Module<ItemDataMgr>.Self.GetItemBaseData(idc.id).SellPrice.id0 * idc.count * Module<StoreManagerV40>.Self.CurPriceIndex);
                 gols += g;
             }
             return gols;
@@ -103,6 +103,8 @@ namespace ShippingBin
         private static void SellItems(List<IdCount> ls)
         {
             int gols = getGols(ls);
+            if (gols <= 0)
+                return;
             MailShipping ms = new MailShipping(gols);
             Module<MailManager>.Self.SendToMailBox(ms);
         }

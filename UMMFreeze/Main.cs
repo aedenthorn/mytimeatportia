@@ -14,7 +14,7 @@ namespace UMMFreeze
     {
         public static bool enabled;
 
-        private static readonly bool isDebug = false;
+        private static readonly bool isDebug = true;
 
         public static void Dbgl(string str = "", bool pref = true)
         {
@@ -40,20 +40,36 @@ namespace UMMFreeze
             {
                 if (!enabled)
                     return;
-                if (value)
+
+                try
                 {
-                    if (UIStateMgr.Instance.currentState.type == UIStateMgr.StateType.Play)
+                    if (value)
                     {
-                        Module<InputSolutionModule>.Self.Push(SolutionType.Empty);
-                        UIStateComm.Instance.SetCursor(true);
+                        Dbgl("Opening UMM");
+                        if (UIStateMgr.Instance.currentState.type == UIStateMgr.StateType.Play)
+                        {
+                            Dbgl("Freezing UI");
+                            Module<InputSolutionModule>.Self.Push(SolutionType.Empty);
+                            UIStateComm.Instance.SetCursor(true);
+                            Dbgl("UI Frozen");
+                        }
+                    }
+                    else
+                    {
+                        Dbgl("Closing UMM");
+                        if (Module<InputSolutionModule>.Self.CurSolutionType == SolutionType.Empty)
+                        {
+                            Dbgl("Unfreezing UI");
+                            Module<InputSolutionModule>.Self.Pop();
+                            UIStateComm.Instance.SetCursor(false);
+                            Dbgl("UI Unfrozen");
+                        }
                     }
                 }
-                else if(Module<InputSolutionModule>.Self.CurSolutionType == SolutionType.Empty)
+                catch(Exception ex)
                 {
-                    Module<InputSolutionModule>.Self.Pop();
-                    UIStateComm.Instance.SetCursor(false);
+                    Dbgl("Exception: "+ex);
                 }
-
             }
         }
 
