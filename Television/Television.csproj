@@ -91,6 +91,9 @@
     <Reference Include="UnityEngine.UnityWebRequestWWWModule">
       <HintPath>..\external\UnityEngine.UnityWebRequestWWWModule.dll</HintPath>
     </Reference>
+    <Reference Include="UnityEngine.VideoModule">
+      <HintPath>..\external\UnityEngine.VideoModule.dll</HintPath>
+    </Reference>
     <Reference Include="UnityModManager">
       <HintPath>..\external\UnityModManager\UnityModManager.dll</HintPath>
     </Reference>

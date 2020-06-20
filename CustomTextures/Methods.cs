@@ -1,6 +1,7 @@
 ﻿using Harmony12;
 using Pathea;
 using Pathea.ActorNs;
+using Pathea.Expression;
 using Pathea.HomeNs;
 using Pathea.ModuleNs;
 using Pathea.NpcAppearNs;
@@ -177,6 +178,38 @@ namespace CustomTextures
             {
                 FixOneTexture(obj);
             }
+
+            if (Module<Player>.Self != null && Module<Player>.Self.actor != null)
+            {
+                FixOneTexture(Module<Player>.Self.actor.gameObject);
+
+                BlinkController bc = (BlinkController) typeof(Actor).GetField("blinkController", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(Module<Player>.Self.actor);
+                if(bc != null)
+                {
+                    SkinnedMeshRenderer mr = (SkinnedMeshRenderer)typeof(BlinkController).GetField("_mesh", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(bc);
+                    if(mr != null)
+                    {
+                        string name = mr.name;
+                        if (customTexturesMisc.ContainsKey(name) && mr.material && mr.material.HasProperty("_MainTex") && mr.material.mainTexture != null)
+                        {
+                            Dbgl($"Changing texture for {name}");
+                            Texture2D tex = customTexturesMisc[name];
+                            tex.name = $"{name}.png";
+                            mr.material.mainTexture = tex;
+                        }
+                    }
+                }
+            }
+
+            if (arg1.name == "Main")
+            {
+                FixWorkshopTextures();
+            }
+            else if (arg1.name == "PlayerHome")
+            {
+                FixHomeTextures();
+            }
+
         }
 
         private static void FixOneTexture(GameObject go)
@@ -185,6 +218,18 @@ namespace CustomTextures
                 return;
             MeshRenderer[] mrs = go.GetComponentsInChildren<MeshRenderer>();
             foreach (MeshRenderer mr in mrs)
+            {
+                string name = mr.name;
+                if (customTexturesMisc.ContainsKey(name) && mr.material && mr.material.HasProperty("_MainTex") && mr.material.mainTexture != null)
+                {
+                    Dbgl($"Changing texture for {name}");
+                    Texture2D tex = customTexturesMisc[name];
+                    tex.name = $"{name}.png";
+                    mr.material.mainTexture = tex;
+                }
+            }
+            SkinnedMeshRenderer[] smrs = go.GetComponentsInChildren<SkinnedMeshRenderer>();
+            foreach (SkinnedMeshRenderer mr in smrs)
             {
                 string name = mr.name;
                 if (customTexturesMisc.ContainsKey(name) && mr.material && mr.material.HasProperty("_MainTex") && mr.material.mainTexture != null)
@@ -206,10 +251,62 @@ namespace CustomTextures
                 Dbgl("scene is null");
                 return;
             }
-
+            string names = "";
             List<string> meshTextures = new List<string>();
 
-            string names = "";
+            if (Module<Player>.Self != null && Module<Player>.Self.actor != null)
+            {
+                GameObject player = Module<Player>.Self.actor.gameObject;
+                names += $"Player actor mesh and texture names:\r\n\r\n\t";
+
+
+                MeshRenderer[] mrs = player.GetComponentsInChildren<MeshRenderer>();
+
+                foreach (MeshRenderer mr in mrs)
+                {
+                    if (mr.material && mr.material.HasProperty("_MainTex") && mr.material.mainTexture != null)
+                    {
+                        string mt = $"mesh name: {mr.name} texture name: {mr.material.mainTexture.name}";
+                        if (!meshTextures.Contains(mt))
+                        {
+                            meshTextures.Add(mt);
+                        }
+
+                    }
+                }
+
+                SkinnedMeshRenderer[] smrs = player.GetComponentsInChildren<SkinnedMeshRenderer>();
+
+                foreach (SkinnedMeshRenderer mr in smrs)
+                {
+                    if (mr.material && mr.material.HasProperty("_MainTex") && mr.material.mainTexture != null)
+                    {
+                        string mt = $"smesh name: {mr.name} texture name: {mr.material.mainTexture.name}";
+                        if (!meshTextures.Contains(mt))
+                        {
+                            meshTextures.Add(mt);
+                        }
+
+                    }
+                }
+
+                BlinkController bc = (BlinkController)typeof(Actor).GetField("blinkController", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(Module<Player>.Self.actor);
+                if (bc != null)
+                {
+                    SkinnedMeshRenderer smr = (SkinnedMeshRenderer)typeof(BlinkController).GetField("_mesh", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(bc);
+                    if (smr != null && smr.material && smr.material.HasProperty("_MainTex") && smr.material.mainTexture != null)
+                    {
+                        string mt = $"blink mesh name: {smr.name} texture name: {smr.material.mainTexture.name}";
+                        if (!meshTextures.Contains(mt))
+                        {
+                            meshTextures.Add(mt);
+                        }
+                    }
+                }
+
+                names += string.Join("\r\n\t", meshTextures.ToArray()) + "\r\n\r\n";
+                meshTextures.Clear();
+            }
 
             names += $"DLC actor mesh and texture names:\r\n\r\n\t";
 

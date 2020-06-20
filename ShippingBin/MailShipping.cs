@@ -17,7 +17,13 @@ namespace ShippingBin
             Type = MailType.Gift;
             itemList = new List<IdCount>();
             GameDateTime gdt = Module<TimeManager>.Self.DateTime;
-            GameDateTime morning = new GameDateTime(gdt.Year, gdt.Month, gdt.Day + 1, 7, 0, 0);
+            GameDateTime morning;
+            if (gdt.Hour >= 7)
+            {
+                gdt = gdt.AddDays(1);
+            }
+            morning = new GameDateTime(gdt.Year, gdt.Month, gdt.Day, 7, 0, 0);
+
             sendDateTicks = morning.Ticks;
 
             baseData = new Pathea.MailConfInfo

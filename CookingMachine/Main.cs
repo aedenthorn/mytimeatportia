@@ -20,8 +20,9 @@ namespace CookingMachine
     public static class Main
     {
         public static bool enabled;
-        private static bool isDebug = true;
+        private static bool isDebug = false;
         private static List<int> crash;
+        private static CompoundItemData templateData;
 
         public static void Dbgl(string str = "", bool pref = true)
         {
@@ -33,6 +34,12 @@ namespace CookingMachine
         private static void Load(UnityModManager.ModEntry modEntry)
         {
             settings = Settings.Load<Settings>(modEntry);
+
+            SqliteDataReader reader = LocalDb.cur.ReadFullTable("Synthesis_table ");
+            var sourceData = DbReader.Read<CompoundItemData>(reader, 20);
+
+            templateData = sourceData.Find((CompoundItemData c) => c.ItemID == 2000046);
+
 
             modEntry.OnToggle = OnToggle;
             modEntry.OnGUI = OnGUI;
@@ -72,6 +79,7 @@ namespace CookingMachine
         {
             static void Postfix(ref CompoundItem[] __result)
             {
+
                 int start = 5000;
                 int start2 = 5001000;
 
@@ -83,60 +91,46 @@ namespace CookingMachine
                     Dbgl("missing list");
                     return;
                 }
-                Dbgl("getting cid");
 
-                SqliteDataReader reader = LocalDb.cur.ReadFullTable("Synthesis_table ");
-                var sourceData = DbReader.Read<CompoundItemData>(reader, 20);
 
-                CompoundItemData cidd = sourceData.Find((CompoundItemData c) => c.ItemID == 2000046);
-
-                Dbgl("getting list");
                 foreach (CookBookData food in cookList)
                 {
                     if (food != null && food.like)
                     {
-                        Dbgl("got food");
-                        cidd.NameID = Module<ItemDataMgr>.Self.GetItemNameId(food.foodId);
-                        cidd.ItemID = food.foodId;
-                        Dbgl("food " + food.foodId);
-                        Dbgl("menu list length " + food.menuList.Count);
+                        templateData.NameID = Module<ItemDataMgr>.Self.GetItemNameId(food.foodId);
+                        templateData.ItemID = food.foodId;
                         foreach (CookMatData cmd in food.menuList)
                         {
-                            Dbgl("matdic length " + cmd.matDic.Count);
-                            cidd.ID = start++;
-                            cidd.BookId = start2++;
-                            cidd.RequireItem1 = cmd.matDic.Keys.ToList()[0];
-                            cidd.RequireItemNum1 = cmd.matDic[cmd.matDic.Keys.ToList()[0]];
-                            Dbgl($"item1 {cidd.RequireItem1} count {cidd.RequireItemNum1}");
+                            templateData.ID = start++;
+                            templateData.BookId = start2++;
+                            templateData.RequireItem1 = cmd.matDic.Keys.ToList()[0];
+                            templateData.RequireItemNum1 = cmd.matDic[cmd.matDic.Keys.ToList()[0]];
                             if (cmd.matDic.Count > 1)
                             {
-                                cidd.RequireItem2 = cmd.matDic.Keys.ToList()[1];
-                                cidd.RequireItemNum2 = cmd.matDic[cmd.matDic.Keys.ToList()[1]];
-                                Dbgl($"item2 {cidd.RequireItem2} count {cidd.RequireItemNum2}");
+                                templateData.RequireItem2 = cmd.matDic.Keys.ToList()[1];
+                                templateData.RequireItemNum2 = cmd.matDic[cmd.matDic.Keys.ToList()[1]];
                                 if (cmd.matDic.Count > 2)
                                 {
-                                    cidd.RequireItem3 = cmd.matDic.Keys.ToList()[2];
-                                    cidd.RequireItemNum3 = cmd.matDic[cmd.matDic.Keys.ToList()[2]];
-                                    Dbgl($"item3 {cidd.RequireItem3} count {cidd.RequireItemNum3}");
+                                    templateData.RequireItem3 = cmd.matDic.Keys.ToList()[2];
+                                    templateData.RequireItemNum3 = cmd.matDic[cmd.matDic.Keys.ToList()[2]];
                                 }
                                 else
                                 {
-                                    cidd.RequireItem3 = 0;
-                                    cidd.RequireItemNum3 = 0;
+                                    templateData.RequireItem3 = 0;
+                                    templateData.RequireItemNum3 = 0;
                                 }
                             }
                             else
                             {
-                                cidd.RequireItem2 = 0;
-                                cidd.RequireItemNum2 = 0;
+                                templateData.RequireItem2 = 0;
+                                templateData.RequireItemNum2 = 0;
                             }
-                            newList.Add(new CompoundItem(cidd));
+                            newList.Add(new CompoundItem(templateData));
                         }
                     }
                 }
-                Dbgl("list length" + __result.Length);
+
                 __result = newList.ToArray();
-                Dbgl("list length" + __result.Length);
             }
         }
         

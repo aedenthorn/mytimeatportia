@@ -1,4 +1,6 @@
 ﻿using Harmony12;
+using Pathea;
+using Pathea.ModuleNs;
 using System.Reflection;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -77,14 +79,6 @@ namespace CustomTextures
             }
             FixSceneTextures(arg1);
 
-            if(arg1.name == "Main")
-            {
-                FixWorkshopTextures();
-            }
-            else if(arg1.name == "PlayerHome")
-            {
-                FixHomeTextures();
-            }
         }
 
     }

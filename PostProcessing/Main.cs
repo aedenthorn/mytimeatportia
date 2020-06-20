@@ -497,8 +497,8 @@ namespace PostProcessing
 
                 }
 
+            /*
                 GUILayout.Space(10f);
-
 
                 settings.customAA = GUILayout.Toggle(settings.customAA, "<b>Use Custom Anti-Aliasing</b>", new GUILayoutOption[0]);
                 if (settings.customAA)
@@ -550,7 +550,7 @@ namespace PostProcessing
                     GUILayout.EndHorizontal();
 
                 }
-
+            */
                 GUILayout.Space(20f);
 
                 GUILayout.EndVertical();

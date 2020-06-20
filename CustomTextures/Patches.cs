@@ -86,7 +86,7 @@ namespace CustomTextures
         [HarmonyPatch(typeof(AppearTarget), "BuildMesh", new Type[] { typeof(List<AppearUnit>), typeof(AppearData), typeof(AppearUnit), typeof(string) })]
         static class BuildMesh1_Patch
         {
-            static void Prefix(AppearTarget __instance, AppearData appearData, ref List<AppearUnit> units)
+            static void Prefix(ref List<AppearUnit> units)
             {
                 //Dbgl($"Building player mesh");
 
@@ -97,12 +97,28 @@ namespace CustomTextures
                 {
                     string name = units[i].name;
                     Dbgl($"appear part name: {name}");
-                    if (customTexturesMisc.ContainsKey(name))
+                    if (units[i].Smr != null)
                     {
-                        Dbgl($"Changing texture for {name}");
-                        units[i].Smr.material.mainTexture = customTexturesMisc[name];
+
+                        if (units[i].Smr.material.HasProperty("_MainTex") && customTexturesMisc.ContainsKey(name))
+                        {
+                            Dbgl($"Changing texture for {name}");
+                            units[i].Smr.material.mainTexture = customTexturesMisc[name];
+                        }
                     }
                 }
+            }
+            static void Postfix(ref SkinnedMeshRenderer __result)
+            {
+                //Dbgl($"Building player mesh");
+
+                if (!enabled)
+                    return;
+                for(int i = 0; i <  __result.materials.Length; i++)
+                {
+                    __result.materials[i].mainTexture = customTexturesMisc["AppearUnit_Linda_Test"];
+                }
+                __result.material.mainTexture = customTexturesMisc["AppearUnit_Linda_Test"];
             }
         }
 

@@ -12,6 +12,8 @@ using Pathea.TipsNs;
 using System.IO;
 using Pathea.ItemSystem;
 using System.Linq;
+using Pathea.CameraSystemNs;
+using Pathea.ModuleNs;
 
 namespace Television
 {
@@ -57,6 +59,43 @@ namespace Television
 
         private static void OnGUI(UnityModManager.ModEntry modEntry)
         {
+            return;
+            foreach(string video in videoPaths.Keys)
+            {
+                if (GUILayout.Button(video)){
+                    GameObject camera = CameraManager.Instance.SourceCamera.gameObject;
+                    var audioSource = camera.AddComponent<AudioSource>();
+                    MeshRenderer back = camera.GetComponent<MeshRenderer>();
+                    if (back == null)
+                    {
+                        Dbgl("Adding mesh renderer");
+                        back = camera.AddComponent<MeshRenderer>();
+                    }
+                    back.material.SetTexture("_MainTex", new Texture2D(1920,1080));
+                    back.material.SetColor("_MainTex", Color.white);
+                    //back.transform.localScale = new Vector3(0.5f,0.5f,0.5f);
+                    cameraVideo = camera.AddComponent<UnityEngine.Video.VideoPlayer>();
+                    cameraVideo.targetCameraAlpha = 0.5F;
+                    cameraVideo.url = videoPaths[video];
+
+                    cameraVideo.renderMode = UnityEngine.Video.VideoRenderMode.MaterialOverride;
+                    cameraVideo.targetMaterialRenderer = back;
+                    cameraVideo.targetMaterialProperty = "_MainTex";
+
+                    cameraVideo.audioOutputMode = UnityEngine.Video.VideoAudioOutputMode.AudioSource;
+                    cameraVideo.SetTargetAudioSource(0,audioSource);
+
+                    cameraVideo.prepareCompleted += CameraVideo_prepareCompleted;
+                    cameraVideo.Prepare();
+                }
+            }
+
+        }
+
+        private static void CameraVideo_prepareCompleted(UnityEngine.Video.VideoPlayer source)
+        {
+
+            source.Play();
         }
 
         private static void LoadVideoFiles()
@@ -89,6 +128,7 @@ namespace Television
 
         private static Dictionary<string, string> videoPaths = new Dictionary<string, string>();
         private static Dictionary<int, string> videoNames = new Dictionary<int, string>();
+        private static UnityEngine.Video.VideoPlayer cameraVideo;
 
         [HarmonyPatch(typeof(VideoChoiceUICtr), "GetVideoes")]
         static class VideoChoiceUICtr_GetVideoes
@@ -159,10 +199,14 @@ namespace Television
         [HarmonyPatch(typeof(TVCtr), "Play")]
         static class TVCtr_Play
         {
-            static bool Prefix(TVCtr __instance, string fileName)
+            static bool Prefix(TVCtr __instance, string fileName, GameObject ___screen)
             {
                 if (!enabled)
                     return true;
+
+                //___screen.transform.localScale = new Vector3(1.6f, 1.4f, 1f);
+                //___screen.transform.position = new Vector3(___screen.transform.position.x - 0.08f, ___screen.transform.position.y - 0.32f, ___screen.transform.position.z - 0.21f);
+                //___screen.transform.rotation = new Quaternion(___screen.transform.rotation.x + 0.0155f, ___screen.transform.rotation.y,___screen.transform.rotation.z + 0.0155f, ___screen.transform.rotation.w);
 
                 if (__instance.CurPlay == fileName)
                 {
