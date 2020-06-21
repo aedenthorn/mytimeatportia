@@ -34,6 +34,7 @@
 		{"Id": "PostProcessing", "Version": "0.2.0"},
 		{"Id": "SaveAnyTime", "Version": "0.10.0"},
 		{"Id": "ShippingBin", "Version": "0.1.6"},
+		{"Id": "SkillLimit", "Version": "0.1.0"},
 		{"Id": "StorageAnywhere", "Version": "0.6.0"},
 		{"Id": "Swim", "Version": "0.2.1"},
 		{"Id": "Teleport", "Version": "0.0.1"},

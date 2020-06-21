@@ -432,8 +432,8 @@ namespace Cheats
             static void Postfix()
             {
                 Dbgl("new Vector3" + Module<Player>.Self.actor.gamePos.ToString() + ",");
+                Module<Player>.Self.AddExp(400000, true);
                 return;
-                //Module<Player>.Self.AddExp(400000, true);
                 //Module<Player>.Self.bag.ChangeMoney(1000000, true, 0);
                 //Object here is necessary.
 

@@ -63,7 +63,8 @@ namespace WeaponMod
                 Dbgl(__instance.storeIcon);
                 if (___generalProduct == null)
                 {
-                    return;
+                    ___generalProduct = new string[0];
+                    ___generalProductData = new SaleProductData[0];
                 }
                 int i = ___generalProduct.Length;
 
