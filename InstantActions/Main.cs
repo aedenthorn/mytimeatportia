@@ -59,6 +59,8 @@ namespace InstantActions
             settings.MoveWhileActing = GUILayout.Toggle(settings.MoveWhileActing, "Allow moving while acting (Drilling, etc.)", new GUILayoutOption[0]);
             GUILayout.Space(10);
             settings.InstantText = GUILayout.Toggle(settings.InstantText, "Instant Dialog Text", new GUILayoutOption[0]);
+            GUILayout.Space(10);
+            settings.InstantCreation = GUILayout.Toggle(settings.InstantCreation, "Instant Automatic Creation", new GUILayoutOption[0]);
 
             GUILayout.Space(20);
             GUILayout.Label(string.Format("Hug Speed Multiplier : <b>{0:F1}x</b>", settings.HugSpeed), new GUILayoutOption[0]);
