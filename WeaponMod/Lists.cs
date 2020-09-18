@@ -28,30 +28,56 @@ namespace WeaponMod
         
         private static List<Weapon> weapons = new List<Weapon>();
 
-        private static Dictionary<int, string> storeNames = new Dictionary<int, string>()
+        private static List<int> storeIds = new List<int>()
         {
-            {1,"Farm Store"},
-            {2,"The Round Table"},
-            {3,"Clothing Store"},
-            {4,"Best Brother"},
-            {5,"Total Tools"},
-            {7,"Martha's Bakery"},
-            {8,"Alice's Flower Shop"},
-            {9,"Clinic Shop"},
-            {10,"Mysterious Man"},
-            {11,"Emily's Food Stall"},
-            {12,"Church Store"},
-            {13,"Badge Exchange"},
-            {14,"A&G Construction Store"},
-            {15,"Tody's Fish-o-Rama"},
-            {16,"McD's Jumpin' Livestock"},
-            {20,"South Block Trade Store"},
-            {21,"Harbor Trade Station"},
-            {22,"Gift Exchange"},
-            {23,"Church Store"},
-            {24,"Research Center Exchange"},
-            {25,"Oaks' Handicrafts"},
-            {26,"McBurger"}
+            1,
+            2,
+            3,
+            4,
+            5,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            20,
+            21,
+            22,
+            23,
+            24,
+            25,
+            26,
+        };
+            
+        public static List<string> storeNames = new List<string>()
+        {
+            "Farm Store",
+            "The Round Table",
+            "Clothing Store",
+            "Best Brother",
+            "Total Tools",
+            "Martha's Bakery",
+            "Alice's Flower Shop",
+            "Clinic Shop",
+            "Mysterious Man",
+            "Emily's Food Stall",
+            "Church Store",
+            "Badge Exchange",
+            "A&G Construction Store",
+            "Tody's Fish-o-Rama",
+            "McD's Jumpin' Livestock",
+            "South Block Trade Store",
+            "Harbor Trade Station",
+            "Gift Exchange",
+            "Church Store",
+            "Research Center Exchange",
+            "Oaks' Handicrafts",
+            "McBurger"
         };
 
     }

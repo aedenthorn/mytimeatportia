@@ -108,18 +108,6 @@ namespace CustomTextures
                     }
                 }
             }
-            static void Postfix(ref SkinnedMeshRenderer __result)
-            {
-                //Dbgl($"Building player mesh");
-
-                if (!enabled)
-                    return;
-                for(int i = 0; i <  __result.materials.Length; i++)
-                {
-                    __result.materials[i].mainTexture = customTexturesMisc["AppearUnit_Linda_Test"];
-                }
-                __result.material.mainTexture = customTexturesMisc["AppearUnit_Linda_Test"];
-            }
         }
 
 

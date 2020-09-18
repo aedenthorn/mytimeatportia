@@ -1,27 +1,12 @@
 ﻿using Harmony12;
-using Pathea;
-using Pathea.DungeonModuleNs;
-using Pathea.ItemDropNs;
 using Pathea.ItemSystem;
-using Pathea.ModuleNs;
-using Pathea.ScenarioNs;
-using Pathea.SkillNs;
 using Pathea.StoreNs;
-using Pathea.TreasureRevealerNs;
-using Pathea.UISystemNs;
-using Pathea.UISystemNs.Grid;
 using SimpleJSON;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using TMPro;
 using UnityEngine;
-using UnityEngine.SceneManagement;
-using UnityModManagerNet;
-using static Harmony12.AccessTools;
 
 namespace WeaponMod
 {
@@ -75,9 +60,11 @@ namespace WeaponMod
                 Array.Copy(___generalProductData, newProductData, i);
 
                 foreach(Weapon weapon in weapons)
-                { 
-                    if(weapon.storeId == __instance.id)
+                {
+                    Dbgl($"weapon store id {weapon.storeId} id {weapon.itemId} {__instance.id}");
+                    if (weapon.storeId == __instance.id)
                     {
+                        Dbgl("adding weapon");
                         string data = $"{weapon.productId}_{weapon.count}{(weapon.chance < 1f ? "_" + weapon.chance : "")}";
                         newProduct[i] = data;
                         newProductData[i++] = new SaleProductData(data);
@@ -117,15 +104,15 @@ namespace WeaponMod
                 int sourceIds = 4200;
                 if (settings.includeSpecialWeapons)
                 {
-                    int storeId = storeNames.Keys.ToArray()[settings.specialWeaponStore];
-
+                    int storeId = storeIds[settings.specialWeaponStore];
+                    Dbgl($"special weapons store {storeId}");
                     weapons = new List<Weapon> {
-                        new Weapon(1001999,productIds++,1,-1,"-1", storeId, 0.1f), // nameless
-                        new Weapon(1001011,productIds++,1,-1,"-1", storeId, 0.5f), // Waterfall
+                        new Weapon(1001999,productIds++,1,-1,"-1", storeId, settings.unknownWeaponChance), // nameless
+                        new Weapon(1001011,productIds++,1,-1,"-1", storeId, settings.waterSwordChance), // Waterfall
                         //new Weapon(1001010,productIds++,1,-1,"-1", storeId, 0.5f), //Rogue Knight
-                        new Weapon(1001012,productIds++,1,-1,"-1", storeId, 0.5f), // Purple Haze
-                        new Weapon(1001402,productIds++,1,-1,"-1", storeId, 0.5f), // Inflateable Hammer
-                        new Weapon(1001000,productIds++,1,-1,"-1", storeId, 0.5f), // Dev's Dagger
+                        new Weapon(1001012,productIds++,1,-1,"-1", storeId, settings.purpleHazeChance), // Purple Haze
+                        new Weapon(1001402,productIds++,1,-1,"-1", storeId, settings.InflateableHammerChance), // Inflateable Hammer
+                        new Weapon(1001000,productIds++,1,-1,"-1", storeId, settings.DevDaggerChance), // Dev's Dagger
                     };
                 }
 

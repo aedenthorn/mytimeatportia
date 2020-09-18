@@ -41,7 +41,16 @@ namespace NPCNoDelete
 
         private static void OnGUI(UnityModManager.ModEntry modEntry)
         {
+            GUILayout.Space(10f);
+            settings.Aadit = GUILayout.Toggle(settings.Aadit, "Keep Aadit", new GUILayoutOption[0]);
+            GUILayout.Space(10f);
+            settings.Ginger = GUILayout.Toggle(settings.Ginger, "Keep Ginger", new GUILayoutOption[0]);
+            GUILayout.Space(10f);
+            settings.Penny = GUILayout.Toggle(settings.Penny, "Keep Penny", new GUILayoutOption[0]);
+            GUILayout.Space(10f);
+
             GUILayout.Label("Attempt to manually bring back and give +100 favour:", new GUILayoutOption[0]);
+            GUILayout.Space(10f);
 
             GUILayout.BeginHorizontal(new GUILayoutOption[0]);
             if (GUILayout.Button("Aadit", new GUILayoutOption[]{
@@ -55,6 +64,7 @@ namespace NPCNoDelete
                 IncreaseFavor(4000038);
             }
             GUILayout.EndHorizontal();
+            GUILayout.Space(10f);
             GUILayout.BeginHorizontal(new GUILayoutOption[0]);
             if (GUILayout.Button("Ginger", new GUILayoutOption[]{
                         GUILayout.Width(150f)
@@ -69,6 +79,7 @@ namespace NPCNoDelete
 
             }
             GUILayout.EndHorizontal();
+            GUILayout.Space(10f);
             GUILayout.BeginHorizontal(new GUILayoutOption[0]);
             if (GUILayout.Button("Penny", new GUILayoutOption[]{
                         GUILayout.Width(150f)
@@ -83,6 +94,7 @@ namespace NPCNoDelete
 
             }
             GUILayout.EndHorizontal();
+            GUILayout.Space(20f);
         }
 
         private static void IncreaseFavor(int id)

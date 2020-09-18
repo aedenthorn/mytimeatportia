@@ -12,7 +12,7 @@ namespace WeaponMod
 {
     public partial class Main
     {
-        private static bool isDebug = false;
+        private static bool isDebug = true;
 
         public static void Dbgl(string str = "", bool pref = true)
         {
@@ -53,11 +53,26 @@ namespace WeaponMod
             {
                 GUILayout.BeginHorizontal();
                 GUILayout.Space(40);
-                GUILayout.Label(string.Format("Special weapons store: {0}", storeNames.Values.ToArray()[settings.specialWeaponStore]), new GUILayoutOption[0]);
-                GUILayout.EndHorizontal();
-                GUILayout.BeginHorizontal();
-                GUILayout.Space(40);
+                GUILayout.BeginVertical();
+                GUILayout.Label(string.Format("Special weapons store: {0}", storeNames[settings.specialWeaponStore]), new GUILayoutOption[0]);
                 settings.specialWeaponStore = (int)GUILayout.HorizontalSlider(settings.specialWeaponStore, 0f, storeNames.Count-1, new GUILayoutOption[0]);
+                GUILayout.Space(10);
+                GUILayout.Label(string.Format("Water Sword Chance: {0}", settings.waterSwordChance * 100), new GUILayoutOption[0]);
+                settings.waterSwordChance = (int)GUILayout.HorizontalSlider(settings.waterSwordChance * 100, 0f, 100f, new GUILayoutOption[0]) / 100f;
+                GUILayout.Space(10);
+                GUILayout.Label(string.Format("Purple Haze Chance: {0}", settings.purpleHazeChance * 100), new GUILayoutOption[0]);
+                settings.purpleHazeChance = (int)GUILayout.HorizontalSlider(settings.purpleHazeChance * 100, 0f, 100f, new GUILayoutOption[0]) / 100f;
+                GUILayout.Space(10);
+                GUILayout.Label(string.Format("Inflatable Hammer Chance: {0}", settings.InflateableHammerChance * 100), new GUILayoutOption[0]);
+                settings.InflateableHammerChance = (int)GUILayout.HorizontalSlider(settings.InflateableHammerChance * 100, 0f, 100f, new GUILayoutOption[0]) / 100f;
+                GUILayout.Space(10);
+                GUILayout.Label(string.Format("Dev's Dagger Chance: {0}", settings.DevDaggerChance * 100), new GUILayoutOption[0]);
+                settings.DevDaggerChance = (int)GUILayout.HorizontalSlider(settings.DevDaggerChance * 100, 0f, 100f, new GUILayoutOption[0]) / 100f;
+                GUILayout.Space(10);
+                GUILayout.Label(string.Format("??? Chance: {0}", settings.unknownWeaponChance * 100), new GUILayoutOption[0]);
+                settings.unknownWeaponChance = (int)GUILayout.HorizontalSlider(settings.unknownWeaponChance * 100, 0f, 100f, new GUILayoutOption[0]) / 100f;
+                GUILayout.Space(10);
+                GUILayout.EndVertical();
                 GUILayout.EndHorizontal();
             }
         }

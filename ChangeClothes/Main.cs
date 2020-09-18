@@ -257,7 +257,7 @@ namespace ChangeClothes
 
 
             NpcAppear component = actor.GetComponent<NpcAppear>();
-            if (component == null)
+            if (component == null || !appearDbDatas.ContainsKey(hairId) || !appearDbDatas.ContainsKey(clothesId))
             {
                 Dbgl($"no npcappear for {actor.ActorName}");
                 return;
