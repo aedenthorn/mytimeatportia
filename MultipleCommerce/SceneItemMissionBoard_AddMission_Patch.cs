@@ -1,8 +1,5 @@
 ﻿using Harmony12;
 using Pathea.Missions;
-using Pathea.GuildRanking;
-using System;
-using System.Collections.Generic;
 using PatheaScriptExt;
 using UnityEngine;
 

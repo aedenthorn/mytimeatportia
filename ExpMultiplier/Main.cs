@@ -1,18 +1,8 @@
 ﻿using Harmony12;
 using Pathea;
-using Pathea.Behavior;
-using Pathea.InputSolutionNs;
-using Pathea.MapNs;
-using Pathea.MessageSystem;
-using Pathea.ModuleNs;
-using Pathea.ScenarioNs;
-using Pathea.UISystemNs;
-using PatheaScriptExt;
 using System;
-using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
-using UnityEngine.UI;
 using UnityModManagerNet;
 
 namespace ExpMultiplier

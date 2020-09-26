@@ -21,7 +21,7 @@ namespace MultipleCommerce
 
         public static Settings settings { get; private set; }
 
-        private static readonly int FISH_BASE_ID = 42000;
+        private static int DIVERSE_ID_COUNTER = 42000;
         private static readonly int FISH_GROUP_ID = 424242;
 
         private static void Load(UnityModManager.ModEntry modEntry)
@@ -45,10 +45,16 @@ namespace MultipleCommerce
         {
             GUILayout.Label(string.Format("Maximum total number of commerce orders available per day: <b>{0:F0}</b>", settings.NumberCommerceOrders), new GUILayoutOption[0]);
             settings.NumberCommerceOrders = (int)GUILayout.HorizontalSlider((float)Main.settings.NumberCommerceOrders, 1f, 20f, new GUILayoutOption[0]);
+            GUILayout.Space(20);
             GUILayout.Label(string.Format("Maximum number of <b>big</b> commerce orders available per day: <b>{0:F0}</b>", settings.NumberBigOrders), new GUILayoutOption[0]);
             settings.NumberBigOrders = (int)GUILayout.HorizontalSlider((float)Main.settings.NumberBigOrders, 1f, 10f, new GUILayoutOption[0]);
+            GUILayout.Space(20);
             GUILayout.Label(string.Format("Maximum number of <b>special</b> commerce missions available per day: <b>{0:F0}</b>", settings.NumberSpecialOrders), new GUILayoutOption[0]);
             settings.NumberSpecialOrders = (int)GUILayout.HorizontalSlider((float)Main.settings.NumberSpecialOrders, 1f, 10f, new GUILayoutOption[0]);
+            GUILayout.Space(20);
+            settings.MoreDiverseOrders = GUILayout.Toggle(settings.MoreDiverseOrders, "More diverse commerce orders (experimental)", new GUILayoutOption[0]);
+            GUILayout.Space(20);
+            settings.RandomOrderLevel = GUILayout.Toggle(settings.RandomOrderLevel, "Randomize commerce mission level (experimental)", new GUILayoutOption[0]);
 
             GUILayout.Space(20);
             GUILayout.Label("Use the buttons below to add missing orders to the order board. Warning! This is really experimental and should only be used if they haven't shown up as expected as a last resort! ", new GUILayoutOption[0]);

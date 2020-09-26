@@ -19,7 +19,9 @@ namespace MultipleCommerce
             {
                 if (!enabled || !settings.AddFishSpecialOrders)
                     return;
-                int index = FISH_BASE_ID;
+                Dbgl("NpcOrderData_LoadDataBase_Patch");
+
+                int index = DIVERSE_ID_COUNTER;
                 foreach (int f in FishInts)
                 {
                     RequirementData.refDataDic.Add(index, new RequirementData(index++, f, new DoubleInt(1, 1), new DoubleInt(2000, 2000), new DoubleInt(150, 150), new DoubleInt(70, 70), new DoubleInt(85, 85), 5, -1, 100, 10, new List<int> { }, new List<int> { }));
