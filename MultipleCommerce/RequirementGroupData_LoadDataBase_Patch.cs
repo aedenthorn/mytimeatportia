@@ -41,8 +41,8 @@ namespace MultipleCommerce
                             {
                                 ids.Add(DIVERSE_ID_COUNTER);
                                 level++;
-                                int mult = level - rd.level;
-                                RequirementData.refDataDic[DIVERSE_ID_COUNTER] = new RequirementData(DIVERSE_ID_COUNTER, rd.itemId, new DoubleInt(rd.itemCount.id0 * mult, rd.itemCount.id1 * mult), new DoubleInt(rd.rewardGold.id0 * mult, rd.rewardGold.id1 * mult), new DoubleInt(rd.rewardExp.id0 * mult, rd.rewardExp.id1 * mult), new DoubleInt(rd.rewardLikability.id0 * mult, rd.rewardLikability.id1 * mult), new DoubleInt(rd.rewardReputation.id0 * mult, rd.rewardReputation.id1 * mult), level, level, rd.weight, rd.deadLine, rd.seasonReq, rd.weatherReq);
+                                float mult = 1 + (level - rd.level)/6f;
+                                RequirementData.refDataDic[DIVERSE_ID_COUNTER] = new RequirementData(DIVERSE_ID_COUNTER, rd.itemId, new DoubleInt((int)Math.Round(rd.itemCount.id0 * mult), (int)Math.Round(rd.itemCount.id1 * mult)), new DoubleInt((int)Math.Round(rd.rewardGold.id0 * mult), (int)Math.Round(rd.rewardGold.id1 * mult)), new DoubleInt((int)Math.Round(rd.rewardExp.id0 * mult), (int)Math.Round(rd.rewardExp.id1 * mult)), new DoubleInt((int)Math.Round(rd.rewardLikability.id0 * mult), (int)Math.Round(rd.rewardLikability.id1 * mult)), new DoubleInt((int)Math.Round(rd.rewardReputation.id0 * mult), (int)Math.Round(rd.rewardReputation.id1 * mult)), level, level, rd.weight, rd.deadLine, rd.seasonReq, rd.weatherReq);
                                 DIVERSE_ID_COUNTER++;
                             }
                         }
