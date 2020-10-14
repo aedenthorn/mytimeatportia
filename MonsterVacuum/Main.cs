@@ -17,7 +17,7 @@ namespace MonsterVacuum
         
         public static List<int> vacuumed;
 
-        private static readonly bool isDebug = true;
+        private static readonly bool isDebug = false;
 
         public static void Dbgl(string str = "", bool pref = true)
         {
@@ -65,29 +65,9 @@ namespace MonsterVacuum
 
         private static void OnGUI(UnityModManager.ModEntry modEntry)
         {
+
             GUILayout.Label(string.Format("Vacuum Range: <b>{0}</b>", settings.VacuumRadius), new GUILayoutOption[0]);
             settings.VacuumRadius = (int)GUILayout.HorizontalSlider(settings.VacuumRadius, 1f, 1000f, new GUILayoutOption[0]);
-        }
-        
-        //[HarmonyPatch(typeof(Player), "Move")]
-        static class Pathea_Player_Move_Patch
-        {
-            static void Prefix()
-            {
-                if (!enabled)
-                    return;
-
-            }
-        }
-
-        [HarmonyPatch(typeof(ActorMotor), "JumpStart")]
-        static class Pathea_ActorMotor_MoveReal_Patch
-        {
-            static void Prefix(ActorMotor __instance, ref ActorMotor.JumpActionParamer ___jumpParamer)
-            {
-                if (!enabled)
-                    return;
-            }
         }
     }
 }

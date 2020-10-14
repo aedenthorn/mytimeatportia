@@ -25,6 +25,7 @@ using System.IO;
 using Pathea.HomeViewerNs;
 using Pathea.MessageSystem;
 using Pathea.ScenarioNs;
+using Pathea.ConfigNs;
 
 namespace Cheats
 {

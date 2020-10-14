@@ -107,6 +107,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExpMultiplier", "ExpMultipl
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InstantLoot", "InstantLoot\InstantLoot.csproj", "{231F63AE-BB5F-4F48-879A-309D62A983B3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MoreDisplayedMissions", "MoreDisplayedMissions\MoreDisplayedMissions.csproj", "{4505C767-CCA5-44D9-9922-B7FB78BD2591}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -321,6 +323,10 @@ Global
 		{231F63AE-BB5F-4F48-879A-309D62A983B3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{231F63AE-BB5F-4F48-879A-309D62A983B3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{231F63AE-BB5F-4F48-879A-309D62A983B3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4505C767-CCA5-44D9-9922-B7FB78BD2591}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4505C767-CCA5-44D9-9922-B7FB78BD2591}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4505C767-CCA5-44D9-9922-B7FB78BD2591}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4505C767-CCA5-44D9-9922-B7FB78BD2591}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
