@@ -48,7 +48,7 @@ namespace Cheats
             modEntry.OnToggle = OnToggle;
             modEntry.OnGUI = OnGUI;
             modEntry.OnSaveGUI = OnSaveGUI;
-            modEntry.OnUpdate = OnUpdate;
+            //modEntry.OnUpdate = OnUpdate;
 
             var harmony = HarmonyInstance.Create(modEntry.Info.Id);
             harmony.PatchAll(Assembly.GetExecutingAssembly());
@@ -97,6 +97,7 @@ namespace Cheats
 
         private static void OnUpdate(UnityModManager.ModEntry arg1, float arg2)
         {
+            return;
             if (Input.GetKeyDown(","))
             {
                 Module<Player>.Self.bag.ChangeMoney(100000, true, 0);

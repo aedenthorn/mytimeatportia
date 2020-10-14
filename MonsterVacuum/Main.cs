@@ -1,33 +1,37 @@
 ﻿using Harmony12;
 using Pathea;
-using Pathea.ACT;
-using Pathea.ModuleNs;
+using Pathea.MessageSystem;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-using Pathea.ActorNs;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityModManagerNet;
-using static Pathea.ActorMotor;
 
 namespace MonsterVacuum
 {
-    public class Main
+    public partial class Main
     {
-        //public static Settings settings { get; private set; }
+        public static Settings settings { get; private set; }
         public static bool enabled;
+        
+        public static List<int> vacuumed;
 
-        private static readonly bool isDebug = false;
+        private static readonly bool isDebug = true;
 
         public static void Dbgl(string str = "", bool pref = true)
         {
             if (isDebug)
-                Debug.Log((pref ? "JumpRun " : "") + str);
+                Debug.Log((pref ? "MonsterVacuum " : "") + str);
         }
 
         private static void Load(UnityModManager.ModEntry modEntry)
         {
-            //settings = Settings.Load<Settings>(modEntry);
+            settings = Settings.Load<Settings>(modEntry);
+
+            vacuumed = new List<int>();
+            MessageManager.Instance.Subscribe("WakeUpScreenEnd", new Action<object[]>(OnWakeUp));
+            SceneManager.activeSceneChanged += ChangeScene;
 
             modEntry.OnGUI = OnGUI;
             modEntry.OnSaveGUI = OnSaveGUI;
@@ -37,6 +41,17 @@ namespace MonsterVacuum
             harmony.PatchAll(Assembly.GetExecutingAssembly());
         }
 
+        private static void ChangeScene(Scene arg0, Scene arg1)
+        {
+            vacuumed.Clear();
+        }
+
+        private static void OnWakeUp(object[] obj)
+        {
+            vacuumed.Clear();
+        }
+
+
         // Called when the mod is turned to on/off.
         static bool OnToggle(UnityModManager.ModEntry modEntry, bool value /* active or inactive */)
         {
@@ -45,20 +60,16 @@ namespace MonsterVacuum
         }
         private static void OnSaveGUI(UnityModManager.ModEntry modEntry)
         {
-            //settings.Save(modEntry);
+            settings.Save(modEntry);
         }
 
         private static void OnGUI(UnityModManager.ModEntry modEntry)
         {
-            /*
-            GUILayout.Label(string.Format("Jump height multiplier: <b>{0:F1}</b>", settings.JumpHeight), new GUILayoutOption[0]);
-            settings.JumpHeight = GUILayout.HorizontalSlider(settings.JumpHeight * 10f, 10f, 50f, new GUILayoutOption[0]) / 10f;
-            GUILayout.Label(string.Format("Movement Speed multiplier: <b>{0:F1}</b>", settings.MovementSpeed), new GUILayoutOption[0]);
-            settings.MovementSpeed = GUILayout.HorizontalSlider(settings.MovementSpeed * 10f, 10f, 50f, new GUILayoutOption[0]) / 10f;
-            settings.multiJump = GUILayout.Toggle(settings.multiJump, "Allow multi-jump", new GUILayoutOption[0]);
-            */
+            GUILayout.Label(string.Format("Vacuum Range: <b>{0}</b>", settings.VacuumRadius), new GUILayoutOption[0]);
+            settings.VacuumRadius = (int)GUILayout.HorizontalSlider(settings.VacuumRadius, 1f, 1000f, new GUILayoutOption[0]);
         }
-        [HarmonyPatch(typeof(Player), "Move")]
+        
+        //[HarmonyPatch(typeof(Player), "Move")]
         static class Pathea_Player_Move_Patch
         {
             static void Prefix()
