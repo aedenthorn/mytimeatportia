@@ -112,6 +112,8 @@ namespace UnlimitedCivicCorpsMissions
             { 1016,new object[] { 1016, 1, 2, -1, 283024, "", 12, new int[] { 15, 50 }, new int[] { 2, 6 }, new string[] { "4000161" }, "", null, -1, "", 0 } },
             { 1017,new object[] { 1017, 1, 2, -1, 283024, "", 14, new int[] { 15, 50 }, new int[] { 2, 6 }, new string[] { "4000165" }, "", null, 1100411, "", 0 } },
             { 1018,new object[] { 1018, 1, 3, -1, 283024, "", 12, new int[] { 15, 50 }, new int[] { 2, 6 }, new string[] { "4000140" }, "", null, 1100452, "", 0 } },
+            { 1019,new object[] { 1019, 1, 3, -1, 283024, "", 12, new int[] { 15, 50 }, new int[] { 2, 6 }, new string[] { "4000033" }, "", null, 1100452, "", 0 } },
+            { 1020,new object[] { 1020, 1, 3, -1, 283024, "", 30, new int[] { 10, 30 }, new int[] { 2, 6 }, new string[] { "4000046" }, "", null, 1100452, "", 0 } },
         };
 
         [HarmonyPatch(typeof(MissionData), "List")]

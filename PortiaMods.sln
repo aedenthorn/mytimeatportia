@@ -109,6 +109,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InstantLoot", "InstantLoot\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MoreDisplayedMissions", "MoreDisplayedMissions\MoreDisplayedMissions.csproj", "{4505C767-CCA5-44D9-9922-B7FB78BD2591}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FactoryWorktableDiscount", "FactoryWorktableDiscount\FactoryWorktableDiscount.csproj", "{A8E0B303-C041-46E0-B6B5-F297E54D60B4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MoreSkillPoints", "MoreSkillPoints\MoreSkillPoints.csproj", "{993C2AC3-291C-49D0-B983-F57851960283}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -327,6 +331,14 @@ Global
 		{4505C767-CCA5-44D9-9922-B7FB78BD2591}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4505C767-CCA5-44D9-9922-B7FB78BD2591}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4505C767-CCA5-44D9-9922-B7FB78BD2591}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A8E0B303-C041-46E0-B6B5-F297E54D60B4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A8E0B303-C041-46E0-B6B5-F297E54D60B4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A8E0B303-C041-46E0-B6B5-F297E54D60B4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A8E0B303-C041-46E0-B6B5-F297E54D60B4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{993C2AC3-291C-49D0-B983-F57851960283}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{993C2AC3-291C-49D0-B983-F57851960283}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{993C2AC3-291C-49D0-B983-F57851960283}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{993C2AC3-291C-49D0-B983-F57851960283}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

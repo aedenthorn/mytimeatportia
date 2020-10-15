@@ -413,7 +413,7 @@ namespace Cheats
                 return true;
             }
         }
-        [HarmonyPatch(typeof(Pathea.SkillNs.Factory), "CreateCmd", new Type[] { typeof(JSONNode) })]
+        //[HarmonyPatch(typeof(Pathea.SkillNs.Factory), "CreateCmd", new Type[] { typeof(JSONNode) })]
         static class Factory_CreateCmd_Patch
         {
             static void Prefix(ref JSONNode node)
