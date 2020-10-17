@@ -24,6 +24,11 @@ namespace MarriageMod
                 {
                     FavorRelationshipData frd = FavorRelationshipData.refDataDic[id];
 
+                    if(frd.nameId == 4000097)
+                    {
+                        Dbgl($"Higgins can play: {frd.canPlay}");
+                    }
+
                     if(frd.canPlay)
                         frd.canExpress = true;
                     __result = frd;

@@ -14,14 +14,16 @@ namespace MarriageMod
         {
             static void Postfix()
             {
-                if (typeof(FavorManager).GetMethod("RemoveFromBlackList") != null)
-                {
-                    typeof(FavorManager).GetMethod("RemoveFromBlackList").Invoke(Module<FavorManager>.Self, new object[] { 4000097 }); 
+                try {
+                    typeof(FavorManager).GetMethod("RemoveFromBlackList").Invoke(Module<FavorManager>.Self, new object[] { 4000097 });
+                    Dbgl("Making Higgins datable (1)");
                 }
-                else if (typeof(FavorManager).GetMethod("RemoveToBlackList") != null)
-                {
-                    typeof(FavorManager).GetMethod("RemoveToBlackList").Invoke(Module<FavorManager>.Self, new object[] { 4000097 }); 
+                catch { }
+                try {
+                    typeof(FavorManager).GetMethod("RemoveToBlackList").Invoke(Module<FavorManager>.Self, new object[] { 4000097 });
+                    Dbgl("Making Higgins datable (2)");
                 }
+                catch { }
             }
         }
     }

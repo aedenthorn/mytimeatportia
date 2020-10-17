@@ -51,7 +51,8 @@
     <Compile Include="EGStopEngagement_OnStart_Patch.cs" />
     <Compile Include="EGStopEngagement_OnUpdate_Patch.cs" />
     <Compile Include="FavorManager_InitData_Patch.cs" />
-    <Compile Include="FavorRelationshipData_GetRefData_Patch.cs" />
+    <Compile Include="FavorRelationshipData_GetRefData_Patch - Copy.cs" />
+    <Compile Include="FavorManager_IsBlackListContain_Patch.cs" />
     <Compile Include="ITAnimation_OnStart_Patch.cs" />
     <Compile Include="ITJealousStart_OnUpdate_Patch.cs" />
     <Compile Include="ITJealous_OnStart_Patch.cs" />

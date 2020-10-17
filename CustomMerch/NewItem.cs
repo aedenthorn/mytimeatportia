@@ -38,47 +38,47 @@ namespace CustomMerch
 		public NewItem(JSONNode node)
 		{
 			Main.Dbgl("1");
-			this.name = node["name"];
-			this.description = node["description"];
-			this.effect = node["effect"];
-			this.buyPrice = node["buyPrice"].AsInt;
-			this.sellPrice = new DoubleInt(node["sellPrice"],':');
-			this.iconPath = node["iconPath"];
-			this.modelPath = node["modelPath"];
-			this.dropModelPath = node["dropModelPath"];
-			this.displayScale = node["displayScale"].AsFloat;
-			this.orderIndex = node["orderIndex"].AsInt;
+			name = node["name"];
+			description = node["description"];
+			effect = node["effect"];
+			buyPrice = node["buyPrice"].AsInt;
+			sellPrice = new DoubleInt(node["sellPrice"],':');
+			iconPath = node["iconPath"];
+			modelPath = node["modelPath"];
+			dropModelPath = node["dropModelPath"];
+			displayScale = node["displayScale"].AsFloat;
+			orderIndex = node["orderIndex"].AsInt;
 			
-			this.source = node["source"];
+			source = node["source"];
 
-			this.intendType = node["intendType"].AsInt;
+			intendType = node["intendType"].AsInt;
 
 			string temp = node["skillIds"];
 			string[] skillTemp = temp.Split(',');
 			if (skillTemp.Length > 0)
 			{
-				this.skillIds = new int[skillTemp.Length];
+				skillIds = new int[skillTemp.Length];
 				for (int i = 0; i < skillTemp.Length; i++)
 				{
-					this.skillIds[i] = int.Parse(skillTemp[i]);
+					skillIds[i] = int.Parse(skillTemp[i]);
 				}
 			}
 
-			this.attack = node["attack"].AsInt;
-			this.defense = node["defense"].AsInt;
-			this.critical = node["critical"].AsFloat;
-			this.antiCritical = node["antiCritical"].AsFloat;
-			this.hpMax = node["hpMax"].AsFloat;
-			this.cpMax = node["cpMax"].AsFloat;
-			this.alwaysOnHand = node["alwaysOnHand"].AsBool;
-			this.holdInBothHands = node["holdInBothHands"].AsBool;
-			this.digGridCount = node["digGridCount"].AsFloat;
-			this.digIntensity = node["digIntensity"].AsFloat;
-			this.rate = node["rate"].AsFloat;
-			this.meleeCriticalAmount = node["meleeCriticalAmount"].AsFloat;
+			attack = node["attack"].AsInt;
+			defense = node["defense"].AsInt;
+			critical = node["critical"].AsFloat;
+			antiCritical = node["antiCritical"].AsFloat;
+			hpMax = node["hpMax"].AsFloat;
+			cpMax = node["cpMax"].AsFloat;
+			alwaysOnHand = node["alwaysOnHand"].AsBool;
+			holdInBothHands = node["holdInBothHands"].AsBool;
+			digGridCount = node["digGridCount"].AsFloat;
+			digIntensity = node["digIntensity"].AsFloat;
+			rate = node["rate"].AsFloat;
+			meleeCriticalAmount = node["meleeCriticalAmount"].AsFloat;
 
-			this.storeId = node["storeId"].AsInt;
-			this.chance = node["chance"].AsInt;
+			storeId = node["storeId"].AsInt;
+			chance = node["chance"].AsInt;
 		}
 
 	}

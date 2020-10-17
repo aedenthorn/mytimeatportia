@@ -1,32 +1,39 @@
 ﻿using Harmony12;
-using UnityModManagerNet;
-using System.Reflection;
+using Pathea;
+using Pathea.ACT;
+using Pathea.ActorNs;
+using Pathea.BlackBoardNs;
+using Pathea.EG;
 using Pathea.FavorSystemNs;
-using Pathea.NpcRepositoryNs;
-using UnityEngine;
-using System.Collections.Generic;
+using Pathea.HomeNs;
+using Pathea.ItemSystem;
 using Pathea.MG;
 using Pathea.ModuleNs;
-using Pathea;
-using System;
-using Pathea.ItemSystem;
-using Pathea.BlackBoardNs;
-using Pathea.HomeNs;
-using System.Threading;
-using Pathea.MessageSystem;
-using Pathea.ActorNs;
-using Pathea.ACT;
-using RootMotion.FinalIK;
+using Pathea.NpcRepositoryNs;
 using Pathea.ScenarioNs;
-using UnityEngine.SceneManagement;
-using Pathea.EG;
-using UnityEngine.Networking;
+using RootMotion.FinalIK;
+using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Reflection;
+using System.Threading;
+using UnityEngine;
+using UnityEngine.Networking;
+using UnityEngine.SceneManagement;
+using UnityModManagerNet;
 
 namespace MarriageMod
 {
     public static partial class Main
     {
+        private static bool isDebug = false;
+
+        public static void Dbgl(string str = "", bool pref = true)
+        {
+            if (isDebug)
+                Debug.Log((pref ? "MarriageMod " : "") + str);
+        }
+
         public static bool enabled;
         public static Settings settings { get; private set; }
         private static AudioClip kissAudioClip = null;
@@ -597,12 +604,5 @@ namespace MarriageMod
             actor.ResumeInteraction(FullBodyBipedEffector.RightHand);
         }
 
-        private static bool isDebug = false;
-
-        public static void Dbgl(string str = "", bool pref = true)
-        {
-            if (isDebug)
-                Debug.Log((pref ? "MarriageMod " : "") + str);
-        }
     }
 }

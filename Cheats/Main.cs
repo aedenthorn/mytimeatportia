@@ -1,31 +1,29 @@
-﻿using System;
+﻿using Ccc;
+using Harmony12;
+using Hont;
+using Pathea;
+using Pathea.ActorNs;
+using Pathea.AppearNs;
+using Pathea.BlackBoardNs;
+using Pathea.FavorSystemNs;
+using Pathea.GuildRanking;
+using Pathea.HomeViewerNs;
+using Pathea.ItemSystem;
+using Pathea.Missions;
+using Pathea.ModuleNs;
+using Pathea.OptionNs;
+using Pathea.ScenarioNs;
+using Pathea.UISystemNs;
+using PatheaScript;
+using PatheaScriptExt;
+using SimpleJSON;
+using System;
+using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
-using UnityModManagerNet;
-using Harmony12;
-using Pathea.UISystemNs;
-using Pathea.ItemSystem;
-using Pathea;
-using System.Collections.Generic;
-using SimpleJSON;
-using Pathea.FavorSystemNs;
-using Pathea.ModuleNs;
-using Pathea.Missions;
-using static Harmony12.AccessTools;
-using Pathea.ActorNs;
 using UnityEngine.SceneManagement;
-using PatheaScript;
-using Ccc;
-using Hont;
-using Pathea.AppearNs;
-using PatheaScriptExt;
-using Pathea.BlackBoardNs;
-using Pathea.OptionNs;
-using System.IO;
-using Pathea.HomeViewerNs;
-using Pathea.MessageSystem;
-using Pathea.ScenarioNs;
-using Pathea.ConfigNs;
+using UnityModManagerNet;
+using static Harmony12.AccessTools;
 
 namespace Cheats
 {
@@ -49,7 +47,7 @@ namespace Cheats
             modEntry.OnToggle = OnToggle;
             modEntry.OnGUI = OnGUI;
             modEntry.OnSaveGUI = OnSaveGUI;
-            //modEntry.OnUpdate = OnUpdate;
+            modEntry.OnUpdate = OnUpdate;
 
             var harmony = HarmonyInstance.Create(modEntry.Info.Id);
             harmony.PatchAll(Assembly.GetExecutingAssembly());
@@ -98,6 +96,49 @@ namespace Cheats
 
         private static void OnUpdate(UnityModManager.ModEntry arg1, float arg2)
         {
+            return;
+            if (Input.GetKeyDown(","))
+            {
+                Module<GuildRankingManager>.Self.PrintAllWorkshopState();
+            }
+            if (Input.GetKeyDown("."))
+            {
+                HUDFPS component = Module<TestClick>.Self.gameObject.GetComponent<HUDFPS>();
+                if (component != null)
+                {
+                    UnityEngine.Object.Destroy(component);
+                }
+                else
+                {
+                    Module<TestClick>.Self.gameObject.AddComponent<HUDFPS>();
+                }
+
+            }
+            if (Input.GetKeyDown("/"))
+            {
+                DeviceInfo component = Module<TestClick>.Self.gameObject.GetComponent<DeviceInfo>();
+                if (component != null)
+                {
+                    UnityEngine.Object.Destroy(component);
+                }
+                else
+                {
+                    Module<TestClick>.Self.gameObject.AddComponent<DeviceInfo>();
+                }
+            }
+            if (Input.GetKeyDown("'"))
+            {
+                GraphicCtr component = Module<TestClick>.Self.GetComponent<GraphicCtr>();
+                if (component)
+                {
+                    UnityEngine.Object.Destroy(component);
+                }
+                else
+                {
+                    Module<TestClick>.Self.gameObject.AddComponent<GraphicCtr>();
+                }
+            }
+
             return;
             if (Input.GetKeyDown(","))
             {
@@ -275,8 +316,20 @@ namespace Cheats
             settings.Save(modEntry);
         }
 
+        private static string command;
+
         private static void OnGUI(UnityModManager.ModEntry modEntry)
         {
+
+
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("Run command:", new GUILayoutOption[0]);
+            command = GUILayout.TextField(command, new GUILayoutOption[0]);
+            if (GUILayout.Button("Run", new GUILayoutOption[0]))
+            {
+                typeof(CCC_Cmd).GetMethod(command, BindingFlags.Instance | BindingFlags.NonPublic).Invoke(new CCC_Cmd(), new object[0]);
+            }
+            GUILayout.EndHorizontal();
 
             UnityEngine.Event e = UnityEngine.Event.current;
 

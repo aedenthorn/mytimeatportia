@@ -19,9 +19,11 @@ namespace MarriageMod
                     return;
                 List<int> l = new List<int> { 4000002, 4000008, 4000102, 4000012 , 4000114 , 4000040 , 4000059, 4000019, 4000014, 4000055, 4000015 , 4000010, 4000041, 4000013, 4000115, 4000141, 4000097, 4000117 };
 
+                Dbgl($"parsing id {___id}");
 
                 if (l.Contains(___id))
                 {
+                    Dbgl($"editing for id {___id}");
                     if (___addLike == 0)
                     {
                         ___addLike = 1;
