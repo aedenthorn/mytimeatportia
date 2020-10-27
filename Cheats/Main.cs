@@ -11,6 +11,7 @@ using Pathea.HomeViewerNs;
 using Pathea.ItemSystem;
 using Pathea.Missions;
 using Pathea.ModuleNs;
+using Pathea.NpcInstanceNs;
 using Pathea.OptionNs;
 using Pathea.ScenarioNs;
 using Pathea.UISystemNs;
@@ -351,6 +352,14 @@ namespace Cheats
                     }))
             {
                 NewGamePlus();
+            }
+
+            if (GUILayout.Button("GetAadit", new GUILayoutOption[]{
+                        GUILayout.Width(150f)
+                    }))
+            {
+                NpcInstanceModule.InstanceData data = NpcInstanceModule.GetData(instanceId);
+                Dbgl($"Aadit: ");
             }
 
             if (GUILayout.Button("Relationship++", new GUILayoutOption[]

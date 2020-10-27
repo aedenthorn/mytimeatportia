@@ -118,67 +118,97 @@ namespace CustomQuests
                 return;
 
 
+
             dictStrings = new Dictionary<int, string>();
-            string path = $"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\\assets\\{lang}.txt";
-            if (!File.Exists(path))
+            string path = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),"assets");
+
+            string[] files = Directory.GetFiles(path, $"{lang}*.txt", SearchOption.AllDirectories);
+            if (files.Length == 0)
             {
-                Dbgl("No dialogue file found at " + path);
-                return;
+                Dbgl("No translation files found at " + path);
             }
-            var lines = File.ReadAllLines(path);
-            for (var i = 0; i < lines.Length; i += 1)
+            else
             {
-                string[] line = lines[i].Split('=');
-                if (line.Length < 2)
-                    continue;
-                var text = new string[line.Length - 1];
-                Array.Copy(line, 1, text, 0, line.Length - 1);
-                if (int.TryParse(line[0], out int id))
+                Dbgl($"{files.Length} translation files found at {path}");
+            }
+            foreach (string filename in files)
+            {
+                try
                 {
-                    dictStrings.Add(id, text.Join());
+
+                    var lines = File.ReadAllLines(filename);
+                    for (var i = 0; i < lines.Length; i += 1)
+                    {
+                        string[] line = lines[i].Split('=');
+                        if (line.Length < 2)
+                            continue;
+                        var text = new string[line.Length - 1];
+                        Array.Copy(line, 1, text, 0, line.Length - 1);
+                        if (int.TryParse(line[0], out int id))
+                        {
+                            dictStrings.Add(id, text.Join());
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    UnityEngine.Debug.LogError(ex.ToString());
                 }
             }
         }
 
         private static void AddConv()
         {
-
-            string path = $"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\\assets\\conversations.txt";
-            if (!File.Exists(path))
+            string path = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "assets");
+            string[] files = Directory.GetFiles(path, "conversations*.txt", SearchOption.AllDirectories);
+            if (files.Length == 0)
             {
-                Dbgl("No conversation file found at " + path);
-                return;
+                Dbgl("No conversation files found at " + path);
             }
-            var lines = File.ReadAllLines(path);
-            for (var i = 0; i < lines.Length; i += 1)
+            else
             {
-                string[] line = lines[i].Split('|');
-                if (line.Length != 5)
-                    continue;
-                if (!int.TryParse(line[0], out int id))
+                Dbgl($"{files.Length} conversation files found at {path}");
+            }
+            foreach (string filename in files)
+            {
+                try
                 {
-                    continue;
-                }
-                string[] trans = line[1].Split(',');
-                List<int> transId = new List<int>();
-                foreach (string str in trans)
-                {
-                    if(int.TryParse(str, out int atrans))
+                    var lines = File.ReadAllLines(filename);
+                    for (var i = 0; i < lines.Length; i += 1)
                     {
-                        transId.Add(atrans);
+                        string[] line = lines[i].Split('|');
+                        if (line.Length != 5)
+                            continue;
+                        if (!int.TryParse(line[0], out int id))
+                        {
+                            continue;
+                        }
+                        string[] trans = line[1].Split(',');
+                        List<int> transId = new List<int>();
+                        foreach (string str in trans)
+                        {
+                            if (int.TryParse(str, out int atrans))
+                            {
+                                transId.Add(atrans);
+                            }
+                        }
+                        if (!int.TryParse(line[2], out int type))
+                        {
+                            continue;
+                        }
+                        if (type == 0)
+                        {
+                            ConvBase.mDict[id] = new ConvBSentence(id, transId, line[3], line[4]);
+                        }
+                        else if (type == 1)
+                        {
+                            ConvBase.mDict[id] = new ConvBChoice(id, transId, line[3], line[4]);
+                        }
                     }
                 }
-                if (!int.TryParse(line[2], out int type))
+                catch (Exception ex)
                 {
-                    continue;
-                }
-                if (type == 0)
-                {
-                    ConvBase.mDict[id] = new ConvBSentence(id, transId, line[3], line[4]);
-                }
-                else if (type == 1)
-                {
-                    ConvBase.mDict[id] = new ConvBChoice(id, transId, line[3], line[4]);
+                    UnityEngine.Debug.LogError(ex.ToString());
                 }
             }
         }
@@ -187,11 +217,15 @@ namespace CustomQuests
         {
             newMissions = new Dictionary<int, string>();
             activeMissions = new List<int>();
-            string path = $"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\\assets";
+            string path = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "assets");
             string[] files = Directory.GetFiles(path, "*.xml", SearchOption.AllDirectories);
             if(files.Length == 0)
             {
                 Dbgl("No xml files found at " + path);
+            }
+            else
+            {
+                Dbgl($"{files.Length} xml files found at {path}");
             }
             foreach (string filename in files)
             {

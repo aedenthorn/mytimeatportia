@@ -3,6 +3,7 @@ using Pathea.ConfigNs;
 using Pathea.Missions;
 using Pathea.ModuleNs;
 using Pathea.PlayerMissionNs;
+using Pathea.UISystemNs;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -74,6 +75,26 @@ namespace MoreDisplayedMissions
                 for (int i = 0; i < codes.Count; i++)
                 {
                     if (codes[i].opcode == OpCodes.Ldc_I4_3)
+                    {
+                        codes[i].opcode = OpCodes.Ldc_I4;
+                        codes[i].operand = settings.MaxMissions;
+
+                    }
+                }
+                return codes.AsEnumerable();
+            }
+        }
+
+        [HarmonyPatch(typeof(MissionTraceCtr))]
+        [HarmonyPatch("Fresh")]
+        public static class MissionTraceCtr_Fresh_Patch
+        {
+            static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+            {
+                var codes = new List<CodeInstruction>(instructions);
+                for (int i = 0; i < codes.Count; i++)
+                {
+                    if (codes[i].opcode == OpCodes.Ldc_I4_3 && codes[i-1].opcode == OpCodes.Ldloc_S && codes[i+1].opcode == OpCodes.Blt)
                     {
                         codes[i].opcode = OpCodes.Ldc_I4;
                         codes[i].operand = settings.MaxMissions;

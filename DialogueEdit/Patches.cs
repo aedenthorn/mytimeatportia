@@ -1,14 +1,5 @@
-﻿using BehaviorDesigner.Runtime.Tasks.Basic.UnityString;
-using Harmony12;
-using Hont;
-using Pathea;
-using Pathea.GameFlagNs;
-using Pathea.TipsNs;
-using Pathea.UISystemNs;
-using System;
+﻿using Harmony12;
 using System.Collections.Generic;
-using System.Reflection;
-using UnityEngine;
 
 namespace DialogueEdit
 {

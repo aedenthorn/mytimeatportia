@@ -1,7 +1,11 @@
 ﻿using Ccc;
 using Harmony12;
 using Pathea.Conversations;
+using Pathea.FavorSystemNs;
+using Pathea.ModuleNs;
 using PatheaScript;
+using PatheaScriptExt;
+using System.Xml;
 
 namespace CustomQuests
 {
@@ -73,6 +77,28 @@ namespace CustomQuests
                     __result = newMissions[id];
                     return false;
                 }
+                return true;
+            }
+        }
+
+        [HarmonyPatch(typeof(NpcDeleteFavor), "Exec")]
+        private static class NpcDeleteFavor_Exec_Patch
+        {
+            private static bool Prefix(XmlNode ___mInfo, Trigger ___mTrigger)
+            {
+                if (!enabled)
+                    return true;
+                
+                int dead = (int)Util.GetVarRefOrValue(___mInfo, "dead", VarValue.EType.Int, ___mTrigger).Value;
+
+                if(dead == -1)
+                {
+                    int actorId = StoryHelper.GetActorId(___mInfo, ___mTrigger, true);
+                    Dbgl($"restoring {actorId} favor");
+                    Module<FavorManager>.Self.RemoveFromBlackList(actorId);
+                    return false;
+                }
+
                 return true;
             }
         }
