@@ -2,7 +2,7 @@
     "Releases":
     [
 		{"Id": "AlwaysOpen", "Version": "0.1.0"},
-		{"Id": "BuildAnywhere", "Version": "0.2.4"},
+		{"Id": "BuildAnywhere", "Version": "0.3.0"},
 		{"Id": "ChangeClothes", "Version": "0.2.4"},
 		{"Id": "ChineseVoice", "Version": "0.1.0"},
 		{"Id": "CookingMachine", "Version": "0.3.1"},
@@ -22,7 +22,7 @@
 		{"Id": "InstantLoot", "Version": "0.1.0"},
 		{"Id": "Interact", "Version": "0.6.1"},
 		{"Id": "Invasion", "Version": "0.6.3"},
-		{"Id": "InventoryResize", "Version": "0.1.0"},
+		{"Id": "InventoryResize", "Version": "0.1.1"},
 		{"Id": "JumpRun", "Version": "0.4.2"},
 		{"Id": "Lights", "Version": "0.4.0"},
 		{"Id": "MarriageMod", "Version": "2.3.0"},
@@ -31,7 +31,7 @@
 		{"Id": "MonsterVacuum", "Version": "0.1.0"},
 		{"Id": "MoreDisplayedMissions", "Version": "0.2.0"},
 		{"Id": "MoreResourceDeliveries", "Version": "0.4.0"},
-		{"Id": "MoreSkillPoints", "Version": "0.1.0"},
+		{"Id": "MoreSkillPoints", "Version": "0.1.1"},
 		{"Id": "MultipleCommerce", "Version": "0.8.1"},
 		{"Id": "MusicBox", "Version": "0.4.0"},
 		{"Id": "NPCNoDelete", "Version": "0.1.0"},

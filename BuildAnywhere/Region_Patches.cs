@@ -1,6 +1,7 @@
 ﻿using Harmony12;
 using NovaEnv;
 using Pathea;
+using Pathea.ACT;
 using Pathea.HomeNs;
 using Pathea.ItemSystem;
 using Pathea.ModuleNs;
@@ -128,7 +129,7 @@ namespace BuildAnywhere
                 return false;
             }
         }
-        
+
         [HarmonyPatch(typeof(Region), "SetSlot")]
         static class Region_SetSlot_Patch
         {
@@ -213,7 +214,7 @@ namespace BuildAnywhere
             }
         }
 
-        [HarmonyPatch(typeof(Region), "TakeUpItem")]
+        [HarmonyPatch(typeof(Region), "TakeUpItem", new Type[]{ typeof(CellIndex), typeof(Action<int, int>)})]
         static class Region_TakeUpItem_Patch
         {
             static bool Prefix(Region __instance, ref ItemObject __result, CellIndex index, HomeRegionType ___regionType)

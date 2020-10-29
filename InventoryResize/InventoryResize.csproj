@@ -31,9 +31,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="0Harmony-1.2">
-      <HintPath>..\external\0Harmony-1.2.dll</HintPath>
-    </Reference>
     <Reference Include="0Harmony12">
       <HintPath>..\external\UnityModManager\0Harmony12.dll</HintPath>
     </Reference>

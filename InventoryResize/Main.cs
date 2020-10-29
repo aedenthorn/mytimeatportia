@@ -1,4 +1,4 @@
-﻿using Harmony;
+﻿using Harmony12;
 using Pathea;
 using Pathea.ItemSystem;
 using Pathea.ModuleNs;

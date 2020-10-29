@@ -1,4 +1,4 @@
-﻿using Harmony;
+﻿using Harmony12;
 using Pathea;
 using Pathea.ModuleNs;
 using Pathea.PlayerAbilityNs;
@@ -54,6 +54,7 @@ namespace MoreSkillPoints
 
             GUILayout.Label(string.Format("Extra Skill Points Per Level: <b>{0}</b>", settings.ExtraPoints), new GUILayoutOption[0]);
             settings.ExtraPoints = (int)GUILayout.HorizontalSlider(settings.ExtraPoints, 0f, 100f, new GUILayoutOption[0]);
+            GUILayout.Space(10f);
             GUILayout.BeginHorizontal();
             GUILayout.Label("Add Skill Points:", new GUILayoutOption[0]);
             addPoints = GUILayout.TextField(addPoints, new GUILayoutOption[0]);

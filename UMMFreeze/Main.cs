@@ -46,7 +46,7 @@ namespace UMMFreeze
                     if (value)
                     {
                         Dbgl("Opening UMM");
-                        if (UIStateMgr.Instance.currentState.type == UIStateMgr.StateType.Play)
+                        if (UIStateMgr.Instance?.currentState?.type == UIStateMgr.StateType.Play)
                         {
                             Dbgl("Freezing UI");
                             Module<InputSolutionModule>.Self.Push(SolutionType.Empty);
@@ -57,7 +57,7 @@ namespace UMMFreeze
                     else
                     {
                         Dbgl("Closing UMM");
-                        if (Module<InputSolutionModule>.Self.CurSolutionType == SolutionType.Empty)
+                        if (Module<InputSolutionModule>.Self?.CurSolutionType == SolutionType.Empty)
                         {
                             Dbgl("Unfreezing UI");
                             Module<InputSolutionModule>.Self.Pop();
