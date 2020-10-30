@@ -18,7 +18,7 @@ namespace FarmAnimals
 
         public static bool enabled;
 
-        private static readonly bool isDebug = true;
+        private static readonly bool isDebug = false;
 
         public static void Dbgl(string str = "", bool pref = true)
         {

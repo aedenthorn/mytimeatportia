@@ -21,6 +21,7 @@ namespace CustomTextures
         private static Dictionary<int, Dictionary<int, Texture2D>> customTexturesPartial = new Dictionary<int, Dictionary<int, Texture2D>>();
         private static Dictionary<int, Dictionary<string, Texture2D>> customTexturesExact = new Dictionary<int, Dictionary<string, Texture2D>>();
         private static Dictionary<string, Texture2D> customTexturesMisc = new Dictionary<string, Texture2D>();
+        private static Dictionary<string, Texture2D> customTexturesHorse = new Dictionary<string, Texture2D>();
 
         private static void LoadCustomTextures()
         {
@@ -35,6 +36,7 @@ namespace CustomTextures
             Regex pattern = new Regex(@"^[0-9][0-9][0-9][0-9][0-9][0-9][0-9]\.png$");
             Regex pattern2 = new Regex(@"^[0-9][0-9][0-9][0-9][0-9][0-9][0-9]_[0-9]\.png$");
             Regex pattern3 = new Regex(@"^[0-9][0-9][0-9][0-9][0-9][0-9][0-9]_..*\.png$");
+            Regex pattern4 = new Regex(@"^Horse_..*\.png$");
 
             customTextures.Clear();
             customTexturesPartial.Clear();
@@ -51,7 +53,7 @@ namespace CustomTextures
                     Texture2D tex = new Texture2D(2, 2);
                     byte[] imageData = File.ReadAllBytes(file);
                     tex.LoadImage(imageData);
-                    customTextures.Add(id, tex);
+                    customTextures[id] = tex;
                 }
                 else if (pattern2.IsMatch(fileName))
                 {
@@ -89,13 +91,23 @@ namespace CustomTextures
                         customTexturesExact.Add(id, new Dictionary<string, Texture2D>() { { mesh, tex } });
                     }
                 }
+                else if (pattern4.IsMatch(fileName))
+                {
+                    Dbgl($"got horse name texture at path: {file}");
+                    string name = fileName.Substring(6, fileName.Length - 10);
+                    Dbgl($"got horse name: '{name}'");
+                    Texture2D tex = new Texture2D(2, 2);
+                    byte[] imageData = File.ReadAllBytes(file);
+                    tex.LoadImage(imageData);
+                    customTexturesHorse[name] = tex;
+                }
                 else
                 {
                     Dbgl($"got misc texture at path: {file}");
                     Texture2D tex = new Texture2D(2, 2);
                     byte[] imageData = File.ReadAllBytes(file);
                     tex.LoadImage(imageData);
-                    customTexturesMisc.Add(fileName.Substring(0, fileName.Length - 4), tex);
+                    customTexturesMisc[fileName.Substring(0, fileName.Length - 4)] = tex;
                 }
             }
         }
@@ -209,7 +221,6 @@ namespace CustomTextures
             {
                 FixHomeTextures();
             }
-
         }
 
         private static void FixOneTexture(GameObject go)

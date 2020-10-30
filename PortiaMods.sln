@@ -117,6 +117,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InventoryResize", "Inventor
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DiscardSpecialItems", "DiscardSpecialItems\DiscardSpecialItems.csproj", "{229D4689-C4C4-48A0-B5E3-99439571D7FA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameManager", "GameManager\GameManager.csproj", "{C5EBA49D-F817-4523-903F-4D7F90D33772}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -351,6 +353,10 @@ Global
 		{229D4689-C4C4-48A0-B5E3-99439571D7FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{229D4689-C4C4-48A0-B5E3-99439571D7FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{229D4689-C4C4-48A0-B5E3-99439571D7FA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C5EBA49D-F817-4523-903F-4D7F90D33772}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C5EBA49D-F817-4523-903F-4D7F90D33772}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C5EBA49D-F817-4523-903F-4D7F90D33772}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C5EBA49D-F817-4523-903F-4D7F90D33772}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

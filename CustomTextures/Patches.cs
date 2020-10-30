@@ -3,7 +3,9 @@ using Pathea.ActorNs;
 using Pathea.AppearNs;
 using Pathea.HomeNs;
 using Pathea.HomeViewerNs;
+using Pathea.ModuleNs;
 using Pathea.NpcAppearNs;
+using Pathea.RiderNs;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -18,12 +20,43 @@ namespace CustomTextures
         {
             private static void Postfix(Actor __instance, ref SkinnedMeshRenderer ___skinnedMeshRenderer)
             {
-
                 if (customTextures.ContainsKey(__instance.InstanceId) && __instance.GetComponent<NpcAppear>() == null)
                 {
                     Dbgl($"got texture for {__instance.ActorName}");
                     if (___skinnedMeshRenderer != null)
                         ___skinnedMeshRenderer.material.mainTexture = customTextures[__instance.InstanceId];
+                }
+                if (__instance.IsRidable)
+                {
+                    string name = Module<RidableModuleManager>.Self.GetRidable(__instance.RidableUID).GetNickName();
+                    Dbgl($"got horse '{name}'");
+                    if (customTexturesHorse.ContainsKey(name))
+                    {
+                        Dbgl($"got horse texture for {name}");
+                        GameObject go = __instance.gameObject;
+                        MeshRenderer[] mrs = go.GetComponentsInChildren<MeshRenderer>();
+                        foreach (MeshRenderer mr in mrs)
+                        {
+                            if (mr.material?.HasProperty("_MainTex") == true && mr.material.mainTexture != null)
+                            {
+                                Dbgl($"Changing texture for {name}");
+                                Texture2D tex = customTexturesHorse[name];
+                                tex.name = $"Horse_{name}.png";
+                                mr.material.mainTexture = tex;
+                            }
+                        }
+                        SkinnedMeshRenderer[] smrs = go.GetComponentsInChildren<SkinnedMeshRenderer>();
+                        foreach (SkinnedMeshRenderer mr in smrs)
+                        {
+                            if (mr.material?.HasProperty("_MainTex") == true && mr.material.mainTexture != null)
+                            {
+                                Dbgl($"Changing texture for {name}");
+                                Texture2D tex = customTexturesHorse[name];
+                                tex.name = $"Horse_{name}.png";
+                                mr.material.mainTexture = tex;
+                            }
+                        }
+                    }
                 }
             }
         }
