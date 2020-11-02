@@ -229,7 +229,7 @@ namespace InventoryGiftHighlights
 
             for (int i = 0; i < d.Length; i++)
             {
-                Dbgl($"Pixel color: {d[i]}");
+                //Dbgl($"Pixel color: {d[i]}");
 
                 if (d[i] != Color.white)
                     continue;

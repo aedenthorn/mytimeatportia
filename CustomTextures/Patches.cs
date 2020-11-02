@@ -93,10 +93,15 @@ namespace CustomTextures
                     {
                         if (unit == null || unit.smrs == null)
                             continue;
-                        Dbgl($"mesh {unit.smrs[0].name}");
-                        if (customTexturesExact[___m_Actor.InstanceId].ContainsKey(unit.smrs[0].name))
+
+                        for(int i = 0; i < unit.smrs.Length; i++)
                         {
-                            unit.smrs[0].material.mainTexture = customTexturesExact[___m_Actor.InstanceId][unit.smrs[0].name];
+                            Dbgl($"mesh {unit.smrs[i].name}");
+                            if (customTexturesExact[___m_Actor.InstanceId].ContainsKey(unit.smrs[i].name))
+                            {
+                                unit.smrs[i].material.mainTexture = customTexturesExact[___m_Actor.InstanceId][unit.smrs[i].name];
+                                unit.smrs[i].material.mainTexture.name = $"{___m_Actor.InstanceId}_{ unit.smrs[i].name}";
+                            }
                         }
                     }
                 }

@@ -1,8 +1,13 @@
 ﻿using Harmony12;
 using Pathea;
+using Pathea.ACT;
 using Pathea.AudioNs;
+using Pathea.ConfigNs;
+using Pathea.MiniGameNs;
 using Pathea.MiniGameNs.Fishing;
 using Pathea.ModuleNs;
+using Pathea.PlayerOperateNs;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -102,23 +107,104 @@ namespace HereFishy
                 }
             }
         }
+
         [HarmonyPatch(typeof(FishingSystem_t), "WaitForFish")]
         static class FishingSystem_t_WaitForFish_Patch
         { 
-            static bool Prefix(FishingSystem_t __instance)
+            static bool Prefix(FishingSystem_t __instance, FishInfo ___fishInfo, Transform ___shoal, IFishingMan ___fishingMan, ref MoveArea ___area, FishingInfo ___fishingAreaInfo, float ___fishSpeedBaseFactor, float ___fishDashBaseFactor, float ___fishWaitBaseFactor, FishingUI_t ___hud)
             {
                 if (!enabled)
                     return true;
                 Dbgl("Wait for fish");
 
+                OtherConfig.Self.BaitID = -1;
+
+                Fish_t fish = null;
+                if (string.IsNullOrEmpty(___fishInfo.fishPrefabPath))
+                {
+                    UnityEngine.Debug.LogError("fishPrefabPath = is null!");
+                }
+                else
+                {
+                    GameObject original = Singleton<ResMgr>.Instance.LoadSync<GameObject>(___fishInfo.fishPrefabPath, false, false);
+                    GameObject gameObject = UnityEngine.Object.Instantiate<GameObject>(original, ___fishInfo.FishBornTrans.position, Quaternion.identity);
+                    gameObject.transform.parent = ___shoal;
+                    gameObject.transform.localScale = Vector3.one;
+                    gameObject.SetActive(true);
+                    fish = gameObject.GetComponent<Fish_t>();
+                }
+                if (fish != null)
+                {
+                    Vector3 vector = ___fishInfo.FishBornTrans.position - ___fishingMan.Pos;
+                    ___area = new MoveArea();
+                    ___area.angle = ___fishingAreaInfo.angleLimit / 2f;
+                    ___area.dir = vector.normalized;
+                    ___area.fishingManPos = ___fishingMan.Pos;
+                    ___fishInfo.GenPowerFactor(fish.PowerValue);
+                    ___fishInfo.GenSpeedFactor(fish.SpeedValue, ___fishSpeedBaseFactor);
+                    ___fishInfo.GenAngerFactor(fish.AngerValue, ___fishDashBaseFactor);
+                    ___fishInfo.GenTenacityFactor(fish.TenacityValue);
+                    ___fishInfo.SetBaseWaitTime(___fishWaitBaseFactor);
+                    fish.SetFishInfo(___fishInfo);
+                }
+
                 AudioPlayer.Self.PlayVoice(audioClip, true, Player.Self.actor.transform);
                 Singleton<TaskRunner>.Self.RunDelayTask(audioClip.length, true, delegate
                 {
+                    if (___hud == null)
+                        return;
+                    if(fish != null)
+                    {
+                        __instance.GetType().GetField("curFish", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(__instance, fish);
+                        Module<Player>.Self.actor.TryDoAction(ACType.Animation, ACTAnimationPara.Construct("Throw_2", null, null, false));
+                    }
+                    //__instance.GetType().GetField("curFish", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(__instance, __instance.GetType().GetMethod("CreateFish", BindingFlags.NonPublic | BindingFlags.Instance).Invoke(__instance, new object[0]));
+                    //typeof(FishingSystem_t).GetMethod("FishingBegin", BindingFlags.NonPublic | BindingFlags.Instance).Invoke(__instance, new object[] { });
                     typeof(FishingSystem_t).GetMethod("FishingEnd", BindingFlags.NonPublic | BindingFlags.Instance).Invoke(__instance, new object[] { true, false });
                 });
 
                 return false;
             }
+
         }
+
+        [HarmonyPatch(typeof(FishingUI_t), "ShowPoleTips")]
+        static class FishingUI_t_ShowPoleTips_Patch
+        { 
+            static bool Prefix()
+            {
+                if (!enabled)
+                    return true;
+
+                return false;
+            }
+        }
+        
+        [HarmonyPatch(typeof(FishingInteraction), "CheckCanStartFish")]
+        static class FishingInteraction_CheckCanStartFish_Patch
+        { 
+            static bool Prefix(ref bool __result)
+            {
+                if (!enabled || Module<Player>.Self.actor.IsActionRunning(ACType.Fish) || (!Module<FishingMatchMgr>.Self.IsInMatch && !Module<PlayerOperateModule>.Self.CheckStaminaAndSendTooltip(OperateType.Fishing, 1, false)))
+                    return true;
+
+                __result = true;
+                return false;
+            }
+        }
+
+        [HarmonyPatch(typeof(FishingInteraction), "CheckCanContinueFish")]
+        static class FishingInteraction_CheckCanContinueFish_Patch
+        { 
+            static bool Prefix(ref bool __result)
+            {
+                if (!enabled || Module<Player>.Self.actor.IsActionRunning(ACType.Fish) || (!Module<FishingMatchMgr>.Self.IsInMatch && !Module<PlayerOperateModule>.Self.CheckStaminaAndSendTooltip(OperateType.Fishing, 1, false)))
+                    return true;
+
+                __result = true;
+                return false;
+            }
+        }
+
     }
 }
