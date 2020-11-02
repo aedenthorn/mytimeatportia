@@ -313,6 +313,8 @@ namespace InventoryGiftHighlights
 
                     GiveGiftResult result = FavorUtility.GetFavorBehaviorInfo(favorObject.ID, ___allGiftItem[num2].ItemBase.ID);
 
+                    Dbgl($"num2 {num2} curItemIndex {___curItemIndex} i {i}");
+
                     switch (result.FeeLevel)
                     {
                         case FeeLevelEnum.Hate:
@@ -323,12 +325,16 @@ namespace InventoryGiftHighlights
                         case FeeLevelEnum.DisLike:
                             Dbgl($"item {i}: {___allGiftItem[num2].ItemBase.ID} DISLIKE");
                             if (settings.ShowDisliked)
+                            {
                                 gridIconWithNum.selectableBg.image.sprite = (num2 != ___curItemIndex ? dislike : dislikes);
+                            }
                             break;
                         case FeeLevelEnum.Neutral:
                             Dbgl($"item {i}: {___allGiftItem[num2].ItemBase.ID} NEUTRAL");
                             if (settings.ShowNeutral)
+                            {
                                 gridIconWithNum.selectableBg.image.sprite = (num2 != ___curItemIndex ? neutral : neutrals);
+                            }
                             break;
                         case FeeLevelEnum.Like:
                             Dbgl($"item {i}: {___allGiftItem[num2].ItemBase.ID} LIKE");
@@ -350,5 +356,9 @@ namespace InventoryGiftHighlights
             }
         }
 
+        private static void GridIconWithNum_onSelectBg(int obj)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

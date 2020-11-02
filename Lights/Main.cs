@@ -29,7 +29,7 @@ namespace Lights
             "Very High"
         };
 
-        private static readonly bool isDebug = false;
+        private static readonly bool isDebug = true;
 
         public static void Dbgl(string str = "", bool pref = true)
         {
@@ -248,15 +248,30 @@ namespace Lights
         private static void RefreshAllLights(Scene scene)
         {
             LayeredRegion layeredRegion = (LayeredRegion)typeof(FarmModule).GetField("layeredRegion", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(Module<FarmModule>.Self);
+            if(layeredRegion == null)
+            {
+                Dbgl("layeredRegion  is null");
+                return;
+            }
             Region itemLayer = (Region)typeof(LayeredRegion).GetField("itemLayer", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(layeredRegion);
+            if (itemLayer == null)
+            {
+                Dbgl("itemLayer  is null");
+                return;
+            }
             List<object> slots = AccessTools.FieldRefAccess<Region, List<object>>(itemLayer, "slots");
+            if (slots == null)
+            {
+                Dbgl("slots is null");
+                return;
+            }
 
             List<GameObject> workshopLights = new List<GameObject>();
             foreach (object slot in slots)
             {
-                UnitObjInfo unitObjInfo = (UnitObjInfo)slot.GetType().GetField("unitObjInfo").GetValue(slot);
-                GameObject go = unitObjInfo.go;
-                if(go.GetComponentInChildren<Light>() != null)
+                UnitObjInfo unitObjInfo = (UnitObjInfo)slot?.GetType().GetField("unitObjInfo").GetValue(slot);
+                GameObject go = unitObjInfo?.go;
+                if(go?.GetComponentInChildren<Light>() != null)
                 {
                     workshopLights.Add(go);
                     RefreshOneWorkshopLight(go);

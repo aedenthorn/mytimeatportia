@@ -65,6 +65,7 @@
     <Compile Include="Main.cs" />
     <Compile Include="NpcRelationModule_RelationFlagTime_Dispose.cs" />
     <Compile Include="NpcRelationModule_OnRemoveFlag_Patch.cs" />
+    <Compile Include="Pathea_Player_InteractiveJealousStart_Patch - Copy.cs" />
     <Compile Include="StoreData_Init_Patch.cs" />
     <Compile Include="MGMgr_CanFollow_Patch.cs" />
     <Compile Include="MGMgr_IsMarriage2_Patch.cs" />
@@ -79,7 +80,7 @@
     <Compile Include="NpcRelationModule_AddFlag_Patch.cs" />
     <Compile Include="Pathea_Player_CanExpressRuntime_Patch.cs" />
     <Compile Include="Pathea_Player_CanInteractiveJealous_Patch.cs" />
-    <Compile Include="Pathea_Player_InteractiveJealousStart_Patch.cs" />
+    <Compile Include="ChildrenModule_ConversationData_CheckLoad_Patch.cs" />
     <Compile Include="Pathea_Player_InteractiveJealous_Patch.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Settings.cs" />

@@ -152,9 +152,9 @@ namespace ChangeClothes
             playerClothes.Insert(0, 0);
             playerClothesNames = new List<string>(clothesNames);
             playerClothesNames.Insert(0, "default");
-            playerHair = hairs;
+            playerHair = new List<int>(hairs);
             playerHair.Insert(0, 0);
-            playerHairNames = hairNames;
+            playerHairNames =  new List<string>(hairNames);
             playerHairNames.Insert(0, "default");
             Dbgl("loaded arrays");
 
@@ -419,7 +419,7 @@ namespace ChangeClothes
                     //Dbgl($"changing for {i} {clothesChangers[i].name}");
                     if (clothesChangers[i].id == actor.InstanceId)
                     {
-                        //Dbgl($"actor: {actor.ActorName}");
+                        Dbgl($"actor: {actor.ActorName}");
                         Dictionary<int, AppearDBData> appearDbDatas = AccessTools.FieldRefAccess<NpcAppearModule, Dictionary<int, AppearDBData>>(Module<NpcAppearModule>.Self, "m_AppearDBDataDic");
                         NpcAppear component = actor.GetComponent<NpcAppear>();
                         if (component == null)
@@ -427,7 +427,11 @@ namespace ChangeClothes
                             Dbgl("actor does not have npcappear");
                             return;
                         }
+                        Dbgl($"i {i} hair setting {settings.hairs[i]} actor hair: {hairs[settings.hairs[i]]}");
+                        //if(settings.hairs[i] != 0)
                         component.SetPart(appearDbDatas[hairs[settings.hairs[i]]]);
+                        Dbgl($"actor clothes: {clothes[settings.clothes[i]]}");
+                        //if (settings.clothes[i] != 0)
                         component.SetPart(appearDbDatas[clothes[settings.clothes[i]]]);
                     }
                 }

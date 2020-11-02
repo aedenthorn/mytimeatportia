@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using UnityModManagerNet;
+﻿using UnityModManagerNet;
 namespace ChangeClothes
 {
     public class Settings : UnityModManager.ModSettings

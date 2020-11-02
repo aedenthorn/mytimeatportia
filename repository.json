@@ -3,7 +3,7 @@
     [
 		{"Id": "AlwaysOpen", "Version": "0.1.0"},
 		{"Id": "BuildAnywhere", "Version": "0.3.0"},
-		{"Id": "ChangeClothes", "Version": "0.2.4"},
+		{"Id": "ChangeClothes", "Version": "0.2.6"},
 		{"Id": "ChineseVoice", "Version": "0.1.0"},
 		{"Id": "ConnectedFactoryStorage", "Version": "0.1.0"},
 		{"Id": "CookingMachine", "Version": "0.3.1"},
