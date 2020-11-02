@@ -354,13 +354,6 @@ namespace Cheats
                 NewGamePlus();
             }
 
-            if (GUILayout.Button("GetAadit", new GUILayoutOption[]{
-                        GUILayout.Width(150f)
-                    }))
-            {
-                NpcInstanceModule.InstanceData data = NpcInstanceModule.GetData(instanceId);
-                Dbgl($"Aadit: ");
-            }
 
             if (GUILayout.Button("Relationship++", new GUILayoutOption[]
             {

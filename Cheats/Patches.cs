@@ -49,7 +49,6 @@ namespace Cheats
 
 
 
-
         //[HarmonyPatch(typeof(MissionUICtr), "Start")]
         static class MissionUICtr_Start_Patch
         {

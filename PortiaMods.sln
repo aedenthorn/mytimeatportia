@@ -119,6 +119,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DiscardSpecialItems", "Disc
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameManager", "GameManager\GameManager.csproj", "{C5EBA49D-F817-4523-903F-4D7F90D33772}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConnectedFactoryStorage", "ConnectedFactoryStorage\ConnectedFactoryStorage.csproj", "{5CC12DCD-F765-484C-9E99-7CCD658A80A7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InventoryGiftHighlights", "InventoryGiftHighlights\InventoryGiftHighlights.csproj", "{532B2475-82BE-4EB5-9E1F-11F74F0898CA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -357,6 +361,14 @@ Global
 		{C5EBA49D-F817-4523-903F-4D7F90D33772}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C5EBA49D-F817-4523-903F-4D7F90D33772}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C5EBA49D-F817-4523-903F-4D7F90D33772}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5CC12DCD-F765-484C-9E99-7CCD658A80A7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5CC12DCD-F765-484C-9E99-7CCD658A80A7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5CC12DCD-F765-484C-9E99-7CCD658A80A7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5CC12DCD-F765-484C-9E99-7CCD658A80A7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{532B2475-82BE-4EB5-9E1F-11F74F0898CA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{532B2475-82BE-4EB5-9E1F-11F74F0898CA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{532B2475-82BE-4EB5-9E1F-11F74F0898CA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{532B2475-82BE-4EB5-9E1F-11F74F0898CA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

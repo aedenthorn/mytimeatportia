@@ -34,26 +34,28 @@ namespace CustomTextures
                     {
                         Dbgl($"got horse texture for {name}");
                         GameObject go = __instance.gameObject;
-                        MeshRenderer[] mrs = go.GetComponentsInChildren<MeshRenderer>();
-                        foreach (MeshRenderer mr in mrs)
-                        {
-                            if (mr.material?.HasProperty("_MainTex") == true && mr.material.mainTexture != null)
-                            {
-                                Dbgl($"Changing texture for {name}");
-                                Texture2D tex = customTexturesHorse[name];
-                                tex.name = $"Horse_{name}.png";
-                                mr.material.mainTexture = tex;
-                            }
-                        }
                         SkinnedMeshRenderer[] smrs = go.GetComponentsInChildren<SkinnedMeshRenderer>();
                         foreach (SkinnedMeshRenderer mr in smrs)
                         {
                             if (mr.material?.HasProperty("_MainTex") == true && mr.material.mainTexture != null)
                             {
-                                Dbgl($"Changing texture for {name}");
-                                Texture2D tex = customTexturesHorse[name];
-                                tex.name = $"Horse_{name}.png";
-                                mr.material.mainTexture = tex;
+                                Dbgl($"Changing smr texture for {mr.name}");
+                                if(mr.name == "saddle")
+                                {
+                                    Dbgl($"Changing saddle");
+                                    if (customTexturesMisc.ContainsKey($"Saddle_{name}"))
+                                    {
+                                        Texture2D tex = customTexturesMisc[$"Saddle_{name}"];
+                                        tex.name = $"Saddle_{name}.png";
+                                        mr.material.mainTexture = tex;
+                                    }
+                                }
+                                else
+                                {
+                                    Texture2D tex = customTexturesHorse[name];
+                                    tex.name = $"Horse_{name}.png";
+                                    mr.material.mainTexture = tex;
+                                }
                             }
                         }
                     }

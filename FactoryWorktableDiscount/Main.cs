@@ -65,6 +65,8 @@ namespace FactoryWorktableDiscount
                prefix: new HarmonyMethod(typeof(Main), nameof(SetIsWorkTable_Prefix)),
                postfix: new HarmonyMethod(typeof(Main), nameof(SetIsWorkTable_Postfix))
             );
+
+
         }
 
         // Called when the mod is turned to on/off.
