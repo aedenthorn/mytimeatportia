@@ -18,6 +18,7 @@ using Pathea.InputSolutionNs;
 using Pathea.IntendNs;
 using Pathea.ItemSystem;
 using Pathea.LightMgr;
+using Pathea.MiniGameNs.Fishing;
 using Pathea.Missions;
 using Pathea.ModuleNs;
 using Pathea.NpcInstanceNs;
@@ -46,6 +47,9 @@ namespace Cheats
     {
         static FieldRef<MissionUICtr, MissionType> curShowTypeByRef = FieldRefAccess<MissionUICtr, MissionType>("curShowType");
         static FieldRef<MissionManager, List<Mission>> missions_EndTypeByRef = FieldRefAccess<MissionManager, List<Mission>>("m_missions_End");
+
+
+
 
 
 
