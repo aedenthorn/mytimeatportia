@@ -5,6 +5,7 @@ using Pathea;
 using Pathea.ActorNs;
 using Pathea.AppearNs;
 using Pathea.BlackBoardNs;
+using Pathea.DungeonModuleNs;
 using Pathea.FavorSystemNs;
 using Pathea.GuildRanking;
 using Pathea.HomeViewerNs;
@@ -14,6 +15,7 @@ using Pathea.ModuleNs;
 using Pathea.NpcInstanceNs;
 using Pathea.OptionNs;
 using Pathea.ScenarioNs;
+using Pathea.Spawn;
 using Pathea.UISystemNs;
 using PatheaScript;
 using PatheaScriptExt;
@@ -97,6 +99,8 @@ namespace Cheats
 
         private static void OnUpdate(UnityModManager.ModEntry arg1, float arg2)
         {
+
+
             return;
             if (Input.GetKeyDown(","))
             {

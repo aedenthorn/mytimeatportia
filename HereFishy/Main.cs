@@ -107,17 +107,27 @@ namespace HereFishy
                 }
             }
         }
+        private static int origBaitID = -1;
 
         [HarmonyPatch(typeof(FishingSystem_t), "WaitForFish")]
         static class FishingSystem_t_WaitForFish_Patch
-        { 
+        {
+
             static bool Prefix(FishingSystem_t __instance, FishInfo ___fishInfo, Transform ___shoal, IFishingMan ___fishingMan, ref MoveArea ___area, FishingInfo ___fishingAreaInfo, float ___fishSpeedBaseFactor, float ___fishDashBaseFactor, float ___fishWaitBaseFactor, FishingUI_t ___hud)
             {
                 if (!enabled)
-                    return true;
+                {
+                    if (origBaitID != -1)
+                        OtherConfig.Self.BaitID = origBaitID;
+                        return true;
+                }
                 Dbgl("Wait for fish");
 
-                OtherConfig.Self.BaitID = -1;
+                if(OtherConfig.Self.BaitID != -1)
+                {
+                    origBaitID = OtherConfig.Self.BaitID;
+                    OtherConfig.Self.BaitID = -1;
+                }
 
                 Fish_t fish = null;
                 if (string.IsNullOrEmpty(___fishInfo.fishPrefabPath))
@@ -199,6 +209,32 @@ namespace HereFishy
             static bool Prefix(ref bool __result)
             {
                 if (!enabled || Module<Player>.Self.actor.IsActionRunning(ACType.Fish) || (!Module<FishingMatchMgr>.Self.IsInMatch && !Module<PlayerOperateModule>.Self.CheckStaminaAndSendTooltip(OperateType.Fishing, 1, false)))
+                    return true;
+
+                __result = true;
+                return false;
+            }
+        }
+
+        [HarmonyPatch(typeof(FishingInteraction), nameof(FishingInteraction.HasFishBait))]
+        static class FishingInteraction_HasFishBait_Patch
+        {
+            static bool Prefix(ref bool __result)
+            {
+                if (!enabled)
+                    return true;
+
+                __result = true;
+                return false;
+            }
+        }
+
+        [HarmonyPatch(typeof(FishingInteraction), nameof(FishingInteraction.HasFishPole))]
+        static class FishingInteraction_HasFishPole_Patch
+        {
+            static bool Prefix(ref bool __result)
+            {
+                if (!enabled)
                     return true;
 
                 __result = true;

@@ -313,7 +313,7 @@ namespace InventoryGiftHighlights
 
                     GiveGiftResult result = FavorUtility.GetFavorBehaviorInfo(favorObject.ID, ___allGiftItem[num2].ItemBase.ID);
 
-                    Dbgl($"num2 {num2} curItemIndex {___curItemIndex} i {i}");
+                    //Dbgl($"num2 {num2} curItemIndex {___curItemIndex} i {i}");
 
                     switch (result.FeeLevel)
                     {

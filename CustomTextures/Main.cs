@@ -1,6 +1,4 @@
 ﻿using Harmony12;
-using Pathea;
-using Pathea.ModuleNs;
 using System.Reflection;
 using UnityEngine;
 using UnityEngine.SceneManagement;

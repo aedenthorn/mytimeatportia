@@ -125,6 +125,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InventoryGiftHighlights", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HereFishy", "HereFishy\HereFishy.csproj", "{A2C4240C-216F-44AD-8EE3-B6438A3DE0A3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InstantKill", "InstantKill\InstantKill.csproj", "{D0612C15-4661-461D-BBC4-2F2B966F9BE2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DebugUtils", "DebugUtils\DebugUtils.csproj", "{9FEDF7B1-F022-4083-9561-98105A13D598}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -375,6 +379,14 @@ Global
 		{A2C4240C-216F-44AD-8EE3-B6438A3DE0A3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A2C4240C-216F-44AD-8EE3-B6438A3DE0A3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A2C4240C-216F-44AD-8EE3-B6438A3DE0A3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D0612C15-4661-461D-BBC4-2F2B966F9BE2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D0612C15-4661-461D-BBC4-2F2B966F9BE2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D0612C15-4661-461D-BBC4-2F2B966F9BE2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D0612C15-4661-461D-BBC4-2F2B966F9BE2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9FEDF7B1-F022-4083-9561-98105A13D598}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9FEDF7B1-F022-4083-9561-98105A13D598}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9FEDF7B1-F022-4083-9561-98105A13D598}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9FEDF7B1-F022-4083-9561-98105A13D598}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
