@@ -84,6 +84,9 @@ namespace DebugUtils
         private static void OnGUI(UnityModManager.ModEntry modEntry)
         {
             settings.StackTrace = GUILayout.Toggle(settings.StackTrace, "Log StackTrace Line", new GUILayoutOption[0]);
+            GUILayout.Space(10f);
+            settings.WriteNativeLog = GUILayout.Toggle(settings.WriteNativeLog, "Log Native Log (wasteful)", new GUILayoutOption[0]);
+            GUILayout.Space(10f);
 
             if (GUILayout.Button("Open Clean Log File", new GUILayoutOption[]{
                 GUILayout.Width(250f),

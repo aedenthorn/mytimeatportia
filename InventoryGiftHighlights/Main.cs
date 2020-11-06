@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityModManagerNet;
 
 namespace InventoryGiftHighlights
@@ -33,6 +34,7 @@ namespace InventoryGiftHighlights
         private static Sprite neutrals;
         private static Sprite likes;
         private static Sprite loves;
+        private static Sprite bkgs;
 
         private static readonly bool isDebug = true;
 
@@ -59,6 +61,7 @@ namespace InventoryGiftHighlights
             );
             harmony.Patch(
                original: AccessTools.Method(typeof(GiveGiftUICtr), "SelectMain"),
+               prefix: new HarmonyMethod(typeof(Main), nameof(Reset_Gifts)),
                postfix: new HarmonyMethod(typeof(Main), nameof(Update_Gifts))
             );
         }
@@ -186,21 +189,29 @@ namespace InventoryGiftHighlights
 
         private static void LoadTextures()
         {
+            Dbgl($"Loading textures");
+
             string file = $"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\\assets\\bg_item.png";
             string file2 = $"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\\assets\\bg_item_select.png";
+            string file3 = $"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\\assets\\bg_item_select_orig.png";
 
             if (!File.Exists(file) || !File.Exists(file2))
             {
                 Dbgl($"Files not found!");
                 return;
             }
+
             Texture2D bkg = new Texture2D(2, 2);
             byte[] imageData = File.ReadAllBytes(file);
             bkg.LoadImage(imageData);
 
-            Texture2D bkgs = new Texture2D(2, 2);
+            Texture2D bkg2 = new Texture2D(2, 2);
             byte[] imageDatas = File.ReadAllBytes(file2);
-            bkgs.LoadImage(imageDatas);
+            bkg2.LoadImage(imageDatas);
+
+            Texture2D bkg3 = new Texture2D(2, 2);
+            byte[] imageDatao = File.ReadAllBytes(file3);
+            bkg3.LoadImage(imageDatao);
 
 
             Texture2D hateT = new Texture2D(83, 83);
@@ -215,7 +226,7 @@ namespace InventoryGiftHighlights
             Texture2D loveTs = new Texture2D(83, 83);
 
             Color[] d = bkg.GetPixels();
-            Color[] ds = bkgs.GetPixels();
+            Color[] ds = bkg2.GetPixels();
             Color[] d1 = new Color[83 * 83];
             Color[] d2 = new Color[83 * 83];
             Color[] d3 = new Color[83 * 83];
@@ -269,11 +280,11 @@ namespace InventoryGiftHighlights
             likeT.Apply(false);
             loveT.Apply(false);
 
-            hateTs.SetPixels(d1);
-            dislikeTs.SetPixels(d2);
-            neutralTs.SetPixels(d3);
-            likeTs.SetPixels(d4);
-            loveTs.SetPixels(d5);
+            hateTs.SetPixels(d6);
+            dislikeTs.SetPixels(d7);
+            neutralTs.SetPixels(d8);
+            likeTs.SetPixels(d9);
+            loveTs.SetPixels(d10);
 
             hateTs.Apply(false);
             dislikeTs.Apply(false);
@@ -286,79 +297,110 @@ namespace InventoryGiftHighlights
             neutral = Sprite.Create(neutralT, new Rect(0, 0, 83, 83), Vector2.zero);
             like = Sprite.Create(likeT, new Rect(0, 0, 83, 83), Vector2.zero);
             love = Sprite.Create(loveT, new Rect(0, 0, 83, 83), Vector2.zero);
+
             hates = Sprite.Create(hateTs, new Rect(0, 0, 83, 83), Vector2.zero);
             dislikes = Sprite.Create(dislikeTs, new Rect(0, 0, 83, 83), Vector2.zero);
             neutrals = Sprite.Create(neutralTs, new Rect(0, 0, 83, 83), Vector2.zero);
             likes = Sprite.Create(likeTs, new Rect(0, 0, 83, 83), Vector2.zero);
             loves = Sprite.Create(loveTs, new Rect(0, 0, 83, 83), Vector2.zero);
 
+            bkgs = Sprite.Create(bkg3, new Rect(0, 0, 83, 83), Vector2.zero);
 
+            //byte[] bytes = likeT.EncodeToPNG();
+
+            //File.WriteAllBytes($"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\\assets\\like.png", bytes);
         }
-        static void Update_Gifts(ref GridPage ___page, List<ItemObject> ___allGiftItem, Actor ___targetActor, Sprite ___normalBg, int ___curItemIndex)
+        static void Reset_Gifts(ref GridPage ___page, Sprite ___normalBg)
         {
-            FavorObject favorObject = ((Dictionary<int, FavorObject>)typeof(FavorManager).GetField("mFavorDict", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(Module<FavorManager>.Self))[___targetActor.InstanceId];
-
+            for (int i = 0; i < ___page.allIcons.Count; i++)
+            {
+                GridIconWithNum gridIconWithNum = ___page.allIcons[i] as GridIconWithNum;
+                gridIconWithNum.selectableBg.image.sprite = ___normalBg;
+                SpriteState ss = gridIconWithNum.selectableBg.spriteState;
+                ss.highlightedSprite = bkgs;
+                ss.pressedSprite = bkgs;
+                gridIconWithNum.selectableBg.spriteState = ss;
+            }
+        }
+        static void Update_Gifts(ref GridPage ___page, List<ItemObject> ___allGiftItem, Actor ___targetActor, Sprite ___normalBg, int ___curItemIndex, WishItemData ___wishData)
+        {
             int num = ___page.allIcons.Count * ___page.curPage;
+
+            List<int> giftHistory = FavorUtility.GetGiftHistory(___targetActor.InstanceId);
 
             for (int i = 0; i < ___page.allIcons.Count; i++)
             {
                 int num2 = i + num;
                 GridIconWithNum gridIconWithNum = ___page.allIcons[i] as GridIconWithNum;
+                SpriteState ss = gridIconWithNum.selectableBg.spriteState;
                 if (num2 < ___allGiftItem.Count)
                 {
-                    List<int> giftHistory = FavorUtility.GetGiftHistory(favorObject.ID);
 
-                    if (settings.ShowOnlyKnown && !giftHistory.Contains(___allGiftItem[num2].ItemBase.ID))
+                    if ((settings.ShowOnlyKnown && !giftHistory.Contains(___allGiftItem[num2].ItemBase.ID)) || (___wishData != null && ___wishData.ItemId == ___allGiftItem[num2].ItemDataId))
+                    {
                         continue;
+                    }
 
-                    GiveGiftResult result = FavorUtility.GetFavorBehaviorInfo(favorObject.ID, ___allGiftItem[num2].ItemBase.ID);
+                    GiveGiftResult result = FavorUtility.GetFavorBehaviorInfo(___targetActor.InstanceId, ___allGiftItem[num2].ItemBase.ID);
 
                     //Dbgl($"num2 {num2} curItemIndex {___curItemIndex} i {i}");
 
                     switch (result.FeeLevel)
                     {
                         case FeeLevelEnum.Hate:
-                            Dbgl($"item {i}: {___allGiftItem[num2].ItemBase.ID} HATE");
-                            if(settings.ShowHated)
+                            //Dbgl($"item {i}: {___allGiftItem[num2].ItemBase.ID} HATE");
+                            if (settings.ShowHated)
+                            {
                                 gridIconWithNum.selectableBg.image.sprite = (num2 != ___curItemIndex ? hate : hates);
+                                ss.highlightedSprite = hates;
+                                ss.pressedSprite = hates;
+                            }
                             break;
                         case FeeLevelEnum.DisLike:
-                            Dbgl($"item {i}: {___allGiftItem[num2].ItemBase.ID} DISLIKE");
+                            //Dbgl($"item {i}: {___allGiftItem[num2].ItemBase.ID} DISLIKE");
                             if (settings.ShowDisliked)
                             {
                                 gridIconWithNum.selectableBg.image.sprite = (num2 != ___curItemIndex ? dislike : dislikes);
+                                ss.highlightedSprite = dislikes;
+                                ss.pressedSprite = dislikes;
                             }
                             break;
                         case FeeLevelEnum.Neutral:
-                            Dbgl($"item {i}: {___allGiftItem[num2].ItemBase.ID} NEUTRAL");
+                            //Dbgl($"item {i}: {___allGiftItem[num2].ItemBase.ID} NEUTRAL");
                             if (settings.ShowNeutral)
                             {
                                 gridIconWithNum.selectableBg.image.sprite = (num2 != ___curItemIndex ? neutral : neutrals);
+                                ss.highlightedSprite = neutrals;
+                                ss.pressedSprite = neutrals;
                             }
                             break;
                         case FeeLevelEnum.Like:
-                            Dbgl($"item {i}: {___allGiftItem[num2].ItemBase.ID} LIKE");
+                            //Dbgl($"item {i}: {___allGiftItem[num2].ItemBase.ID} LIKE");
                             if (settings.ShowLiked)
+                            {
                                 gridIconWithNum.selectableBg.image.sprite = (num2 != ___curItemIndex ? like : likes);
+                                ss.highlightedSprite = likes;
+                                ss.pressedSprite = likes;
+                            }
                             break;
                         case FeeLevelEnum.Excellent:
-                            Dbgl($"item {i}: {___allGiftItem[num2].ItemBase.ID} LOVE");
+                            //Dbgl($"item {i}: {___allGiftItem[num2].ItemBase.ID} LOVE");
                             if (settings.ShowLoved)
+                            {
                                 gridIconWithNum.selectableBg.image.sprite = (num2 != ___curItemIndex ? love : loves);
+                                ss.highlightedSprite = loves;
+                                ss.pressedSprite = loves;
+                            }
                             break;
                     }
-                    ___page.allIcons[i] = gridIconWithNum;
                 }
                 else
                 {
-                    gridIconWithNum.selectableBg.image.sprite = ___normalBg;
+                    ss.highlightedSprite = ___normalBg;
+                    ss.pressedSprite = ___normalBg;
                 }
+                gridIconWithNum.selectableBg.spriteState = ss;
             }
-        }
-
-        private static void GridIconWithNum_onSelectBg(int obj)
-        {
-            throw new NotImplementedException();
         }
     }
 }
