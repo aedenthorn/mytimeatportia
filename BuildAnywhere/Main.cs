@@ -38,6 +38,12 @@ namespace BuildAnywhere
             var harmony = HarmonyInstance.Create(modEntry.Info.Id);
             harmony.PatchAll(Assembly.GetExecutingAssembly());
 
+            bool updated = typeof(Region).GetMethod("TakeUpItem", new Type[] { typeof(CellIndex), typeof(Action<int, int>) }) != null;
+
+            harmony.Patch(
+                original: AccessTools.Method(typeof(Region), nameof(Region.TakeUpItem), updated ? new Type[] { typeof(CellIndex), typeof(Action<int, int>) } : new Type[] { typeof(CellIndex) }),
+                prefix: new HarmonyMethod(typeof(Main), nameof(Region_TakeUpItem_Prefix))
+            );
         }
 
 

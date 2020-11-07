@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{77A82EA2-1C49-4A7F-8B49-DEDFFEE632F8}</ProjectGuid>
+    <ProjectGuid>{9FEDF7B1-F022-4083-9561-98105A13D598}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>MonsterVacuum</RootNamespace>
-    <AssemblyName>MonsterVacuum</AssemblyName>
+    <RootNamespace>DebugUtils</RootNamespace>
+    <AssemblyName>DebugUtils</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
@@ -31,8 +31,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="0Harmony12, Version=1.2.0.1, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="0Harmony12">
       <HintPath>..\external\UnityModManager\0Harmony12.dll</HintPath>
     </Reference>
     <Reference Include="Assembly-CSharp">
@@ -50,8 +49,7 @@
     <Reference Include="UnityEngine">
       <HintPath>..\external\UnityEngine.dll</HintPath>
     </Reference>
-    <Reference Include="UnityEngine.AnimationModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="UnityEngine.AnimationModule">
       <HintPath>..\external\UnityEngine.AnimationModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.AudioModule">
@@ -90,6 +88,9 @@
     <Reference Include="UnityEngine.UnityWebRequestWWWModule">
       <HintPath>..\external\UnityEngine.UnityWebRequestWWWModule.dll</HintPath>
     </Reference>
+    <Reference Include="UnityEngine.VideoModule">
+      <HintPath>..\external\UnityEngine.VideoModule.dll</HintPath>
+    </Reference>
     <Reference Include="UnityModManager">
       <HintPath>..\external\UnityModManager\UnityModManager.dll</HintPath>
     </Reference>
@@ -101,6 +102,6 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>call $(SolutionDir)copyDll.bat MonsterVacuum</PostBuildEvent>
+    <PostBuildEvent>copy C:\Users\poiqwe\source\repos\PortiaMods\1DebugUtils\bin\Debug\DebugUtils.dll H:\tmp\ga\MTAP\Mods\1DebugUtils\</PostBuildEvent>
   </PropertyGroup>
 </Project>

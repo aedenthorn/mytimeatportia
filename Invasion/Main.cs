@@ -358,6 +358,7 @@ namespace Invasion
         public static void MonsterDeath(ActorAgent agent)
         {
             monsterAlive = false;
+            agent.Destroy();
             Module<SpawnMgr>.Self.RemoveActorAgent(agent);
             Module<AreaTriggerManager>.Self.DestroyTrigger(triggerID);
             if(settings.RelationChange)
@@ -368,6 +369,7 @@ namespace Invasion
         }
         public static void MonsterGangDeath(ActorAgent agent)
         {
+            agent.Destroy();
             Module<SpawnMgr>.Self.RemoveActorAgent(agent);
         }
         private static int Get1337Level()

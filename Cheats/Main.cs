@@ -339,6 +339,40 @@ namespace Cheats
             UnityEngine.Event e = UnityEngine.Event.current;
 
 
+            string ts = $"Pathea.FavorSystemNs.FavorManagerDebuger, {typeof(TransRoot).Assembly}";
+            Type type = Type.GetType(ts);
+
+            type.GetMethod("OnGUI", BindingFlags.NonPublic | BindingFlags.Instance).Invoke(Activator.CreateInstance(type), new object[] { });
+            
+
+            if (GUILayout.Button("FavorDebugger", new GUILayoutOption[]{
+                        GUILayout.Width(150f)
+                    }))
+            {
+                if (TransRoot.self.GetComponent(type) == null)
+                {
+                    TransRoot.self.gameObject.AddComponent(type);
+                }
+                else
+                {
+                    UnityEngine.Object.Destroy(TransRoot.self.GetComponent(type));
+                }
+            }
+
+            if (GUILayout.Button("ScriptDebugger", new GUILayoutOption[]{
+                        GUILayout.Width(150f)
+                    }))
+            {
+                if (TransRoot.self.GetComponent<CCScriptDebugger>() == null)
+                {
+                    TransRoot.self.gameObject.AddComponent<CCScriptDebugger>();
+                }
+                else
+                {
+                    UnityEngine.Object.Destroy(TransRoot.self.GetComponent<CCScriptDebugger>());
+                }
+            }
+
             if (GUILayout.Button("Starlight", new GUILayoutOption[]{
                         GUILayout.Width(150f)
                     }))

@@ -52,7 +52,7 @@ namespace InventoryGiftHighlights
             modEntry.OnSaveGUI = OnSaveGUI;
             modEntry.OnToggle = OnToggle;
 
-            LoadTextures();
+            CreateTextures(true);
 
             var harmony = HarmonyInstance.Create(modEntry.Info.Id);
             harmony.Patch(
@@ -75,7 +75,7 @@ namespace InventoryGiftHighlights
         private static void OnSaveGUI(UnityModManager.ModEntry modEntry)
         {
             settings.Save(modEntry);
-            LoadTextures();
+            CreateTextures();
         }
 
         private static void OnGUI(UnityModManager.ModEntry modEntry)
@@ -187,9 +187,36 @@ namespace InventoryGiftHighlights
             GUILayout.Space(20f);
         }
 
-        private static void LoadTextures()
+        private static Texture2D TextureFromFile(string file)
         {
-            Dbgl($"Loading textures");
+            Texture2D tex = new Texture2D(2, 2);
+            byte[] imageData = File.ReadAllBytes(file);
+            tex.LoadImage(imageData);
+            return tex;
+        }
+
+        private static void CreateTextures(bool check = false)
+        {
+            if(check
+                && File.Exists(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), Path.Combine("assets", "hate.png")))
+                && File.Exists(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), Path.Combine("assets", "dislike.png")))
+                && File.Exists(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), Path.Combine("assets", "neutral.png")))
+                && File.Exists(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), Path.Combine("assets", "like.png")))
+                && File.Exists(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), Path.Combine("assets", "love.png")))
+                && File.Exists(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), Path.Combine("assets", "hates.png")))
+                && File.Exists(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), Path.Combine("assets", "dislikes.png")))
+                && File.Exists(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), Path.Combine("assets", "neutrals.png")))
+                && File.Exists(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), Path.Combine("assets", "likes.png")))
+                && File.Exists(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), Path.Combine("assets", "loves.png")))
+            )
+            {
+                Dbgl($"Check: Textures exist, not recreating");
+                ReloadTextures();
+                return;
+            }
+
+
+            Dbgl($"Creating textures");
 
             string file = $"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\\assets\\bg_item.png";
             string file2 = $"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\\assets\\bg_item_select.png";
@@ -292,6 +319,7 @@ namespace InventoryGiftHighlights
             likeTs.Apply(false);
             loveTs.Apply(false);
 
+            /*
             hate = Sprite.Create(hateT, new Rect(0, 0, 83, 83), Vector2.zero);
             dislike = Sprite.Create(dislikeT, new Rect(0, 0, 83, 83), Vector2.zero);
             neutral = Sprite.Create(neutralT, new Rect(0, 0, 83, 83), Vector2.zero);
@@ -303,13 +331,70 @@ namespace InventoryGiftHighlights
             neutrals = Sprite.Create(neutralTs, new Rect(0, 0, 83, 83), Vector2.zero);
             likes = Sprite.Create(likeTs, new Rect(0, 0, 83, 83), Vector2.zero);
             loves = Sprite.Create(loveTs, new Rect(0, 0, 83, 83), Vector2.zero);
+            */
 
             bkgs = Sprite.Create(bkg3, new Rect(0, 0, 83, 83), Vector2.zero);
+            byte[] bytes;
+            
+            bytes = hateT.EncodeToPNG();
+            File.WriteAllBytes(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), Path.Combine("assets", "hate.png")), bytes);
+            
+            bytes = dislikeT.EncodeToPNG();
+            File.WriteAllBytes(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), Path.Combine("assets", "dislike.png")), bytes);
+            
+            bytes = neutralT.EncodeToPNG();
+            File.WriteAllBytes(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), Path.Combine("assets", "neutral.png")), bytes);
+            
+            bytes = likeT.EncodeToPNG();
+            File.WriteAllBytes(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), Path.Combine("assets", "like.png")), bytes);
+            
+            bytes = loveT.EncodeToPNG();
+            File.WriteAllBytes(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), Path.Combine("assets", "love.png")), bytes);
 
-            //byte[] bytes = likeT.EncodeToPNG();
-
-            //File.WriteAllBytes($"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\\assets\\like.png", bytes);
+            bytes = hateTs.EncodeToPNG();
+            File.WriteAllBytes(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), Path.Combine("assets", "hates.png")), bytes);
+            
+            bytes = dislikeTs.EncodeToPNG();
+            File.WriteAllBytes(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), Path.Combine("assets", "dislikes.png")), bytes);
+            
+            bytes = neutralTs.EncodeToPNG();
+            File.WriteAllBytes(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), Path.Combine("assets", "neutrals.png")), bytes);
+            
+            bytes = likeTs.EncodeToPNG();
+            File.WriteAllBytes(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), Path.Combine("assets", "likes.png")), bytes);
+            
+            bytes = loveTs.EncodeToPNG();
+            File.WriteAllBytes(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), Path.Combine("assets", "loves.png")), bytes);
         }
+
+        private static void ReloadTextures()
+        {
+            Dbgl($"Loading textures into memory");
+
+            string file = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), Path.Combine("assets", "hate.png"));
+            hate = Sprite.Create(TextureFromFile(file), new Rect(0, 0, 83, 83), Vector2.zero);
+            file = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), Path.Combine("assets", "dislike.png"));
+            dislike = Sprite.Create(TextureFromFile(file), new Rect(0, 0, 83, 83), Vector2.zero);
+            file = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), Path.Combine("assets", "neutral.png"));
+            neutral = Sprite.Create(TextureFromFile(file), new Rect(0, 0, 83, 83), Vector2.zero);
+            file = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), Path.Combine("assets", "like.png"));
+            like = Sprite.Create(TextureFromFile(file), new Rect(0, 0, 83, 83), Vector2.zero);
+            file = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), Path.Combine("assets", "love.png"));
+            love = Sprite.Create(TextureFromFile(file), new Rect(0, 0, 83, 83), Vector2.zero);
+
+            file = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), Path.Combine("assets", "hates.png"));
+            hates = Sprite.Create(TextureFromFile(file), new Rect(0, 0, 83, 83), Vector2.zero);
+            file = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), Path.Combine("assets", "dislikes.png"));
+            dislikes = Sprite.Create(TextureFromFile(file), new Rect(0, 0, 83, 83), Vector2.zero);
+            file = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), Path.Combine("assets", "neutrals.png"));
+            neutrals = Sprite.Create(TextureFromFile(file), new Rect(0, 0, 83, 83), Vector2.zero);
+            file = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), Path.Combine("assets", "likes.png"));
+            likes = Sprite.Create(TextureFromFile(file), new Rect(0, 0, 83, 83), Vector2.zero);
+            file = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), Path.Combine("assets", "loves.png"));
+            loves = Sprite.Create(TextureFromFile(file), new Rect(0, 0, 83, 83), Vector2.zero);
+
+        }
+
         static void Reset_Gifts(ref GridPage ___page, Sprite ___normalBg)
         {
             for (int i = 0; i < ___page.allIcons.Count; i++)
@@ -324,6 +409,7 @@ namespace InventoryGiftHighlights
         }
         static void Update_Gifts(ref GridPage ___page, List<ItemObject> ___allGiftItem, Actor ___targetActor, Sprite ___normalBg, int ___curItemIndex, WishItemData ___wishData)
         {
+            ReloadTextures();
             int num = ___page.allIcons.Count * ___page.curPage;
 
             List<int> giftHistory = FavorUtility.GetGiftHistory(___targetActor.InstanceId);

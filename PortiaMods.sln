@@ -127,7 +127,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HereFishy", "HereFishy\Here
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InstantKill", "InstantKill\InstantKill.csproj", "{D0612C15-4661-461D-BBC4-2F2B966F9BE2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DebugUtils", "DebugUtils\DebugUtils.csproj", "{9FEDF7B1-F022-4083-9561-98105A13D598}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DebugUtils", "1DebugUtils\DebugUtils.csproj", "{9FEDF7B1-F022-4083-9561-98105A13D598}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RelationManager", "RelationManager\RelationManager.csproj", "{9774C3AD-0A82-4C21-A7B6-1234937C1958}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -387,6 +389,10 @@ Global
 		{9FEDF7B1-F022-4083-9561-98105A13D598}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9FEDF7B1-F022-4083-9561-98105A13D598}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9FEDF7B1-F022-4083-9561-98105A13D598}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9774C3AD-0A82-4C21-A7B6-1234937C1958}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9774C3AD-0A82-4C21-A7B6-1234937C1958}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9774C3AD-0A82-4C21-A7B6-1234937C1958}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9774C3AD-0A82-4C21-A7B6-1234937C1958}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

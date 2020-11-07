@@ -1,9 +1,5 @@
-﻿using Pathea.ActorNs;
-using Pathea.AttrNs;
-using Pathea.BuffNs;
-using Pathea.Spawn;
+﻿using Pathea.Spawn;
 using System;
-using System.Reflection;
 using UnityEngine;
 
 namespace Invasion
@@ -13,6 +9,15 @@ namespace Invasion
         public BossActorAgent(Vector3 pos, Vector3 rot, int id, Action<ActorAgent> action) : base(pos,rot,id,action)
         {
 
+        }
+
+        public override bool Update()
+        {
+            if (!_actor.Alive)
+                return false;
+            bool result = base.Update();
+            _actor.Buff.list.Clear();
+            return result;
         }
     }
 }

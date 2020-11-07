@@ -115,7 +115,16 @@ namespace Cheats
                 ___missionTitleGrid.OnMiddleClick += RestartMission;
             }
         }
+        
+        [HarmonyPatch(typeof(SpawnPoint), "Respawn")]
+        static class respawn_Patch
+        {
+            static void Prefix()
+            {
+                Dbgl("Respawning");
 
+            }
+        }
 
         //[HarmonyPatch(typeof(LightManager), "OpenLight")]
         static class rmm2_Patch

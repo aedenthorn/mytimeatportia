@@ -6,6 +6,7 @@ using Pathea.GameFlagNs;
 using Pathea.ModuleNs;
 using Pathea.ScenarioNs;
 using Pathea.Spawn;
+using Pathea.UISystemNs;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -57,17 +58,10 @@ namespace InstantKill
 
         private static void OnGUI(UnityModManager.ModEntry modEntry)
         {
-            settings.KillEnable = GUILayout.Toggle(settings.KillEnable, "Enable Killing", new GUILayoutOption[0]);
-            GUILayout.Space(10f);
-
             GUILayout.BeginHorizontal();
-            GUILayout.Label("Kill Toggle Key", new GUILayoutOption[0]);
-            settings.KillToggleButtom = GUILayout.TextField(settings.KillToggleButtom, new GUILayoutOption[0]);
+            GUILayout.Label("Kill Key", new GUILayoutOption[0]);
+            settings.KillButton = GUILayout.TextField(settings.KillButton, new GUILayoutOption[0]);
             GUILayout.EndHorizontal();
-            GUILayout.Space(10f);
-
-            GUILayout.Label(string.Format("Kill Poll Interval: <b>{0}s</b>", settings.KillIntervalSec), new GUILayoutOption[0]);
-            settings.KillIntervalSec = (int)GUILayout.HorizontalSlider((float)settings.KillIntervalSec, 1f, 10f, new GUILayoutOption[0]);
             GUILayout.Space(10f);
 
             GUILayout.Label(string.Format("Kill Max Distance: <b>{0}</b>", settings.KillDistance), new GUILayoutOption[0]);
@@ -81,21 +75,15 @@ namespace InstantKill
 
         private static void OnUpdate(UnityModManager.ModEntry arg1, float arg2)
         {
-            if (Input.GetKeyDown(settings.KillToggleButtom))
+            if (Input.GetKeyDown(settings.KillButton))
             {
-                settings.KillEnable = !settings.KillEnable;
-            }
-
-            if (Time.time - secs > settings.KillIntervalSec)
-            {
-                secs = Time.time;
                 KillMonsters();
             }
         }
 
         private static void KillMonsters()
         {
-            if (!settings.KillEnable || !Singleton<GameFlag>.Instance.Gaming)
+            if (Module<Player>.Self?.actor == null || !Singleton<GameFlag>.Instance.Gaming || UIStateMgr.Instance.BlockInput)
                 return;
             try
             {
@@ -114,7 +102,7 @@ namespace InstantKill
                         {
                             continue;
                         }
-                        if (Vector2.Distance(a.gamePos, Player.Self.GamePos) < settings.KillDistance)
+                        if (Vector3.Distance(a.gamePos, Player.Self.GamePos) < settings.KillDistance)
                         {
                             a.Kill();
                         }
@@ -133,7 +121,7 @@ namespace InstantKill
                         {
                             continue;
                         }
-                        if (Vector2.Distance(a.gamePos, Player.Self.GamePos) < settings.KillDistance)
+                        if (Vector3.Distance(a.gamePos, Player.Self.GamePos) < settings.KillDistance)
                         {
                             a.Kill();
 
@@ -147,7 +135,7 @@ namespace InstantKill
                         {
                             continue;
                         }
-                        if (Vector2.Distance(a.gamePos, Player.Self.GamePos) < settings.KillDistance)
+                        if (Vector3.Distance(a.gamePos, Player.Self.GamePos) < settings.KillDistance)
                         {
                             a.Kill();
 

@@ -214,49 +214,46 @@ namespace BuildAnywhere
             }
         }
 
-        [HarmonyPatch(typeof(Region), "TakeUpItem", new Type[]{ typeof(CellIndex), typeof(Action<int, int>)})]
-        static class Region_TakeUpItem_Patch
+        static bool Region_TakeUpItem_Prefix(Region __instance, ref ItemObject __result, CellIndex index, HomeRegionType ___regionType)
         {
-            static bool Prefix(Region __instance, ref ItemObject __result, CellIndex index, HomeRegionType ___regionType)
+            if (!enabled || ___regionType != HomeRegionType.Farm || !outsideUnits.ContainsKey(index))
+                return true;
+
+            Slot slot = outsideUnits[index];
+
+            if (slot.unit != null)
             {
-                if (!enabled || ___regionType != HomeRegionType.Farm || !outsideUnits.ContainsKey(index))
-                    return true;
-
-                Slot slot = outsideUnits[index];
-
-                if (slot.unit != null)
+                if (slot.unit.IsLimitCount)
                 {
-                    if (slot.unit.IsLimitCount)
+                    typeof(Region).GetProperty("LimitUnitCount").SetValue(__instance, (int)typeof(Region).GetProperty("LimitUnitCount").GetValue(__instance, null)-1,null);
+                }
+                slot.unit.TakeUp(delegate (int id, int number)
+                {
+                    if (id >= 0)
                     {
-                        typeof(Region).GetProperty("LimitUnitCount").SetValue(__instance, (int)typeof(Region).GetProperty("LimitUnitCount").GetValue(__instance, null)-1,null);
+                        Module<Player>.Self.bag.AddItem(id, number, true, AddItemMode.Default);
                     }
-                    slot.unit.TakeUp(delegate (int id, int number)
+                    else
                     {
-                        if (id >= 0)
-                        {
-                            Module<Player>.Self.bag.AddItem(id, number, true, AddItemMode.Default);
-                        }
-                        else
-                        {
-                            Module<Player>.Self.bag.ChangeMoney(number, true, 0);
-                        }
-                    });
-                }
-
-                var mySlot = AccessTools.FieldRefAccess<Region, List<object>>(__instance, "slots").Find((object o) => typeof(Region).GetNestedType("Slot", BindingFlags.NonPublic | BindingFlags.Instance).GetField("unit").GetValue(o) == slot.unit);
-                if(mySlot != null)
-                {
-                    typeof(Region).GetMethod("RemoveSlot", BindingFlags.NonPublic | BindingFlags.Instance).Invoke(__instance, new object[] { mySlot });
-                }
-                if (slot.unit != null && slot.unit.NeedUpdate)
-                {
-                    Module<HomeUnitUpdater>.Self.RemoveUpdateableUnit(slot.unit);
-                }
-                outsideUnits.Remove(index);
-                __result = slot.unitObjInfo.Item;
-                return false;
+                        Module<Player>.Self.bag.ChangeMoney(number, true, 0);
+                    }
+                });
             }
+
+            var mySlot = AccessTools.FieldRefAccess<Region, List<object>>(__instance, "slots").Find((object o) => typeof(Region).GetNestedType("Slot", BindingFlags.NonPublic | BindingFlags.Instance).GetField("unit").GetValue(o) == slot.unit);
+            if(mySlot != null)
+            {
+                typeof(Region).GetMethod("RemoveSlot", BindingFlags.NonPublic | BindingFlags.Instance).Invoke(__instance, new object[] { mySlot });
+            }
+            if (slot.unit != null && slot.unit.NeedUpdate)
+            {
+                Module<HomeUnitUpdater>.Self.RemoveUpdateableUnit(slot.unit);
+            }
+            outsideUnits.Remove(index);
+            __result = slot.unitObjInfo.Item;
+            return false;
         }
+
         [HarmonyPatch(typeof(Region), "PutbackUnitHandle")]
         static class Region_PutbackUnitHandle_Patch
         {
