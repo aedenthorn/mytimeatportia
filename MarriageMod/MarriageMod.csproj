@@ -34,7 +34,8 @@
     <Compile Include="AnimController_SetBool_Patch.cs" />
     <Compile Include="AudioPlayer_Patch.cs" />
     <Compile Include="BedUnitMgr_Bind_Patch.cs" />
-    <Compile Include="BedUnitMgr_FreshList_Patch.cs" />
+    <Compile Include="BedUnitMgr_FreshList_Patch - Copy.cs" />
+    <Compile Include="HomeBedSettingActorSelector_SetLocalPos_Patch.cs" />
     <Compile Include="CheckMarriage_Do_Patch.cs" />
     <Compile Include="ChildrenModule_CanShowWantChildTips_Patch.cs" />
     <Compile Include="ChildrenModule_IsOpenCondition_Patch.cs" />

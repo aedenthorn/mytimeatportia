@@ -19,7 +19,7 @@ namespace MarriageMod
         static class BedUnitMgr_FreshList_Patch
         {
             
-            static bool Prefix(ref Dictionary<int, BedType> ___userTypeMap, ref List<int> ___userActors, List<BedUnit> ___units, Dictionary<int,BedUnit> __state, List<int> ___desUserActors)
+            static bool Prefix(ref Dictionary<int, BedType> ___userTypeMap, ref List<int> ___userActors, List<BedUnit> ___units, ref List<int> ___desUserActors)
             {
                 if (!enabled)
                     return true;

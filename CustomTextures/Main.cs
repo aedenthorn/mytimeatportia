@@ -1,4 +1,5 @@
 ﻿using Harmony12;
+using System;
 using System.Reflection;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -76,7 +77,7 @@ namespace CustomTextures
                 return;
             }
             FixSceneTextures(arg1);
-
+            ReloadActorTextures();
         }
 
     }

@@ -33,7 +33,7 @@ namespace SkillLimit
         public static void Dbgl(string str = "", bool pref = true)
         {
             if (isDebug)
-                Debug.Log((pref ? "SkillLimit " : "") + str);
+                Debug.Log((pref ? typeof(Main).Namespace + " " : "") + str);
         }
 
 

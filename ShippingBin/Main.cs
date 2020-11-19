@@ -86,7 +86,7 @@ namespace ShippingBin
             int gols = 0;
             foreach (IdCount idc in items)
             {
-                int g = (int)Math.Round(Module<ItemDataMgr>.Self.GetItemBaseData(idc.id).SellPrice.id0 * idc.count * Module<StoreManagerV40>.Self.CurPriceIndex);
+                int g = (int)Math.Round(Module<ItemDataMgr>.Self.GetItemBaseData(idc.id).SellPrice.id0 * idc.count * (settings.ApplyMarketFluctuation ? Module<StoreManagerV40>.Self.CurPriceIndex : 1 ));
                 gols += g;
             }
             return gols;

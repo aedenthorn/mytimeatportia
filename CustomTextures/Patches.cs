@@ -26,40 +26,7 @@ namespace CustomTextures
                     if (___skinnedMeshRenderer != null)
                         ___skinnedMeshRenderer.material.mainTexture = customTextures[__instance.InstanceId];
                 }
-                if (__instance.IsRidable)
-                {
-                    string name = Module<RidableModuleManager>.Self.GetRidable(__instance.RidableUID).GetNickName();
-                    Dbgl($"got horse '{name}'");
-                    if (customTexturesHorse.ContainsKey(name))
-                    {
-                        Dbgl($"got horse texture for {name}");
-                        GameObject go = __instance.gameObject;
-                        SkinnedMeshRenderer[] smrs = go.GetComponentsInChildren<SkinnedMeshRenderer>();
-                        foreach (SkinnedMeshRenderer mr in smrs)
-                        {
-                            if (mr.material?.HasProperty("_MainTex") == true && mr.material.mainTexture != null)
-                            {
-                                Dbgl($"Changing smr texture for {mr.name}");
-                                if(mr.name == "saddle")
-                                {
-                                    Dbgl($"Changing saddle");
-                                    if (customTexturesMisc.ContainsKey($"Saddle_{name}"))
-                                    {
-                                        Texture2D tex = customTexturesMisc[$"Saddle_{name}"];
-                                        tex.name = $"Saddle_{name}.png";
-                                        mr.material.mainTexture = tex;
-                                    }
-                                }
-                                else
-                                {
-                                    Texture2D tex = customTexturesHorse[name];
-                                    tex.name = $"Horse_{name}.png";
-                                    mr.material.mainTexture = tex;
-                                }
-                            }
-                        }
-                    }
-                }
+
             }
         }
         [HarmonyPatch(typeof(NpcAppear), "RebuildMesh", new Type[] { typeof(List<NpcAppearUnit>), typeof(Transform), typeof(SkinnedMeshRenderer[]) })]
@@ -83,8 +50,12 @@ namespace CustomTextures
                     {
                         if (unit == null || unit.smrs == null)
                             continue;
-                        //Dbgl($"got mesh for: {___m_Actor.ActorName}");
-                        unit.smrs[0].material.mainTexture = customTextures[___m_Actor.InstanceId];
+                        for (int i = 0; i < unit.smrs.Length; i++)
+                        {
+                            Dbgl($"replacing texture for smr {unit.smrs[i].name}");
+                            unit.smrs[i].material.mainTexture = customTextures[___m_Actor.InstanceId];
+                            unit.smrs[i].material.mainTexture.name = $"{___m_Actor.InstanceId}_{ unit.smrs[i].name}";
+                        }
                     }
                 }
                 else if (customTexturesExact.ContainsKey(___m_Actor.InstanceId))
@@ -96,9 +67,9 @@ namespace CustomTextures
 
                         for(int i = 0; i < unit.smrs.Length; i++)
                         {
-                            Dbgl($"mesh {unit.smrs[i].name}");
                             if (customTexturesExact[___m_Actor.InstanceId].ContainsKey(unit.smrs[i].name))
                             {
+                                Dbgl($"replacing texture for smr {unit.smrs[i].name}");
                                 unit.smrs[i].material.mainTexture = customTexturesExact[___m_Actor.InstanceId][unit.smrs[i].name];
                                 unit.smrs[i].material.mainTexture.name = $"{___m_Actor.InstanceId}_{ unit.smrs[i].name}";
                             }

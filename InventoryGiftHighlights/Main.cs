@@ -407,7 +407,7 @@ namespace InventoryGiftHighlights
                 gridIconWithNum.selectableBg.spriteState = ss;
             }
         }
-        static void Update_Gifts(ref GridPage ___page, List<ItemObject> ___allGiftItem, Actor ___targetActor, Sprite ___normalBg, int ___curItemIndex, WishItemData ___wishData)
+        static void Update_Gifts(ref GridPage ___page, List<ItemObject> ___allGiftItem, Actor ___targetActor, Sprite ___normalBg, Sprite ___wantedBg, int ___curItemIndex, WishItemData ___wishData)
         {
             ReloadTextures();
             int num = ___page.allIcons.Count * ___page.curPage;
@@ -422,8 +422,14 @@ namespace InventoryGiftHighlights
                 if (num2 < ___allGiftItem.Count)
                 {
 
-                    if ((settings.ShowOnlyKnown && !giftHistory.Contains(___allGiftItem[num2].ItemBase.ID)) || (___wishData != null && ___wishData.ItemId == ___allGiftItem[num2].ItemDataId))
+                    if ((settings.ShowOnlyKnown && !giftHistory.Contains(___allGiftItem[num2].ItemBase.ID)))
                     {
+                        continue;
+                    }
+                    if(___wishData != null && ___wishData.ItemId == ___allGiftItem[num2].ItemDataId)
+                    {
+                        Sprite sprite = ___wantedBg;
+                        gridIconWithNum.selectableBg.image.sprite = sprite;
                         continue;
                     }
 

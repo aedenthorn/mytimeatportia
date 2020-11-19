@@ -155,47 +155,62 @@ namespace DebugUtils
 
         public static bool DebugLogHandler_LogFormat_Prefix(LogType logType, UnityEngine.Object context, string format, params object[] args)
         {
-            if(!enabled)
+            if (!enabled)
                 return true;
-            if (settings.StackTrace)
+            try
             {
-                string[] lines = Environment.StackTrace.Split(
-                    new[] { Environment.NewLine },
-                    StringSplitOptions.None
-                );
-                foreach(string line in lines)
+                if (settings.StackTrace)
                 {
-                    if (line.Contains("at System") || line.Contains("at DebugUtils") || line.Contains("at UnityEngine"))
-                        continue;
-                    File.AppendAllText(GetLogPath(), $"[{Enum.GetName(typeof(LogType), logType)}{(context != null ? $" in object {context.name}":"")} {line.Trim()}]\r\n");
-                    break;
+                    string[] lines = Environment.StackTrace.Split(
+                        new[] { Environment.NewLine },
+                        StringSplitOptions.None
+                    );
+                    foreach (string line in lines)
+                    {
+                        if (line.Contains("at System") || line.Contains("at DebugUtils") || line.Contains("at UnityEngine"))
+                            continue;
+                        File.AppendAllText(GetLogPath(), $"[{Enum.GetName(typeof(LogType), logType)}{(context != null ? $" in object {context.name}" : "")} {line.Trim()}]\r\n");
+                        break;
+                    }
                 }
+                File.AppendAllText(GetLogPath(), string.Format(format, args) + "\r\n\r\n");
             }
-
-            File.AppendAllText(GetLogPath(), string.Format(format, args) + "\r\n\r\n");
+            catch
+            {
+                return true;
+            }
             return settings.WriteNativeLog;
         }
+
         public static bool DebugLogHandler_LogException_Prefix(Exception exception, UnityEngine.Object context)
         {
-            if(!enabled)
+            if (!enabled)
                 return true;
-            if (settings.StackTrace)
+            try
             {
-                string[] lines = Environment.StackTrace.Split(
-                    new[] { Environment.NewLine },
-                    StringSplitOptions.None
-                );
-                foreach(string line in lines)
+                if (settings.StackTrace)
                 {
-                    if (line.Contains("at System") || line.Contains("at DebugUtils") || line.Contains("at UnityEngine"))
-                        continue;
-                    File.AppendAllText(GetLogPath(), $"[Exception {(context != null ? $" in object {context.name}":"")} {line.Trim()}]\r\n");
-                    break;
+                    string[] lines = Environment.StackTrace.Split(
+                        new[] { Environment.NewLine },
+                        StringSplitOptions.None
+                    );
+                    foreach (string line in lines)
+                    {
+                        if (line.Contains("at System") || line.Contains("at DebugUtils") || line.Contains("at UnityEngine"))
+                            continue;
+                        File.AppendAllText(GetLogPath(), $"[Exception {(context != null ? $" in object {context.name}" : "")} {line.Trim()}]\r\n");
+                        break;
+                    }
                 }
-            }
 
-            File.AppendAllText(GetLogPath(), exception + "\r\n\r\n");
+                File.AppendAllText(GetLogPath(), exception + "\r\n\r\n");
+            }
+            catch
+            {
+                return true;
+            }
             return settings.WriteNativeLog;
         }
+
     }
 }

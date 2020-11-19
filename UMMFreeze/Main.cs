@@ -1,7 +1,6 @@
 ﻿using Harmony12;
-using Pathea.InputSolutionNs;
-using Pathea.MessageSystem;
-using Pathea.ModuleNs;
+using Pathea;
+using Pathea.GameFlagNs;
 using Pathea.UISystemNs;
 using System;
 using System.Reflection;
@@ -32,10 +31,12 @@ namespace UMMFreeze
         }
 
 
+        public static BoolTrue MouseLocker { get; set; } = new BoolTrue();
 
         [HarmonyPatch(typeof(UnityModManager.UI), "BlockGameUI")]
         static class UnityModManager_UI_BlockGameUI
         {
+
             static void Prefix(bool value)
             {
                 if (!enabled)
@@ -46,24 +47,19 @@ namespace UMMFreeze
                     if (value)
                     {
                         Dbgl("Opening UMM");
-                        if (UIStateMgr.Instance?.currentState?.type == UIStateMgr.StateType.Play)
-                        {
-                            Dbgl("Freezing UI");
-                            Module<InputSolutionModule>.Self.Push(SolutionType.Empty);
-                            UIStateComm.Instance.SetCursor(true);
-                            Dbgl("UI Frozen");
-                        }
+                        Dbgl("Freezing UI");
+
+                        UIStateComm.Instance.SetCursor(true);
+                        Singleton<GameFlag>.Instance.Add(Flag.Pause, MouseLocker);
+                        Dbgl("UI Frozen");
                     }
                     else
                     {
                         Dbgl("Closing UMM");
-                        if (Module<InputSolutionModule>.Self?.CurSolutionType == SolutionType.Empty)
-                        {
-                            Dbgl("Unfreezing UI");
-                            Module<InputSolutionModule>.Self.Pop();
-                            UIStateComm.Instance.SetCursor(false);
-                            Dbgl("UI Unfrozen");
-                        }
+                        Dbgl("Unfreezing UI");
+                        UIStateComm.Instance.SetCursor(false);
+                        Singleton<GameFlag>.Instance.Remove(Flag.Pause, MouseLocker);
+                        Dbgl("UI Unfrozen");
                     }
                 }
                 catch(Exception ex)

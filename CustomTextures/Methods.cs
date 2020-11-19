@@ -5,6 +5,7 @@ using Pathea.Expression;
 using Pathea.HomeNs;
 using Pathea.ModuleNs;
 using Pathea.NpcAppearNs;
+using Pathea.RiderNs;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
@@ -115,6 +116,11 @@ namespace CustomTextures
         private static void ReloadTextures()
         {
             LoadCustomTextures();
+            FixSceneTextures(SceneManager.GetActiveScene());
+            ReloadActorTextures();
+        }
+        private static void ReloadActorTextures()
+        {
             foreach (KeyValuePair<int, Texture2D> kvp in customTextures)
             {
                 Actor actor = Module<ActorMgr>.Self.Get(kvp.Key);
@@ -127,10 +133,13 @@ namespace CustomTextures
                 }
                 else
                 {
-                    SkinnedMeshRenderer smr = (SkinnedMeshRenderer)typeof(Actor).GetField("skinnedMeshRenderer", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(actor);
-                    if (smr != null)
+                    SkinnedMeshRenderer[] smrs = actor.gameObject.GetComponentsInChildren<SkinnedMeshRenderer>();
+                    for(int i = 0; i < smrs.Length; i++)
                     {
-                        smr.material.mainTexture = kvp.Value;
+                        if (smrs[i].material?.HasProperty("_MainTex") == true && smrs[i].material.mainTexture != null)
+                        {
+                            smrs[i].material.mainTexture = kvp.Value;
+                        }
                     }
                 }
             }
@@ -145,9 +154,49 @@ namespace CustomTextures
                     appear.RebuildMesh();
                 }
             }
-            FixSceneTextures(SceneManager.GetActiveScene());
-        }
 
+
+            int[] rint = Module<RidableModuleManager>.Self.GetAllRidableUid();
+
+            foreach(int r in rint)
+            {
+                IRidable ridable = Module<RidableModuleManager>.Self.GetRidable(r);
+                if (ridable == null)
+                    continue;
+                string name = ridable.GetNickName();
+                Dbgl($"got horse '{name}'");
+                if (customTexturesHorse.ContainsKey(name))
+                {
+                    Dbgl($"got horse texture for {name}");
+                    GameObject go = ridable.GetActor().gameObject;
+                    SkinnedMeshRenderer[] smrs = go.GetComponentsInChildren<SkinnedMeshRenderer>();
+                    foreach (SkinnedMeshRenderer mr in smrs)
+                    {
+                        if (mr.material?.HasProperty("_MainTex") == true && mr.material.mainTexture != null)
+                        {
+                            Dbgl($"Changing smr texture for {mr.name}");
+                            if (mr.name == "saddle")
+                            {
+                                Dbgl($"Changing saddle");
+                                if (customTexturesMisc.ContainsKey($"Saddle_{name}"))
+                                {
+                                    Texture2D tex = customTexturesMisc[$"Saddle_{name}"];
+                                    tex.name = $"Saddle_{name}.png";
+                                    mr.material.mainTexture = tex;
+                                }
+                            }
+                            else
+                            {
+                                Texture2D tex = customTexturesHorse[name];
+                                tex.name = $"Horse_{name}.png";
+                                mr.material.mainTexture = tex;
+                            }
+                        }
+                    }
+                }
+            }
+
+        }
 
         private static void FixWorkshopTextures()
         {

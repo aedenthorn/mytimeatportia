@@ -5,6 +5,7 @@ using Pathea.HomeViewerNs;
 using Pathea.LightMgr;
 using Pathea.ModuleNs;
 using Pathea.ScenarioNs;
+using Pathea.SwitchNs;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -50,6 +51,7 @@ namespace Lights
             harmony.PatchAll(Assembly.GetExecutingAssembly());
             SceneManager.activeSceneChanged += ChangeScene;
         }
+
 
         private static void HideGUI(UnityModManager.ModEntry obj)
         {
@@ -242,11 +244,13 @@ namespace Lights
         {
             if (!enabled || arg1.name != "Main")
                 return;
+            //origLights.Clear();
             RefreshAllLights(arg1);
         }
 
         private static void RefreshAllLights(Scene scene)
         {
+            Dbgl($"Refreshing Lights");
             LayeredRegion layeredRegion = (LayeredRegion)typeof(FarmModule).GetField("layeredRegion", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(Module<FarmModule>.Self);
             if(layeredRegion == null)
             {
@@ -265,27 +269,21 @@ namespace Lights
                 Dbgl("slots is null");
                 return;
             }
-
-            List<GameObject> workshopLights = new List<GameObject>();
+            if (settings.customStreetlightLights)
+            {
+                GameObject[] gameObjects = scene.GetRootGameObjects();
+                foreach (GameObject obj in gameObjects)
+                {
+                    RefreshOneStreetLight(obj);
+                }
+            }
             foreach (object slot in slots)
             {
                 UnitObjInfo unitObjInfo = (UnitObjInfo)slot?.GetType().GetField("unitObjInfo").GetValue(slot);
                 GameObject go = unitObjInfo?.go;
                 if(go?.GetComponentInChildren<Light>() != null)
                 {
-                    workshopLights.Add(go);
                     RefreshOneWorkshopLight(go);
-                }
-            }
-            if (settings.customStreetlightLights)
-            {
-                GameObject[] gameObjects = scene.GetRootGameObjects();
-                foreach (GameObject obj in gameObjects)
-                {
-                    if (!workshopLights.Contains(obj))
-                    {
-                        RefreshOneStreetLight(obj);
-                    }
                 }
             }
         }
@@ -301,7 +299,6 @@ namespace Lights
                 if (!settings.lampsCastShadows)
                 {
                     light.shadows = LightShadows.None;
-                    return;
                 }
                 else
                 {
@@ -317,9 +314,12 @@ namespace Lights
                 light.intensity = settings.lampLightIntensity;
                 light.bounceIntensity = settings.lampBounceIntensity;
                 light.color = new Color(settings.lampColorR, settings.lampColorG, settings.lampColorB);
+
             }
         }
-        
+
+        private static Dictionary<int, MyLight> origLights = new Dictionary<int, MyLight>();
+
         private static void RefreshOneStreetLight(GameObject go)
         {
             if (go == null)
@@ -343,14 +343,16 @@ namespace Lights
                     light.shadowResolution = (UnityEngine.Rendering.LightShadowResolution)settings.streetlightShadowResolution;
                     light.shadowCustomResolution = -1;
                 }
-
-                light.range += + (settings.streetlightLightRangeMult < 0 ? settings.streetlightLightRangeMult * light.range : (1000f - light.range)*settings.streetlightLightRangeMult);
-                light.intensity += (settings.streetlightLightIntensityMult < 0 ? settings.streetlightLightIntensityMult * light.intensity : (10f - light.intensity) * settings.streetlightLightIntensityMult);
-                light.bounceIntensity += (settings.streetlightBounceIntensityMult < 0 ? settings.streetlightBounceIntensityMult * light.bounceIntensity: (10f - light.bounceIntensity) * settings.streetlightBounceIntensityMult);
-                float r = (settings.streetlightColorRMult < 0 ? settings.streetlightColorRMult * light.color.r : (1f - light.color.r) * settings.streetlightColorRMult);
-                float g = (settings.streetlightColorGMult < 0 ? settings.streetlightColorGMult * light.color.g : (1f - light.color.g) * settings.streetlightColorGMult);
-                float b = (settings.streetlightColorBMult < 0 ? settings.streetlightColorBMult * light.color.b : (1f - light.color.b) * settings.streetlightColorBMult);
-                light.color = new Color(r,g,b, light.color.a);
+                if (!origLights.ContainsKey(go.GetInstanceID()))
+                    origLights.Add(go.GetInstanceID(), new MyLight(light));
+                MyLight origLight = origLights[go.GetInstanceID()];
+                light.range = origLight.range + (settings.streetlightLightRangeMult < 0 ? settings.streetlightLightRangeMult * origLight.range : (1000f - origLight.range)*settings.streetlightLightRangeMult);
+                light.intensity = origLight.intensity + (settings.streetlightLightIntensityMult < 0 ? settings.streetlightLightIntensityMult * origLight.intensity : (10f - origLight.intensity) * settings.streetlightLightIntensityMult);
+                light.bounceIntensity = origLight.bounceIntensity + (settings.streetlightBounceIntensityMult < 0 ? settings.streetlightBounceIntensityMult * origLight.bounceIntensity: (10f - origLight.bounceIntensity) * settings.streetlightBounceIntensityMult);
+                float r = origLight.color.r + (settings.streetlightColorRMult < 0 ? settings.streetlightColorRMult * origLight.color.r : (1f - origLight.color.r) * settings.streetlightColorRMult);
+                float g = origLight.color.g + (settings.streetlightColorGMult < 0 ? settings.streetlightColorGMult * origLight.color.g : (1f - origLight.color.g) * settings.streetlightColorGMult);
+                float b = origLight.color.b + (settings.streetlightColorBMult < 0 ? settings.streetlightColorBMult * origLight.color.b : (1f - origLight.color.b) * settings.streetlightColorBMult);
+                light.color = new Color(r,g,b, origLight.color.a);
             }
         }
 

@@ -2,6 +2,7 @@
 using Pathea;
 using Pathea.ACT;
 using Pathea.AudioNs;
+using Pathea.CameraSystemNs;
 using Pathea.ConfigNs;
 using Pathea.MiniGameNs;
 using Pathea.MiniGameNs.Fishing;
@@ -25,7 +26,8 @@ namespace HereFishy
         
         public static List<int> vacuumed;
         public static int pages = 3;
-        private static AudioClip audioClip;
+        private static AudioClip fishyClip;
+        private static AudioClip weeClip;
         private static readonly bool isDebug = true;
 
         public static void Dbgl(string str = "", bool pref = true)
@@ -89,7 +91,46 @@ namespace HereFishy
                         if (ac != null)
                         {
                             Dbgl("audio clip is not null. samples: " + ac.samples);
-                            audioClip = ac;
+                            fishyClip = ac;
+                        }
+                        else
+                        {
+                            Dbgl("audio clip is null. data: " + dac.text);
+                        }
+                    }
+                    else
+                    {
+                        Dbgl("DownloadHandler is null. bytes downloaded: " + www.downloadedBytes);
+                    }
+                }
+                else
+                {
+                    Dbgl("www is null " + www.url);
+                }
+            }
+            path = $"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\\assets\\wee.wav";
+
+            filename = "file:///" + path.Replace("\\", "/");
+
+            Dbgl($"filename: {filename}");
+
+            using (UnityWebRequest www = UnityWebRequestMultimedia.GetAudioClip(filename, AudioType.WAV))
+            {
+
+                www.SendWebRequest();
+                yield return null;
+                //Dbgl($"checking downloaded {filename}");
+                if (www != null)
+                {
+                    //Dbgl("www not null. errors: " + www.error);
+                    DownloadHandlerAudioClip dac = ((DownloadHandlerAudioClip)www.downloadHandler);
+                    if (dac != null)
+                    {
+                        AudioClip ac = dac.audioClip;
+                        if (ac != null)
+                        {
+                            Dbgl("audio clip is not null. samples: " + ac.samples);
+                            weeClip = ac;
                         }
                         else
                         {
@@ -108,6 +149,7 @@ namespace HereFishy
             }
         }
         private static int origBaitID = -1;
+        private static float origDistance;
 
         [HarmonyPatch(typeof(FishingSystem_t), "WaitForFish")]
         static class FishingSystem_t_WaitForFish_Patch
@@ -158,28 +200,73 @@ namespace HereFishy
                     fish.SetFishInfo(___fishInfo);
                 }
 
-                AudioPlayer.Self.PlayVoice(audioClip, true, Player.Self.actor.transform);
-                Singleton<TaskRunner>.Self.RunDelayTask(audioClip.length, true, delegate
+                AudioPlayer.Self.PlayVoice(fishyClip, false, CameraManager.Instance.SourceTransform);
+                Singleton<TaskRunner>.Self.RunDelayTask(fishyClip.length, true, delegate
                 {
                     if (___hud == null)
                         return;
-                    if(fish != null)
+                    Module<Player>.Self.actor.TryDoAction(ACType.Animation, ACTAnimationPara.Construct("Throw_2", null, null, false));
+                    AudioPlayer.Self.PlayVoice(weeClip, false, CameraManager.Instance.SourceTransform);
+                    if (fish != null)
                     {
                         __instance.GetType().GetField("curFish", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(__instance, fish);
-                        Module<Player>.Self.actor.TryDoAction(ACType.Animation, ACTAnimationPara.Construct("Throw_2", null, null, false));
+                        Vector3 oPos = (__instance.GetType().GetField("curFish", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(__instance) as Fish_t).gameObject.transform.position;
+                        origDistance = Vector2.Distance(new Vector2(oPos.x, oPos.z), new Vector2(Module<Player>.Self.actor.gamePos.x, Module<Player>.Self.actor.gamePos.z));
+                        Singleton<TaskRunner>.Self.StartCoroutine(FishJump(__instance));
+                    }
+                    else
+                    {
+                        typeof(FishingSystem_t).GetMethod("FishingEnd", BindingFlags.NonPublic | BindingFlags.Instance).Invoke(__instance, new object[] { true, false });
                     }
                     //__instance.GetType().GetField("curFish", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(__instance, __instance.GetType().GetMethod("CreateFish", BindingFlags.NonPublic | BindingFlags.Instance).Invoke(__instance, new object[0]));
                     //typeof(FishingSystem_t).GetMethod("FishingBegin", BindingFlags.NonPublic | BindingFlags.Instance).Invoke(__instance, new object[] { });
-                    typeof(FishingSystem_t).GetMethod("FishingEnd", BindingFlags.NonPublic | BindingFlags.Instance).Invoke(__instance, new object[] { true, false });
                 });
 
                 return false;
             }
 
+            private static IEnumerator FishJump(FishingSystem_t instance)
+            {
+                for (; ; )
+                {
+                    Fish_t fish = (Fish_t)instance.GetType().GetField("curFish", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(instance);
+                    fish.gameObject.transform.position = Vector3.MoveTowards(fish.gameObject.transform.position, Module<Player>.Self.actor.gamePos, 0.6f);
+                    if (Vector3.Distance(Module<Player>.Self.actor.gamePos, fish.gameObject.transform.position) < 1)
+                    {
+                        typeof(FishingSystem_t).GetMethod("FishingEnd", BindingFlags.NonPublic | BindingFlags.Instance).Invoke(instance, new object[] { true, false });
+                        break;
+                    }
+                    yield return null;
+                }
+            }
         }
 
         [HarmonyPatch(typeof(FishingUI_t), "ShowPoleTips")]
         static class FishingUI_t_ShowPoleTips_Patch
+        { 
+            static bool Prefix()
+            {
+                if (!enabled)
+                    return true;
+
+                return false;
+            }
+        }
+
+        [HarmonyPatch(typeof(FishingSystem_t), "Update")]
+        static class FishingSystem_t_Update_Patch
+        { 
+            static bool Prefix()
+            {
+                if (!enabled)
+                    return true;
+
+                return false;
+            }
+        }
+        
+        [HarmonyPatch(typeof(FishingSystem_t), "ResetFishingPole")]
+        static class FishingSystem_t_ResetFishingPole_Patch
         { 
             static bool Prefix()
             {
