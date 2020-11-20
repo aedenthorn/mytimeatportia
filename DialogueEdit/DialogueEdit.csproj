@@ -71,6 +71,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Settings.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="assets\English.txt" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>call $(SolutionDir)copyDll.bat DialogueEdit</PostBuildEvent>

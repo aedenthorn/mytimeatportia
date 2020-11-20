@@ -4,16 +4,14 @@ using Pathea.HomeNs;
 using Pathea.HomeViewerNs;
 using Pathea.InputSolutionNs;
 using Pathea.ItemSystem;
-using Pathea.MessageSystem;
 using Pathea.ModuleNs;
+using Pathea.OptionNs;
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.IO;
 using System.Reflection;
-using System.Text;
 using UnityEngine;
 using UnityModManagerNet;
-using static Harmony12.AccessTools;
 
 namespace FishBowlMod
 {
@@ -21,17 +19,20 @@ namespace FishBowlMod
     {
         private static readonly bool isDebug = true;
         private static bool enabled = true;
+        private static string[] strings;
 
         public static void Dbgl(string str = "", bool pref = true)
         {
             if (isDebug)
-                Debug.Log((pref ? "DatabaseExtension " : "") + str);
+                Debug.Log((pref ? typeof(Main).Namespace + " " : "") + str);
         }
         private static void Load(UnityModManager.ModEntry modEntry)
         {
             modEntry.OnGUI = OnGUI;
             modEntry.OnSaveGUI = OnSaveGUI;
             modEntry.OnToggle = OnToggle;
+
+            reloadStrings();
 
             var harmony = HarmonyInstance.Create(modEntry.Info.Id);
             harmony.PatchAll(Assembly.GetExecutingAssembly());
@@ -52,6 +53,65 @@ namespace FishBowlMod
         {
         }
 
+
+        private static void reloadStrings()
+        {
+            string lang = "";
+
+            switch ((int)Singleton<OptionsMgr>.Instance.LanguageGame)
+            {
+                case 0:
+                    lang = ("Chinese");
+                    break;
+                case 1:
+                    lang = ("English");
+                    break;
+                case 2:
+                    lang = ("German");
+                    break;
+                case 3:
+                    lang = ("French");
+                    break;
+                case 4:
+                    lang = ("T_Chinese");
+                    break;
+                case 5:
+                    lang = ("Italian");
+                    break;
+                case 6:
+                    lang = ("Spanish");
+                    break;
+                case 7:
+                    lang = ("Japanese");
+                    break;
+                case 8:
+                    lang = ("Russian");
+                    break;
+                case 9:
+                    lang = ("Turkish");
+                    break;
+                case 10:
+                    lang = ("Korean");
+                    break;
+                case 11:
+                    lang = ("Portuguese");
+                    break;
+                case 12:
+                    lang = ("Vietnamese");
+                    break;
+            }
+            if (lang == "")
+                lang = ("English");
+
+            string path = $"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\\assets\\{lang}.txt";
+            if (!File.Exists(path))
+            {
+                Dbgl("No translation file found at " + path);
+                return;
+            }
+            Dbgl($"Using {lang} language file");
+            strings = File.ReadAllLines(path);
+        }
 
         [HarmonyPatch(typeof(FishBowlUnitViewer), "FeedFish")]
         static class FishBowlUnitViewer_PlayerTarget_TriggerEvent_Patch
@@ -143,7 +203,7 @@ namespace FishBowlMod
                         }
                     }
                 }
-                string nextRepro = next < int.MaxValue ? $" (Next in {next} days)" : "";
+                string nextRepro = next < int.MaxValue ? string.Format(strings[0], next) : "";
                 fishs.Add($"{kvp.Value.Count} {Module<ItemDataMgr>.Self.GetItemName(kvp.Key)}{nextRepro}");
             }
 
@@ -157,15 +217,15 @@ namespace FishBowlMod
                 string full = "";
                 if (count >= maxmax)
                 {
-                    full = " - Can't Breed";
+                    full = strings[1];
                 }
                 else if (count >= max)
                 {
-                    full = " - Can't Add";
+                    full = strings[2];
                 }
                 CurPlayerTarget.SetAction(ActionType.ActionInteract, $"{TextMgr.GetStr(300316, -1)} ({count}/{maxmax}{full})", ActionTriggerMode.Normal);
                 CurPlayerTarget.SetAction(ActionType.ActionMoveBack, $"{string.Join("\r\n",fishs.ToArray())}", ActionTriggerMode.Normal);
-                CurPlayerTarget.SetAction(ActionType.ActionFavor, $"Hungry: {hungry}, Avg. HP: {Math.Round(chp / mhp * 100)}%, Lowest HP: {Math.Round(lhp * 100)}%", ActionTriggerMode.Normal);
+                CurPlayerTarget.SetAction(ActionType.ActionFavor, string.Format(strings[3], hungry, Math.Round(chp / mhp * 100), Math.Round(lhp * 100)), ActionTriggerMode.Normal);
             }
             else
             {
