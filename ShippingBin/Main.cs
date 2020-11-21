@@ -53,6 +53,8 @@ namespace ShippingBin
         private static void OnGUI(UnityModManager.ModEntry modEntry)
         {
             settings.delayReceipt = GUILayout.Toggle(settings.delayReceipt, "Receive gols the next day morning (turn this off to receive gols instantly)", new GUILayoutOption[0]);
+            GUILayout.Space(10);
+            settings.ApplyMarketFluctuation = GUILayout.Toggle(settings.ApplyMarketFluctuation, "Apply market fluctuation", new GUILayoutOption[0]);
         }
         // Called when the mod is turned to on/off.
         static bool OnToggle(UnityModManager.ModEntry modEntry, bool value /* active or inactive */)
