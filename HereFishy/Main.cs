@@ -64,7 +64,16 @@ namespace HereFishy
 
         private static void OnGUI(UnityModManager.ModEntry modEntry)
         {
-
+            GUILayout.Label(string.Format("Jump Height: <b>{0:F1}</b>", settings.JumpHeight), new GUILayoutOption[0]);
+            settings.JumpHeight = GUILayout.HorizontalSlider(settings.JumpHeight * 10f, 0f, 40f, new GUILayoutOption[0]) / 10f;
+            GUILayout.Space(10f);
+            GUILayout.Label(string.Format("Jump Speed: <b>{0:F1}</b>", settings.JumpSpeed), new GUILayoutOption[0]);
+            settings.JumpSpeed = GUILayout.HorizontalSlider(settings.JumpSpeed * 10f, 1f, 10f, new GUILayoutOption[0]) / 10f;
+            GUILayout.Space(10f);
+            settings.PlayHereFishy = GUILayout.Toggle(settings.PlayHereFishy, "Play 'Here Fishy!' call", new GUILayoutOption[0]);
+            GUILayout.Space(10);
+            settings.PlayWee = GUILayout.Toggle(settings.PlayWee, "Play weeeee sound", new GUILayoutOption[0]);
+            GUILayout.Space(10);
 
         }
         public static IEnumerator PreloadClipCoroutine()
@@ -149,11 +158,12 @@ namespace HereFishy
             }
         }
         private static int origBaitID = -1;
-        private static float origDistance;
 
         [HarmonyPatch(typeof(FishingSystem_t), "WaitForFish")]
         static class FishingSystem_t_WaitForFish_Patch
         {
+            private static Vector3 origPos;
+            private static Vector3 flatPos;
 
             static bool Prefix(FishingSystem_t __instance, FishInfo ___fishInfo, Transform ___shoal, IFishingMan ___fishingMan, ref MoveArea ___area, FishingInfo ___fishingAreaInfo, float ___fishSpeedBaseFactor, float ___fishDashBaseFactor, float ___fishWaitBaseFactor, FishingUI_t ___hud)
             {
@@ -200,22 +210,28 @@ namespace HereFishy
                     fish.SetFishInfo(___fishInfo);
                 }
 
-                AudioPlayer.Self.PlayVoice(fishyClip, false, CameraManager.Instance.SourceTransform);
+                if(settings.PlayHereFishy)
+                    AudioPlayer.Self.PlayVoice(fishyClip, false, CameraManager.Instance.SourceTransform);
+
                 Singleton<TaskRunner>.Self.RunDelayTask(fishyClip.length, true, delegate
                 {
                     if (___hud == null)
                         return;
-                    Module<Player>.Self.actor.TryDoAction(ACType.Animation, ACTAnimationPara.Construct("Throw_2", null, null, false));
-                    AudioPlayer.Self.PlayVoice(weeClip, false, CameraManager.Instance.SourceTransform);
+
+                    if (settings.PlayWee)
+                        AudioPlayer.Self.PlayVoice(weeClip, false, CameraManager.Instance.SourceTransform);
+
                     if (fish != null)
                     {
                         __instance.GetType().GetField("curFish", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(__instance, fish);
-                        Vector3 oPos = (__instance.GetType().GetField("curFish", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(__instance) as Fish_t).gameObject.transform.position;
-                        origDistance = Vector2.Distance(new Vector2(oPos.x, oPos.z), new Vector2(Module<Player>.Self.actor.gamePos.x, Module<Player>.Self.actor.gamePos.z));
+                        origPos = (__instance.GetType().GetField("curFish", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(__instance) as Fish_t).gameObject.transform.position;
+                        flatPos = origPos;
                         Singleton<TaskRunner>.Self.StartCoroutine(FishJump(__instance));
                     }
                     else
                     {
+                        Module<Player>.Self.actor.TryDoAction(ACType.Animation, ACTAnimationPara.Construct("Throw_2", null, null, false));
+
                         typeof(FishingSystem_t).GetMethod("FishingEnd", BindingFlags.NonPublic | BindingFlags.Instance).Invoke(__instance, new object[] { true, false });
                     }
                     //__instance.GetType().GetField("curFish", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(__instance, __instance.GetType().GetMethod("CreateFish", BindingFlags.NonPublic | BindingFlags.Instance).Invoke(__instance, new object[0]));
@@ -230,9 +246,26 @@ namespace HereFishy
                 for (; ; )
                 {
                     Fish_t fish = (Fish_t)instance.GetType().GetField("curFish", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(instance);
-                    fish.gameObject.transform.position = Vector3.MoveTowards(fish.gameObject.transform.position, Module<Player>.Self.actor.gamePos, 0.6f);
-                    if (Vector3.Distance(Module<Player>.Self.actor.gamePos, fish.gameObject.transform.position) < 1)
+
+                    flatPos = Vector3.MoveTowards(flatPos, Module<Player>.Self.actor.gamePos, settings.JumpSpeed);
+
+                    Vector3 playerPos = Module<Player>.Self.actor.gamePos;
+
+                    float travelled = Vector3.Distance(flatPos, origPos);
+                    float total = Vector3.Distance(playerPos, origPos);
+
+                    float height = (float)Math.Sin(travelled * Math.PI / total) * settings.JumpHeight;
+
+                    fish.gameObject.transform.position = new Vector3(flatPos.x, flatPos.y + height, flatPos.z);
+
+                    if (Vector3.Distance(Module<Player>.Self.actor.gamePos, fish.gameObject.transform.position) < settings.JumpSpeed * 20)
                     {
+                        Module<Player>.Self.actor.TryDoAction(ACType.Animation, ACTAnimationPara.Construct("Throw_2", null, null, false));
+                    }
+
+                    if (Vector3.Distance(Module<Player>.Self.actor.gamePos, fish.gameObject.transform.position) < settings.JumpSpeed)
+                    {
+
                         typeof(FishingSystem_t).GetMethod("FishingEnd", BindingFlags.NonPublic | BindingFlags.Instance).Invoke(instance, new object[] { true, false });
                         break;
                     }
