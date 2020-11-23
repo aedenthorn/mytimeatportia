@@ -46,20 +46,29 @@ namespace UMMFreeze
                 {
                     if (value)
                     {
-                        Dbgl("Opening UMM");
-                        Dbgl("Freezing UI");
 
-                        UIStateComm.Instance.SetCursor(true);
-                        Singleton<GameFlag>.Instance.Add(Flag.Pause, MouseLocker);
-                        Dbgl("UI Frozen");
+                        Dbgl("Opening UMM");
+                        if (UIStateMgr.Instance?.currentState?.type == UIStateMgr.StateType.Play)
+                        {
+
+                            Dbgl("Freezing UI");
+
+                            UIStateComm.Instance.SetCursor(true);
+                            Singleton<GameFlag>.Instance.Add(Flag.Pause, MouseLocker);
+                            Dbgl("UI Frozen");
+
+                        }
                     }
                     else
                     {
                         Dbgl("Closing UMM");
-                        Dbgl("Unfreezing UI");
-                        UIStateComm.Instance.SetCursor(false);
                         Singleton<GameFlag>.Instance.Remove(Flag.Pause, MouseLocker);
-                        Dbgl("UI Unfrozen");
+                        if (UIStateMgr.Instance?.currentState?.type == UIStateMgr.StateType.Play)
+                        {
+                            Dbgl("Unfreezing UI");
+                            UIStateComm.Instance.SetCursor(false);
+                            Dbgl("UI Unfrozen");
+                        }
                     }
                 }
                 catch(Exception ex)

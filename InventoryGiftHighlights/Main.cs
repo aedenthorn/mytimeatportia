@@ -395,11 +395,23 @@ namespace InventoryGiftHighlights
 
         }
 
-        static void Reset_Gifts(ref GridPage ___page, Sprite ___normalBg)
+        static void Reset_Gifts(Sprite ___wantedBg, WishItemData ___wishData, List<ItemObject> ___allGiftItem, ref GridPage ___page, Sprite ___normalBg)
         {
+            int num = ___page.allIcons.Count * ___page.curPage;
+
             for (int i = 0; i < ___page.allIcons.Count; i++)
             {
+                int num2 = i + num;
                 GridIconWithNum gridIconWithNum = ___page.allIcons[i] as GridIconWithNum;
+
+                if (num2 < ___allGiftItem.Count && ___wishData != null && ___wishData.ItemId == ___allGiftItem[num2].ItemDataId)
+                {
+                    Sprite sprite = ___wantedBg;
+                    gridIconWithNum.selectableBg.image.sprite = sprite;
+                    gridIconWithNum.Enable();
+                    continue;
+                }
+
                 gridIconWithNum.selectableBg.image.sprite = ___normalBg;
                 SpriteState ss = gridIconWithNum.selectableBg.spriteState;
                 ss.highlightedSprite = bkgs;
@@ -421,15 +433,16 @@ namespace InventoryGiftHighlights
                 SpriteState ss = gridIconWithNum.selectableBg.spriteState;
                 if (num2 < ___allGiftItem.Count)
                 {
-
-                    if ((settings.ShowOnlyKnown && !giftHistory.Contains(___allGiftItem[num2].ItemBase.ID)))
-                    {
-                        continue;
-                    }
-                    if(___wishData != null && ___wishData.ItemId == ___allGiftItem[num2].ItemDataId)
+                    if (___wishData != null && ___wishData.ItemId == ___allGiftItem[num2].ItemDataId)
                     {
                         Sprite sprite = ___wantedBg;
                         gridIconWithNum.selectableBg.image.sprite = sprite;
+                        gridIconWithNum.Enable();
+                        continue;
+                    }
+
+                    if ((settings.ShowOnlyKnown && !giftHistory.Contains(___allGiftItem[num2].ItemBase.ID)))
+                    {
                         continue;
                     }
 
