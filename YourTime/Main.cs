@@ -60,6 +60,17 @@ namespace YourTime
             return true; // Permit or not.
         }
 
+        static bool KeyDown(string key)
+        {
+            try
+            {
+                return (Input.GetKeyDown(key));
+            }
+            catch{
+                return false;
+            }
+        }
+
         private static string TimeSpeedString()
         {
             var speed = "normal";

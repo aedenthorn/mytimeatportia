@@ -31,19 +31,19 @@ namespace YourTime
             static void Postfix()
             {
                 if (!Singleton<GameFlag>.Self.Gaming ||
-                    (!Input.GetKeyDown(settings.StopTimeKey) &&
-                     !Input.GetKeyDown(settings.SubtractTimeKey) &&
-                     !Input.GetKeyDown(settings.AdvanceTimeKey) &&
-                     !Input.GetKeyDown(settings.SlowTimeKey) &&
-                     !Input.GetKeyDown(settings.SpeedTimeKey)) ||
                     UIStateMgr.Instance.currentState.type != UIStateMgr.StateType.Play ||
-                    Player.Self.actor == null
+                    Player.Self.actor == null ||
+                    (!KeyDown(settings.StopTimeKey) &&
+                    !KeyDown(settings.SubtractTimeKey) &&
+                    !KeyDown(settings.AdvanceTimeKey) &&
+                    !KeyDown(settings.SlowTimeKey) &&
+                    !KeyDown(settings.SpeedTimeKey)) 
                 )
                 {
                     return;
                 }
 
-                if (Input.GetKeyDown(settings.StopTimeKey))
+                if (KeyDown(settings.StopTimeKey))
                 {
                     AccessTools.FieldRefAccess<TimeManager,BoolLogic>(TimeManager.Self,"timeStopLogic").Clear();
                     if (TimeManager.Self.TimeStoped)
@@ -59,17 +59,17 @@ namespace YourTime
                         Singleton<TipsMgr>.Instance.SendImageTip($"Time Stopped!", MessageUITipImageAssets.ImageType.CalendarRemind, 0);
                     }
                 }
-                else if (Input.GetKeyDown(settings.SubtractTimeKey))
+                else if (KeyDown(settings.SubtractTimeKey))
                 {
                     GameDateTime dt = TimeManager.Self.DateTime.AddSeconds(-60 * 60);
                     GameTimeSpan t = dt - TimeManager.Self.DateTime;
                     TimeManager.Self.SetDateTime(dt, true, TimeManager.JumpingType.Max);
                 }
-                else if (Input.GetKeyDown(settings.AdvanceTimeKey))
+                else if (KeyDown(settings.AdvanceTimeKey))
                 {
                     TimeManager.Self.JumpTimeByGameTime(60 * 60);
                 }
-                else if (Input.GetKeyDown(settings.SlowTimeKey))
+                else if (KeyDown(settings.SlowTimeKey))
                 {
                     if (settings.TimeScaleModifier > 0.1f)
                     {
@@ -89,7 +89,7 @@ namespace YourTime
                         Singleton<TipsMgr>.Instance.SendSystemTip("Time already at slowest speed!", SystemTipType.warning);
                     }
                 }
-                else if (Input.GetKeyDown(settings.SpeedTimeKey))
+                else if (KeyDown(settings.SpeedTimeKey))
                 {
                     if (settings.TimeScaleModifier < 10.0f)
                     {
