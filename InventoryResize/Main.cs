@@ -54,7 +54,7 @@ namespace InventoryResize
 
             GUILayout.Label(string.Format("Inventory Pages: <b>{0}</b>", pages), new GUILayoutOption[0]);
             pages = (int)GUILayout.HorizontalSlider(pages, 3f, 100f, new GUILayoutOption[0]);
-            if (GUILayout.Button("Resize", new GUILayoutOption[0]))
+            if (GUILayout.Button("Resize", new GUILayoutOption[0]) && Module<Player>.Self?.bag != null)
             {
                 Dbgl("Resizing");
 
