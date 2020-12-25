@@ -96,16 +96,39 @@ namespace Cheats
             //string[] names = { "Emily", "Nora", "Phyllis", "Ginger", "Sonia", };
 
         }
+        private static BoolTrue myBoolTrue = new BoolTrue();
+
+
+        private static bool noclip = false;
 
         private static void OnUpdate(UnityModManager.ModEntry arg1, float arg2)
         {
+            return;
+            if (Input.GetKeyDown(",") && Module<Player>.Self.actor != null)
+            {
+                GameObject[] roots = SceneManager.GetActiveScene().GetRootGameObjects();
+                List<Collider> cols = new List<Collider>();
+                foreach (GameObject go in roots)
+                {
+                    Collider[] colliders = go.GetComponentsInChildren<Collider>();
+                    cols.AddRange(colliders);
+                }
 
+                noclip = !noclip;
+                Rigidbody component = Module<Player>.Self.actor.GetComponent<Rigidbody>();
+                if (component != null)
+                {
+                    component.useGravity = !noclip;
+                }
+                Module<Player>.Self.actor.IgnoreCollision(cols, noclip);
+            }
 
             return;
             if (Input.GetKeyDown(","))
             {
-                Module<GuildRankingManager>.Self.PrintAllWorkshopState();
+                Module<Player>.Self.bag.AddItem(ItemObject.CreateItem(3000319, 1), true);
             }
+            return;
             if (Input.GetKeyDown("."))
             {
                 HUDFPS component = Module<TestClick>.Self.gameObject.GetComponent<HUDFPS>();

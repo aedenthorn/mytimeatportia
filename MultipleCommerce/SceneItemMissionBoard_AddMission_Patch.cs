@@ -20,7 +20,7 @@ namespace MultipleCommerce
                 }
 
                 double xd = 13.932;
-                ((SceneItem)__instance).AddOrRemoveIconStack(0, 0, -1);
+                __instance.AddOrRemoveIconStack(0, 0, -1);
                 foreach (MissionContentBrief missionContentBrief in m.choosableContent)
                 {
                     if (__instance.HasEmptySeat)

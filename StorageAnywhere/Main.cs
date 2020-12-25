@@ -83,7 +83,17 @@ namespace StorageAnywhere
             GUILayout.Label("Use shift to change storage page", new GUILayoutOption[0]);
 
         }
-
+        static bool KeyDown(string key)
+        {
+            try
+            {
+                return (Input.GetKeyDown(key));
+            }
+            catch
+            {
+                return false;
+            }
+        }
 
         [HarmonyPatch(typeof(PlayerItemBarCtr), "Update")]
         static class ItemBar_Patch
@@ -93,7 +103,7 @@ namespace StorageAnywhere
                 if (!enabled)
                     return;
 
-                if (Input.GetKeyDown(settings.ItemBarSwitchKey))
+                if (KeyDown(settings.ItemBarSwitchKey))
                 {
                     for (int index = 0; index < 8; index++)
                     {
@@ -105,7 +115,7 @@ namespace StorageAnywhere
                     MethodInfo dynMethod = __instance.GetType().GetMethod("Unequip", BindingFlags.NonPublic | BindingFlags.Instance);
                     dynMethod.Invoke(__instance, new object[] { });
                 }
-                else if ( Input.GetKeyDown(settings.OpenStorageKey) && UIStateMgr.Instance.currentState.type == UIStateMgr.StateType.Play)
+                else if (KeyDown(settings.OpenStorageKey) && UIStateMgr.Instance.currentState.type == UIStateMgr.StateType.Play)
                 {
                     StorageViewer sv = new StorageViewer();
                     FieldRef<StorageViewer, StorageUnit> suRef = FieldRefAccess<StorageViewer, StorageUnit>("storageUnit");
@@ -114,7 +124,7 @@ namespace StorageAnywhere
                     MethodInfo dynMethod = sv.GetType().GetMethod("InteractStorage", BindingFlags.NonPublic | BindingFlags.Instance);
                     dynMethod.Invoke(sv, new object[] { });
                 }
-                else if ( Input.GetKeyDown(settings.OpenFactoryKey) && UIStateMgr.Instance.currentState.type == UIStateMgr.StateType.Play)
+                else if (KeyDown(settings.OpenFactoryKey) && UIStateMgr.Instance.currentState.type == UIStateMgr.StateType.Play)
                 {
 
                     FarmFactory[] factorys = Module<FarmFactoryMgr>.Self.GetAllFactorys();
@@ -165,17 +175,17 @@ namespace StorageAnywhere
                     return;
 
                 bool shift = Input.GetKey("left shift");
-                bool prevPage = Input.GetKeyDown(settings.PrevPageKey);
-                bool nextPage = Input.GetKeyDown(settings.NextPageKey);
+                bool prevPage = KeyDown(settings.PrevPageKey);
+                bool nextPage = KeyDown(settings.NextPageKey);
 
                 if (__instance is StoreageUICtr)
                 {
-                    if (Input.GetKeyDown(settings.PrevStorageKey))
+                    if (KeyDown(settings.PrevStorageKey))
                     {
                         (__instance as StoreageUICtr).SwitchStorage(false);
                         return;
                     }
-                    else if (Input.GetKeyDown(settings.NextStorageKey))
+                    else if (KeyDown(settings.NextStorageKey))
                     {
                         (__instance as StoreageUICtr).SwitchStorage(true);
                         return;

@@ -1,19 +1,16 @@
 ﻿using Harmony12;
 using Pathea;
+using Pathea.CameraSystemNs;
+using Pathea.HomeNs;
+using Pathea.HomeViewerNs;
+using Pathea.ItemSystem;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Reflection;
 using UnityEngine;
+using UnityEngine.Video;
 using UnityModManagerNet;
-using Pathea.AnimalFarmNs;
-using Pathea.HomeNs;
-using Hont.ExMethod.Collection;
-using Pathea.TipsNs;
-using System.IO;
-using Pathea.ItemSystem;
-using System.Linq;
-using Pathea.CameraSystemNs;
-using Pathea.ModuleNs;
 
 namespace Television
 {
@@ -133,10 +130,11 @@ namespace Television
         [HarmonyPatch(typeof(VideoChoiceUICtr), "GetVideoes")]
         static class VideoChoiceUICtr_GetVideoes
         {
-            static void Postfix(ref List<VideoTypeData> __result)
+            static void Postfix(ref List<VideoTypeData> __result, VideoChoiceUICtr __instance)
             {
                 if (!enabled)
                     return;
+
                 if (__result == null)
                 {
                     __result = new List<VideoTypeData>();
@@ -147,12 +145,12 @@ namespace Television
                     {
                         FileName = kvp.Value,
                         Id = kvp.Key
-                    });;
+                    });
                 }
 
             }
         }
-
+        
 
 
         [HarmonyPatch(typeof(ItemDataMgr), "OnLoad")]
@@ -199,10 +197,11 @@ namespace Television
         [HarmonyPatch(typeof(TVCtr), "Play")]
         static class TVCtr_Play
         {
-            static bool Prefix(TVCtr __instance, string fileName, GameObject ___screen)
+            static bool Prefix(TVCtr __instance, string fileName, GameObject ___screen, ref VideoPlayer ___videoPlayer)
             {
                 if (!enabled)
                     return true;
+
 
                 //___screen.transform.localScale = new Vector3(1.6f, 1.4f, 1f);
                 //___screen.transform.position = new Vector3(___screen.transform.position.x - 0.08f, ___screen.transform.position.y - 0.32f, ___screen.transform.position.z - 0.21f);

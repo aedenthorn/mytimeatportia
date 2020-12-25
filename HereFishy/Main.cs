@@ -256,7 +256,15 @@ namespace HereFishy
 
                     float height = (float)Math.Sin(travelled * Math.PI / total) * settings.JumpHeight;
 
-                    fish.gameObject.transform.position = new Vector3(flatPos.x, flatPos.y + height, flatPos.z);
+                    try
+                    {
+                        fish.gameObject.transform.position = new Vector3(flatPos.x, flatPos.y + height, flatPos.z);
+                    }
+                    catch
+                    {
+                        break;
+                    }
+
 
                     if (Vector3.Distance(Module<Player>.Self.actor.gamePos, fish.gameObject.transform.position) < settings.JumpSpeed * 20)
                     {
