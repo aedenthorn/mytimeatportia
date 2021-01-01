@@ -11,6 +11,7 @@ using UnityEngine.SceneManagement;
 using Pathea.UISystemNs;
 using UnityEngine.UI;
 using Pathea;
+using System.Text.RegularExpressions;
 
 namespace Teleport
 {
@@ -19,25 +20,31 @@ namespace Teleport
         public static bool enabled;
         private static bool isDebug = false;
 
+        private static Vector3 nextMainPos;
+        private static Settings settings;
+        private static float labelWidth = 80f;
+
         public static void Dbgl(string str = "", bool pref = true)
         {
             if (isDebug)
                 Debug.Log((pref ? "Teleport " : "") + str);
         }
-        //public static Settings settings { get; private set; }
 
         private static void Load(UnityModManager.ModEntry modEntry)
         {
-            //settings = Settings.Load<Settings>(modEntry);
+            settings = Settings.Load<Settings>(modEntry);
 
             modEntry.OnToggle = OnToggle;
             modEntry.OnGUI = OnGUI;
             modEntry.OnSaveGUI = OnSaveGUI;
+            //modEntry.OnUpdate = OnUpdate;
 
             SceneManager.activeSceneChanged += ChangeScene;
             var harmony = HarmonyInstance.Create(modEntry.Info.Id);
             harmony.PatchAll(Assembly.GetExecutingAssembly());
         }
+
+
 
         private static void ChangeScene(Scene arg0, Scene arg1)
         {
@@ -46,11 +53,44 @@ namespace Teleport
 
         private static void OnSaveGUI(UnityModManager.ModEntry modEntry)
         {
-            //settings.Save(modEntry);
+            settings.Save(modEntry);
         }
+
+        private static bool capturingButton;
 
         private static void OnGUI(UnityModManager.ModEntry modEntry)
         {
+            GUILayout.BeginHorizontal();
+            GUILayout.Label(string.Format("Modifier Key:"), new GUILayoutOption[] { GUILayout.Width(labelWidth * 2) });
+            if (!capturingButton)
+            {
+                settings.ModifierKey = GUILayout.TextField(settings.ModifierKey, new GUILayoutOption[] { GUILayout.Width(labelWidth * 2) });
+                if (GUILayout.Button("Capture", new GUILayoutOption[]{
+                        GUILayout.Width(150f)
+                    }))
+                {
+                    capturingButton = true;
+                    GUI.FocusWindow(0);
+                    GUI.FocusControl(null);
+                }
+            }
+            else
+            {
+                GUILayout.TextField(settings.ModifierKey, new GUILayoutOption[] { GUILayout.Width(labelWidth * 2) });
+                GUILayout.Label("Press key / button", new GUILayoutOption[] { GUILayout.Width(labelWidth * 2) });
+                foreach (KeyCode kcode in Enum.GetValues(typeof(KeyCode)))
+                {
+                    if (Input.GetKey(kcode))
+                    {
+                        settings.ModifierKey = ConvertKeyCode(kcode.ToString());
+                        capturingButton = false;
+                        break;
+                    }
+                }
+            }
+            GUILayout.EndHorizontal();
+            GUILayout.Space(20f);
+
             return;
             if (GUILayout.Button("Outdoors", new GUILayoutOption[]{
                         GUILayout.Width(150f)
@@ -170,6 +210,21 @@ namespace Teleport
             }
         }
 
+        private static string ConvertKeyCode(string str)
+        {
+            str = Regex.Replace(str, @"([a-z0-9])([A-Z])", @"$1 $2");
+            str = Regex.Replace(str, @"([a-z])([0-9])", @"$1 $2");
+            str = str.ToLower();
+            str = str.Replace("keypad plus", "[+]");
+            str = str.Replace("keypad minus", "[-]");
+            str = str.Replace("keypad divide", "[/]");
+            str = str.Replace("keypad multiply", "[*]");
+            str = Regex.Replace(str, @"keypad (.*)", @"[$1]");
+            str = str.Replace("alpha ", "");
+            Dbgl($"capturing key: {str}");
+            return str;
+        }
+
         private static void ButtonTeleport(string scene)
         {
             UnityModManager.UI.Instance.ToggleWindow();
@@ -206,15 +261,28 @@ namespace Teleport
             return true; // Permit or not.
         }
 
-        private static Vector3 nextMainPos;
+        private static bool KeyDown(string key)
+        {
+            try
+            {
+                return (Input.GetKey(key));
+            }
+            catch
+            {
+                return false;
+            }
+        }
 
         [HarmonyPatch(typeof(WholeMapViewer), "SetMarkIcon")]
-        static class RefreshTreasureRevealerItem_Patch
+        static class SetMarkIcon_Patch
         {
 
             static bool Prefix(WholeMapViewer __instance, Image iconImage, Image ___NowPlayingMap)
             {
-                if (Input.GetKey("left shift"))
+
+
+
+                if (KeyDown(settings.ModifierKey)) 
                 {
                     Dbgl("Trying to teleport");
                     Vector3 v1 = iconImage.rectTransform.position;

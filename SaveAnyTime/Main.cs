@@ -162,7 +162,7 @@ namespace SaveAnyTime
             if (!enabled)
                 return;
 
-            if (Input.GetKeyDown(settings.QuickLoadKey) && saveFiles.Count > 0 && !isLoading)
+            if (KeyDown(settings.QuickLoadKey) && saveFiles.Count > 0 && !isLoading)
             {
                 string fileName = saveFiles[saveFiles.Count - 1].fileName;
                 Dbgl($"Quick load {fileName}");
@@ -186,12 +186,25 @@ namespace SaveAnyTime
                     DoSaveFile(true);
                 }
 
-                if (Input.GetKeyDown(settings.QuickSaveKey))
+                if (KeyDown(settings.QuickSaveKey))
                 {
                     DoSaveFile();
                 }
             }
+
         }
+
+        private static bool KeyDown(string key)
+        {
+            try {
+                return Input.GetKeyDown(key);
+            } 
+            catch {
+                return false;
+            }
+        }
+
+
         private static void DeleteSaveGame(string fileName)
         {
             string filePath = Path.Combine(GetSavesPath(), fileName);

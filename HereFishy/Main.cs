@@ -74,7 +74,9 @@ namespace HereFishy
             GUILayout.Space(10);
             settings.PlayWee = GUILayout.Toggle(settings.PlayWee, "Play weeeee sound", new GUILayoutOption[0]);
             GUILayout.Space(10);
-
+            GUILayout.Label(string.Format("Audio volume: <b>{0:F1}</b>", settings.Volume), new GUILayoutOption[0]);
+            settings.Volume = GUILayout.HorizontalSlider(settings.Volume * 10f, 1f, 10f, new GUILayoutOption[0]) / 10f;
+            GUILayout.Space(10f);
         }
         public static IEnumerator PreloadClipCoroutine()
         {
@@ -210,16 +212,27 @@ namespace HereFishy
                     fish.SetFishInfo(___fishInfo);
                 }
 
-                if(settings.PlayHereFishy)
-                    AudioPlayer.Self.PlayVoice(fishyClip, false, CameraManager.Instance.SourceTransform);
+                if (settings.PlayHereFishy && fishyClip != null)
+                {
+                    AudioSource audio = Player.Self.actor.gameObject.AddComponent<AudioSource>();
+                    audio.volume = settings.Volume;
+                    audio.clip = fishyClip;
+                    audio.Play();
+                    //AudioPlayer.Self.PlayVoice(fishyClip, false, CameraManager.Instance.SourceTransform);
+                }
 
                 Singleton<TaskRunner>.Self.RunDelayTask(fishyClip.length, true, delegate
                 {
                     if (___hud == null)
                         return;
 
-                    if (settings.PlayWee)
-                        AudioPlayer.Self.PlayVoice(weeClip, false, CameraManager.Instance.SourceTransform);
+                    if (settings.PlayWee && weeClip != null)
+                    {
+                        AudioSource audio = Player.Self.actor.gameObject.AddComponent<AudioSource>();
+                        audio.volume = settings.Volume;
+                        audio.clip = weeClip;
+                        audio.Play();
+                    }
 
                     if (fish != null)
                     {

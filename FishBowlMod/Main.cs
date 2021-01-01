@@ -142,6 +142,9 @@ namespace FishBowlMod
 
             PlayerTargetMultiAction CurPlayerTarget = (PlayerTargetMultiAction)typeof(UnitViewer).GetProperty("CurPlayerTarget", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(__instance, null);
 
+            if (CurPlayerTarget == null)
+                return;
+
             Dbgl("Showing Hunger");
 
             FishBowl fishBowl = AccessTools.FieldRefAccess<FishBowlUnit, FishBowl>(___fishBowlUnit, "fishBowl");
