@@ -1,25 +1,15 @@
 ﻿using Harmony12;
-using static Harmony12.AccessTools;
-using Pathea;
-using Pathea.ACT;
+using Pathea.FeatureNs;
 using Pathea.ModuleNs;
+using Pathea.PlayerAbilityNs;
+using Pathea.UISystemNs.Grid;
+using Pathea.UISystemNs.MainMenu;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-using Pathea.ActorNs;
+using TMPro;
 using UnityEngine;
 using UnityModManagerNet;
-using static Pathea.ActorMotor;
-using System.Collections;
-using Hont;
-using Pathea.CameraSystemNs;
-using Pathea.InputSolutionNs;
-using Pathea.ScenarioNs;
-using Pathea.PlayerAbilityNs;
-using Pathea.FeatureNs;
-using Pathea.UISystemNs.MainMenu;
-using TMPro;
-using Pathea.UISystemNs.Grid;
 
 namespace SkillLimit
 {

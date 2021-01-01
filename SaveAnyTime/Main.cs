@@ -54,7 +54,7 @@ namespace SaveAnyTime
 
         private static void ChangeScene(Scene arg0, Scene arg1)
         {
-            if(arg1.name != "Game" && settings.saveOnSceneChange)
+            if(arg1.name != "Game" && arg1.name != "custom" && settings.saveOnSceneChange)
             {
                 if (!gameLoaded)
                 {

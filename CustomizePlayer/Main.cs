@@ -83,7 +83,7 @@ namespace CustomizePlayer
 
         static void OnUpdate(UnityModManager.ModEntry modEntry, float dt)
         {
-            if (Input.GetKeyDown(settings.OpenCustomizeKey) && Module<Player>.Self.actor != null && Singleton<GameFlag>.Instance.Gaming)
+            if (Input.GetKeyDown(settings.OpenCustomizeKey) && Module<Player>.Self.actor != null && Singleton<GameFlag>.Instance.Gaming && UIStateMgr.Instance?.currentState?.type == UIStateMgr.StateType.Play)
             {
                 BeginCustomizing();
 
