@@ -93,7 +93,11 @@ namespace InventoryGiftHighlights
             settings.ShowLoved = GUILayout.Toggle(settings.ShowLoved, "Show loved", new GUILayoutOption[0]);
             GUILayout.Space(20f);
 
+
+            GUILayout.BeginHorizontal();
             GUILayout.Label("<b>Hate Color</b>", new GUILayoutOption[0]);
+            DisplayColor(settings.hateColorRed, settings.hateColorGreen, settings.hateColorBlue, settings.hateColorAlpha);
+            GUILayout.EndHorizontal();
 
             GUILayout.BeginHorizontal();
             GUILayout.Space(indentSpace);
@@ -101,7 +105,7 @@ namespace InventoryGiftHighlights
 
             GUILayout.Label(string.Format("Red: <b>{0:F2}</b> ", settings.hateColorRed), new GUILayoutOption[] { GUILayout.Width(labelWidth) });
             settings.hateColorRed = GUILayout.HorizontalSlider((float)settings.hateColorRed * 100f, 0, 100f) / 100f;
-            GUILayout.Label(string.Format("Green: <b>{0:F2}</b> ", settings.hateColorRed), new GUILayoutOption[] { GUILayout.Width(labelWidth) });
+            GUILayout.Label(string.Format("Green: <b>{0:F2}</b> ", settings.hateColorGreen), new GUILayoutOption[] { GUILayout.Width(labelWidth) });
             settings.hateColorGreen = GUILayout.HorizontalSlider((float)settings.hateColorGreen * 100f, 0, 100f) / 100f;
             GUILayout.Label(string.Format("Blue: <b>{0:F2}</b> ", settings.hateColorBlue), new GUILayoutOption[] { GUILayout.Width(labelWidth) });
             settings.hateColorBlue = GUILayout.HorizontalSlider((float)settings.hateColorBlue * 100f, 0, 100f) / 100f;
@@ -111,7 +115,11 @@ namespace InventoryGiftHighlights
             GUILayout.EndHorizontal();
 
             GUILayout.Space(20f);
+            
+            GUILayout.BeginHorizontal();
             GUILayout.Label("<b>Dislike Color</b>", new GUILayoutOption[0]);
+            DisplayColor(settings.dislikeColorRed, settings.dislikeColorGreen, settings.dislikeColorBlue, settings.dislikeColorAlpha);
+            GUILayout.EndHorizontal();
 
             GUILayout.BeginHorizontal();
             GUILayout.Space(indentSpace);
@@ -119,7 +127,7 @@ namespace InventoryGiftHighlights
 
             GUILayout.Label(string.Format("Red: <b>{0:F2}</b> ", settings.dislikeColorRed), new GUILayoutOption[] { GUILayout.Width(labelWidth) });
             settings.dislikeColorRed = GUILayout.HorizontalSlider((float)settings.dislikeColorRed * 100f, 0, 100f) / 100f;
-            GUILayout.Label(string.Format("Green: <b>{0:F2}</b> ", settings.dislikeColorRed), new GUILayoutOption[] { GUILayout.Width(labelWidth) });
+            GUILayout.Label(string.Format("Green: <b>{0:F2}</b> ", settings.dislikeColorGreen), new GUILayoutOption[] { GUILayout.Width(labelWidth) });
             settings.dislikeColorGreen = GUILayout.HorizontalSlider((float)settings.dislikeColorGreen * 100f, 0, 100f) / 100f;
             GUILayout.Label(string.Format("Blue: <b>{0:F2}</b> ", settings.dislikeColorBlue), new GUILayoutOption[] { GUILayout.Width(labelWidth) });
             settings.dislikeColorBlue = GUILayout.HorizontalSlider((float)settings.dislikeColorBlue * 100f, 0, 100f) / 100f;
@@ -129,7 +137,11 @@ namespace InventoryGiftHighlights
             GUILayout.EndHorizontal();
 
             GUILayout.Space(20f);
+
+            GUILayout.BeginHorizontal();
             GUILayout.Label("<b>Neutral Color</b>", new GUILayoutOption[0]);
+            DisplayColor(settings.neutralColorRed, settings.neutralColorGreen, settings.neutralColorBlue, settings.neutralColorAlpha);
+            GUILayout.EndHorizontal();
 
             GUILayout.BeginHorizontal();
             GUILayout.Space(indentSpace);
@@ -137,7 +149,7 @@ namespace InventoryGiftHighlights
 
             GUILayout.Label(string.Format("Red: <b>{0:F2}</b> ", settings.neutralColorRed), new GUILayoutOption[] { GUILayout.Width(labelWidth) });
             settings.neutralColorRed = GUILayout.HorizontalSlider((float)settings.neutralColorRed * 100f, 0, 100f) / 100f;
-            GUILayout.Label(string.Format("Green: <b>{0:F2}</b> ", settings.neutralColorRed), new GUILayoutOption[] { GUILayout.Width(labelWidth) });
+            GUILayout.Label(string.Format("Green: <b>{0:F2}</b> ", settings.neutralColorGreen), new GUILayoutOption[] { GUILayout.Width(labelWidth) });
             settings.neutralColorGreen = GUILayout.HorizontalSlider((float)settings.neutralColorGreen * 100f, 0, 100f) / 100f;
             GUILayout.Label(string.Format("Blue: <b>{0:F2}</b> ", settings.neutralColorBlue), new GUILayoutOption[] { GUILayout.Width(labelWidth) });
             settings.neutralColorBlue = GUILayout.HorizontalSlider((float)settings.neutralColorBlue * 100f, 0, 100f) / 100f;
@@ -148,7 +160,10 @@ namespace InventoryGiftHighlights
 
             GUILayout.Space(20f);
 
+            GUILayout.BeginHorizontal();
             GUILayout.Label("<b>Like Color</b>", new GUILayoutOption[0]);
+            DisplayColor(settings.likeColorRed, settings.likeColorGreen, settings.likeColorBlue, settings.likeColorAlpha);
+            GUILayout.EndHorizontal();
 
             GUILayout.BeginHorizontal();
             GUILayout.Space(indentSpace);
@@ -156,7 +171,7 @@ namespace InventoryGiftHighlights
 
             GUILayout.Label(string.Format("Red: <b>{0:F2}</b> ", settings.likeColorRed), new GUILayoutOption[] { GUILayout.Width(labelWidth) });
             settings.likeColorRed = GUILayout.HorizontalSlider((float)settings.likeColorRed * 100f, 0, 100f) / 100f;
-            GUILayout.Label(string.Format("Green: <b>{0:F2}</b> ", settings.likeColorRed), new GUILayoutOption[] { GUILayout.Width(labelWidth) });
+            GUILayout.Label(string.Format("Green: <b>{0:F2}</b> ", settings.likeColorGreen), new GUILayoutOption[] { GUILayout.Width(labelWidth) });
             settings.likeColorGreen = GUILayout.HorizontalSlider((float)settings.likeColorGreen * 100f, 0, 100f) / 100f;
             GUILayout.Label(string.Format("Blue: <b>{0:F2}</b> ", settings.likeColorBlue), new GUILayoutOption[] { GUILayout.Width(labelWidth) });
             settings.likeColorBlue = GUILayout.HorizontalSlider((float)settings.likeColorBlue * 100f, 0, 100f) / 100f;
@@ -167,24 +182,39 @@ namespace InventoryGiftHighlights
 
             GUILayout.Space(20f);
 
-            GUILayout.Label("<b>Love Color</b>", new GUILayoutOption[0]);
+            GUILayout.BeginHorizontal();
+                GUILayout.Label("<b>Love Color</b>", new GUILayoutOption[0]);
+                DisplayColor(settings.loveColorRed, settings.loveColorGreen, settings.loveColorBlue, settings.loveColorAlpha);
+            GUILayout.EndHorizontal();
 
             GUILayout.BeginHorizontal();
-            GUILayout.Space(indentSpace);
-            GUILayout.BeginVertical();
-
-            GUILayout.Label(string.Format("Red: <b>{0:F2}</b> ", settings.loveColorRed), new GUILayoutOption[] { GUILayout.Width(labelWidth) });
-            settings.loveColorRed = GUILayout.HorizontalSlider((float)settings.loveColorRed * 100f, 0, 100f) / 100f;
-            GUILayout.Label(string.Format("Green: <b>{0:F2}</b> ", settings.loveColorRed), new GUILayoutOption[] { GUILayout.Width(labelWidth) });
-            settings.loveColorGreen = GUILayout.HorizontalSlider((float)settings.loveColorGreen * 100f, 0, 100f) / 100f;
-            GUILayout.Label(string.Format("Blue: <b>{0:F2}</b> ", settings.loveColorBlue), new GUILayoutOption[] { GUILayout.Width(labelWidth) });
-            settings.loveColorBlue = GUILayout.HorizontalSlider((float)settings.loveColorBlue * 100f, 0, 100f) / 100f;
-            GUILayout.Label(string.Format("Alpha: <b>{0:F2}</b> ", settings.loveColorAlpha), new GUILayoutOption[] { GUILayout.Width(labelWidth) });
-            settings.loveColorAlpha = GUILayout.HorizontalSlider((float)settings.loveColorAlpha * 100f, 0, 100f) / 100f;
-            GUILayout.EndVertical();
+                GUILayout.Space(indentSpace);
+                GUILayout.BeginVertical();
+                    GUILayout.Label(string.Format("Red: <b>{0:F2}</b> ", settings.loveColorRed), new GUILayoutOption[] { GUILayout.Width(labelWidth) });
+                    settings.loveColorRed = GUILayout.HorizontalSlider((float)settings.loveColorRed * 100f, 0, 100f) / 100f;
+                    GUILayout.Label(string.Format("Green: <b>{0:F2}</b> ", settings.loveColorGreen), new GUILayoutOption[] { GUILayout.Width(labelWidth) });
+                    settings.loveColorGreen = GUILayout.HorizontalSlider((float)settings.loveColorGreen * 100f, 0, 100f) / 100f;
+                    GUILayout.Label(string.Format("Blue: <b>{0:F2}</b> ", settings.loveColorBlue), new GUILayoutOption[] { GUILayout.Width(labelWidth) });
+                    settings.loveColorBlue = GUILayout.HorizontalSlider((float)settings.loveColorBlue * 100f, 0, 100f) / 100f;
+                    GUILayout.Label(string.Format("Alpha: <b>{0:F2}</b> ", settings.loveColorAlpha), new GUILayoutOption[] { GUILayout.Width(labelWidth) });
+                    settings.loveColorAlpha = GUILayout.HorizontalSlider((float)settings.loveColorAlpha * 100f, 0, 100f) / 100f;
+                GUILayout.EndVertical();
             GUILayout.EndHorizontal();
 
             GUILayout.Space(20f);
+        }
+
+        private static void DisplayColor(float colorRed, float colorGreen, float colorBlue, float colorAlpha)
+        {
+            Texture2D tex = new Texture2D(16,16);
+            Color[] cols = tex.GetPixels();
+            for (int i = 0; i < cols.Length; ++i)
+            {
+                cols[i] = new Color(colorRed, colorGreen, colorBlue, colorAlpha);
+            }
+            tex.SetPixels(cols);
+            tex.Apply(false);
+            GUILayout.Label(new GUIContent(tex), new GUILayoutOption[0]);
         }
 
         private static Texture2D TextureFromFile(string file)
