@@ -74,10 +74,15 @@ namespace HereFishy
             GUILayout.Space(10);
             settings.PlayWee = GUILayout.Toggle(settings.PlayWee, "Play weeeee sound", new GUILayoutOption[0]);
             GUILayout.Space(10);
-            GUILayout.Label(string.Format("Audio volume: <b>{0:F1}</b>", settings.Volume), new GUILayoutOption[0]);
-            settings.Volume = GUILayout.HorizontalSlider(settings.Volume * 10f, 1f, 10f, new GUILayoutOption[0]) / 10f;
+/*
+            GUILayout.Label(string.Format("Here Fishy Volume: <b>{0:F0}</b>%", settings.HereFishyVolume * 100), new GUILayoutOption[0]);
+            settings.HereFishyVolume = GUILayout.HorizontalSlider(settings.HereFishyVolume * 100f, 1f, 100f, new GUILayoutOption[0]) / 100f;
             GUILayout.Space(10f);
-        }
+            GUILayout.Label(string.Format("Weee Volume: <b>{0:F0}</b>%", settings.WeeVolume * 100), new GUILayoutOption[0]);
+            settings.WeeVolume = GUILayout.HorizontalSlider(settings.WeeVolume * 100f, 1f, 100f, new GUILayoutOption[0]) / 100f;
+            GUILayout.Space(10f);
+ */
+            }
         public static IEnumerator PreloadClipCoroutine()
         {
             string path = $"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\\assets\\herefishy.wav";
@@ -214,11 +219,7 @@ namespace HereFishy
 
                 if (settings.PlayHereFishy && fishyClip != null)
                 {
-                    AudioSource audio = Player.Self.actor.gameObject.AddComponent<AudioSource>();
-                    audio.volume = settings.Volume;
-                    audio.clip = fishyClip;
-                    audio.Play();
-                    //AudioPlayer.Self.PlayVoice(fishyClip, false, CameraManager.Instance.SourceTransform);
+                    PlayClip(fishyClip, settings.HereFishyVolume, false);
                 }
 
                 Singleton<TaskRunner>.Self.RunDelayTask(fishyClip.length, true, delegate
@@ -226,16 +227,12 @@ namespace HereFishy
                     if (___hud == null)
                         return;
 
-                    if (settings.PlayWee && weeClip != null)
-                    {
-                        AudioSource audio = Player.Self.actor.gameObject.AddComponent<AudioSource>();
-                        audio.volume = settings.Volume;
-                        audio.clip = weeClip;
-                        audio.Play();
-                    }
-
                     if (fish != null)
                     {
+                        if (settings.PlayWee && weeClip != null)
+                        {
+                            PlayClip(weeClip, settings.WeeVolume, true, fish.transform);
+                        }
                         __instance.GetType().GetField("curFish", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(__instance, fish);
                         origPos = (__instance.GetType().GetField("curFish", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(__instance) as Fish_t).gameObject.transform.position;
                         flatPos = origPos;
@@ -252,6 +249,43 @@ namespace HereFishy
                 });
 
                 return false;
+            }
+
+            private static void PlayClip(AudioClip clip, float volume, bool voice_3d, Transform trans = null)
+            {
+                if(AudioPlayer.Self == null)
+                {
+                    Dbgl("audio player is null");
+                    return;
+                }
+
+                AudioSource[] sources = (AudioSource[])typeof(AudioPlayer).GetField("voices", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(AudioPlayer.Self);
+                AudioSource audioSource = null;
+                for (int i = 0; i < sources.Length; i++)
+                {
+                    if (!sources[i].isPlaying)
+                    {
+                        audioSource = sources[i];
+                        break;
+                    }
+                }
+                if (audioSource == null)
+                {
+                    audioSource = sources[0];
+                }
+                audioSource.volume = Mathf.Clamp(volume, 0.1f, 1f);
+                audioSource.clip = clip;
+                audioSource.loop = false;
+                audioSource.spatialBlend = ((!voice_3d) ? 0f : 1f);
+                audioSource.Play();
+                if (voice_3d && trans != null)
+                {
+                    audioSource.transform.position = trans.position;
+                }
+                else
+                {
+                    audioSource.transform.localPosition = Vector3.zero;
+                }
             }
 
             private static IEnumerator FishJump(FishingSystem_t instance)

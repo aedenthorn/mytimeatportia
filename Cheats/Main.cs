@@ -5,10 +5,12 @@ using Pathea;
 using Pathea.ActorNs;
 using Pathea.AppearNs;
 using Pathea.BlackBoardNs;
+using Pathea.ConfigNs;
 using Pathea.DungeonModuleNs;
 using Pathea.FavorSystemNs;
 using Pathea.GuildRanking;
 using Pathea.HomeViewerNs;
+using Pathea.ItemBoxNs;
 using Pathea.ItemSystem;
 using Pathea.Missions;
 using Pathea.ModuleNs;
@@ -101,8 +103,57 @@ namespace Cheats
 
         private static bool noclip = false;
 
+        private static ItemBox CreateTreasure(Transform point, string prefabPath, int rewardId, bool playActorAnim, float scale)
+        {
+            GameObject gameObject = Singleton<ResMgr>.Instance.LoadSyncByType<GameObject>(AssetType.Mission, prefabPath);
+            if (gameObject == null)
+            {
+                return null;
+            }
+            GameObject gameObject2 = UnityEngine.Object.Instantiate<GameObject>(gameObject);
+
+            Transform mItemBoxRoot = new GameObject("ItemBox").transform;
+            mItemBoxRoot.parent = TransRoot.self.transform;
+            mItemBoxRoot.localPosition = Vector3.zero;
+
+            gameObject2.transform.parent = mItemBoxRoot;
+            ItemBox component = gameObject2.GetComponent<ItemBox>();
+            if (component == null)
+            {
+                Dbgl("item box is null!");
+                return null;
+            }
+            Dbgl("Spawning chest!");
+            component.name += "_cheat_a";
+            component.path = prefabPath;
+            component.SetItems(rewardId, playActorAnim, scale);
+            component.gamePos = point.position;
+            component.transform.position = point.position;
+            component.transform.rotation = point.rotation;
+            return component;
+        }
         private static void OnUpdate(UnityModManager.ModEntry arg1, float arg2)
         {
+            if (Input.GetKeyDown(","))
+            {
+                float scale = 1f;
+                int rewardId = 6601;
+
+
+                CreateTreasure(Player.Self.actor.transform, OtherConfig.Self.UnlimitedRewardBox[3], rewardId, false, scale);
+            }
+            return;
+            if (Input.GetKeyDown(","))
+            {
+                GameObject[] gos = SceneManager.GetActiveScene().GetRootGameObjects();
+                string output = "";
+                foreach(GameObject go in gos)
+                {
+                    output += $"GO: {go.name} {go.transform.position}\r\n";
+                }
+                Dbgl(output);
+                //lUnityEngine.Object.Instantiate
+            }
             return;
             if (Input.GetKeyDown(",") && Module<Player>.Self.actor != null)
             {
@@ -217,6 +268,7 @@ namespace Cheats
                 Module<Player>.Self.bag.AddItem(ItemObject.CreateItem(8020009, 1), true);
             }
         }
+
 
         private static void OnLoadGame()
         {

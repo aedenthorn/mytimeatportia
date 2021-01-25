@@ -24,6 +24,7 @@ using Pathea.ModuleNs;
 using Pathea.NpcInstanceNs;
 using Pathea.OptionNs;
 using Pathea.RiderNs;
+using Pathea.ScenarioInfo;
 using Pathea.ScenarioNs;
 using Pathea.StageNs;
 using Pathea.SwitchNs;
@@ -116,12 +117,12 @@ namespace Cheats
             }
         }
         
-        [HarmonyPatch(typeof(SpawnPoint), "Respawn")]
-        static class respawn_Patch
+        //[HarmonyPatch(typeof(PMChest), "Awake")]
+        static class chest_Patch
         {
-            static void Prefix()
+            static void Postfix(SkinnedMeshRenderer ___render)
             {
-                Dbgl("Respawning");
+                Dbgl($"render: {___render.name} {___render.material.mainTexture.name}");
 
             }
         }
