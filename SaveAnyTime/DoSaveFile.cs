@@ -3,7 +3,6 @@ using Hont;
 using Pathea;
 using Pathea.ActorNs;
 using Pathea.ArchiveNs;
-using Pathea.CameraSystemNs;
 using Pathea.HomeNs;
 using Pathea.ModuleNs;
 using Pathea.NpcRepositoryNs;

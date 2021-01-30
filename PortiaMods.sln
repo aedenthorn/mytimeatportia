@@ -147,6 +147,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NameTweaks", "NameTweaks\Na
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Chests", "Chests\Chests.csproj", "{4DFE4E02-5DB8-4C28-B874-48EEA5C8D021}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EnhancedRomanceChance", "EnhancedRomanceChance\EnhancedRomanceChance.csproj", "{3DCE8512-F3D8-4745-9CE1-09302B366369}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -441,6 +443,10 @@ Global
 		{4DFE4E02-5DB8-4C28-B874-48EEA5C8D021}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4DFE4E02-5DB8-4C28-B874-48EEA5C8D021}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4DFE4E02-5DB8-4C28-B874-48EEA5C8D021}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3DCE8512-F3D8-4745-9CE1-09302B366369}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3DCE8512-F3D8-4745-9CE1-09302B366369}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3DCE8512-F3D8-4745-9CE1-09302B366369}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3DCE8512-F3D8-4745-9CE1-09302B366369}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

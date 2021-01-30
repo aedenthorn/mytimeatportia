@@ -1,4 +1,5 @@
 ﻿using Harmony12;
+using Pathea;
 using Pathea.ActorNs;
 using Pathea.AppearNs;
 using Pathea.HomeNs;
@@ -97,17 +98,17 @@ namespace CustomTextures
         [HarmonyPatch(typeof(AppearTarget), "BuildMesh", new Type[] { typeof(List<AppearUnit>), typeof(AppearData), typeof(AppearUnit), typeof(string) })]
         static class BuildMesh1_Patch
         {
-            static void Prefix(ref List<AppearUnit> units)
+            static void Postfix(ref List<AppearUnit> units)
             {
                 //Dbgl($"Building player mesh");
 
                 if (!enabled)
                     return;
-
                 for (int i = 0; i < units.Count; i++)
                 {
                     string name = units[i].name;
                     Dbgl($"appear part name: {name}");
+
                     if (units[i].Smr != null)
                     {
 
@@ -115,6 +116,16 @@ namespace CustomTextures
                         {
                             Dbgl($"Changing texture for {name}");
                             units[i].Smr.material.mainTexture = customTexturesMisc[name];
+                        }
+                        if (units[i].Smr.material.HasProperty("_Brightness") && customTexturesMisc.ContainsKey($"{name}_Brightness"))
+                        {
+                            Dbgl($"Changing _Brightness texture for {name}");
+                            units[i].Smr.material.SetTexture("_Brightness", customTexturesMisc[$"{name}_Brightness"]);
+                        }
+                        if (units[i].Smr.material.HasProperty("_Mask") && customTexturesMisc.ContainsKey($"{name}_Mask"))
+                        {
+                            Dbgl($"Changing _Mask texture for {name}");
+                            units[i].Smr.material.SetTexture("_Mask", customTexturesMisc[$"{name}_Mask"]);
                         }
                     }
                 }

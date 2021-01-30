@@ -250,13 +250,28 @@ namespace CustomTextures
                     SkinnedMeshRenderer mr = (SkinnedMeshRenderer)typeof(BlinkController).GetField("_mesh", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(bc);
                     if(mr != null)
                     {
-                        string name = mr.name;
+                        Dbgl($"Blink controller name: {mr.name} - use 'Blink_{mr.name}'");
+                        string name = $"Blink_{mr.name}";
                         if (customTexturesMisc.ContainsKey(name) && mr.material && mr.material.HasProperty("_MainTex") && mr.material.mainTexture != null)
                         {
-                            Dbgl($"Changing texture for {name}");
+                            Dbgl($"Changing _MainTex texture for {name}");
                             Texture2D tex = customTexturesMisc[name];
                             tex.name = $"{name}.png";
                             mr.material.mainTexture = tex;
+                        }
+                        if (customTexturesMisc.ContainsKey($"{name}_Brightness") && mr.material && mr.material.HasProperty("_Brightness") && mr.material.mainTexture != null)
+                        {
+                            Dbgl($"Changing _Brightness texture for {name}");
+                            Texture2D tex = customTexturesMisc[$"{name}_Brightness"];
+                            tex.name = $"{name}_Brightness.png";
+                            mr.material.SetTexture($"{name}_Brightness", tex);
+                        }
+                        if (customTexturesMisc.ContainsKey($"{name}_Mask") && mr.material && mr.material.HasProperty("_Mask") && mr.material.mainTexture != null)
+                        {
+                            Dbgl($"Changing _Mask texture for {name}");
+                            Texture2D tex = customTexturesMisc[$"{name}_Mask"];
+                            tex.name = $"{name}_Mask.png";
+                            mr.material.SetTexture($"{name}_Mask", tex);
                         }
                     }
                 }
