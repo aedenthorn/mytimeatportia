@@ -52,7 +52,7 @@
 		{"Id": "PlantMod", "Version": "0.3.0"},
 		{"Id": "PostProcessing", "Version": "0.2.0"},
 		{"Id": "Regeneration", "Version": "0.1.0"},
-		{"Id": "RelationManager", "Version": "0.1.1"},
+		{"Id": "RelationManager", "Version": "0.2.0"},
 		{"Id": "SaveAnyTime", "Version": "0.10.1"},
 		{"Id": "ShippingBin", "Version": "0.2.1"},
 		{"Id": "SkillLimit", "Version": "0.1.0"},
