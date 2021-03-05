@@ -21,7 +21,6 @@ namespace CookingMachine
     {
         public static bool enabled;
         private static bool isDebug = false;
-        private static List<int> crash;
         private static CompoundItemData templateData;
 
         public static void Dbgl(string str = "", bool pref = true)

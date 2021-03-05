@@ -111,7 +111,7 @@ namespace StorageSize
                         break;
                     case 2:
                     case -1:
-                        count = settings.MetalStorageSize;
+                        count = settings.SafetyBoxSize;
                         break;
                     default:
                         return;
@@ -144,7 +144,7 @@ namespace StorageSize
                         break;
                     case 2:
                     case -1:
-                        lcount = settings.MetalStorageSize;
+                        lcount = settings.SafetyBoxSize;
                         break;
                     default:
                         return true;

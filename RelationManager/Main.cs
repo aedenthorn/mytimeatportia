@@ -61,6 +61,8 @@ namespace RelationManager
 		private static void OnGUI(UnityModManager.ModEntry modEntry)
 		{
 			float infoBoxWidth = (typeof(UnityModManager).GetProperty("Params", BindingFlags.Static | BindingFlags.NonPublic).GetValue(null, new object[] { }) as UnityModManager.Param).WindowWidth * 0.9f;
+			if (infoBoxWidth == 0)
+				infoBoxWidth = 960;
 
 			float buttonWidthShort = infoBoxWidth / 7f;
 
@@ -200,6 +202,7 @@ namespace RelationManager
 			}
 			GUILayout.EndHorizontal();
 			GUILayout.Space(10);
+			
 			GUILayout.BeginHorizontal(new GUILayoutOption[0]);
 			if (GUILayout.Button("Love", new GUILayoutOption[]
 			{

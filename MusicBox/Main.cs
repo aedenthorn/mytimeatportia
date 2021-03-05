@@ -1,7 +1,6 @@
 ﻿using Harmony12;
 using Pathea;
 using Pathea.AudioNs;
-using Pathea.ModuleNs;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;

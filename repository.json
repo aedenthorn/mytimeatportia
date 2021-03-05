@@ -57,7 +57,7 @@
 		{"Id": "ShippingBin", "Version": "0.2.1"},
 		{"Id": "SkillLimit", "Version": "0.1.0"},
 		{"Id": "StorageAnywhere", "Version": "0.6.0"},
-		{"Id": "StorageSize", "Version": "0.1.1"},
+		{"Id": "StorageSize", "Version": "0.1.2"},
 		{"Id": "Swim", "Version": "0.2.1"},
 		{"Id": "Teleport", "Version": "0.3.1"},
 		{"Id": "Television", "Version": "0.1.0"},
