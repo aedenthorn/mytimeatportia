@@ -473,6 +473,8 @@ namespace InventoryGiftHighlights
 
                     if ((settings.ShowOnlyKnown && !giftHistory.Contains(___allGiftItem[num2].ItemBase.ID)))
                     {
+                        ss.highlightedSprite = ___normalBg;
+                        ss.pressedSprite = ___normalBg;
                         continue;
                     }
 
