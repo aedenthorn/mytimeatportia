@@ -61,7 +61,29 @@ namespace CustomMerch
                             for (int i = 0; i < jsonRoot.Count; i++)
                             {
                                 JSONNode jsonNode = jsonRoot[i];
-                                storeItems.Add(new StoreItem(jsonNode["ID"].AsInt, productIds++, jsonNode["count"].AsInt, jsonNode["currency"].AsInt, jsonNode["requireMission"], jsonNode["storeId"].AsInt, jsonNode["chance"].AsFloat));
+
+                                int count = 1;
+                                if (jsonNode["count"] != null)
+                                    count = jsonNode["count"].AsInt;
+
+                                int currency = -1;
+                                if (jsonNode["currency"] != null)
+                                    currency = jsonNode["currency"].AsInt;
+
+                                string exchange = "-1";
+                                if (jsonNode["exchange"] != null)
+                                    exchange = jsonNode["exchange"];
+
+                                string requireMission = "-1";
+                                if (jsonNode["requireMission"] != null)
+                                    requireMission = jsonNode["requireMission"];
+
+                                float chance = 1f;
+                                if (jsonNode["chance"] != null)
+                                    chance = jsonNode["chance"].AsFloat;
+
+                                Dbgl($"add from json: {jsonNode["ID"]} as productIds={productIds} to store={jsonNode["storeId"]} with count={count} price {exchange} @ {currency}, chance={chance}, requireMission={requireMission}");
+                                storeItems.Add(new StoreItem(jsonNode["ID"].AsInt, productIds++, count, currency, exchange, requireMission, jsonNode["storeId"].AsInt, chance));
                             }
                         }
                     }

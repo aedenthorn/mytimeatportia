@@ -190,7 +190,7 @@ namespace CustomMerch
 
                     ___equipmentDataList.Add(equipConf);
 
-                    storeItems.Add(new StoreItem(itemIds, productIds++, 1, -1, "-1", item.storeId, item.chance));
+                    storeItems.Add(new StoreItem(itemIds, productIds++, 1, -1, "-1", "-1", item.storeId, item.chance));
 
                     itemIds++;
                     nameIds += 4;
