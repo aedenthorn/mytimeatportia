@@ -2,6 +2,7 @@
 using Pathea.FarmFactoryNs;
 using Pathea.HomeNs;
 using Pathea.ModuleNs;
+using System;
 using System.Reflection;
 using UnityEngine;
 using UnityModManagerNet;
@@ -13,6 +14,7 @@ namespace ConnectedFactoryStorage
         public static Settings settings { get; private set; }
 
         public static bool enabled;
+        public static bool inFactory = false;
 
         private static readonly bool isDebug = false;
 
@@ -50,12 +52,25 @@ namespace ConnectedFactoryStorage
         }
 
 
+        [HarmonyPatch(typeof(FarmFactoryProductUICtr), nameof(FarmFactoryProductUICtr.ChangePage), new Type[] { typeof(int), typeof(bool) })]
+        static class FarmFactoryProductUICtr_ChangePage_Patch
+        {
+            static void Prefix()
+            {
+                inFactory = true;
+            }
+            static void Postfix()
+            {
+                inFactory = false;
+            }
+        }
+
         [HarmonyPatch(typeof(HomeModule), nameof(HomeModule.GetItemCount))]
         static class HomeModule_GetItemCount_Patch
         {
             static void Postfix(ref int __result, int itemId)
             {
-                if (!enabled)
+                if (!enabled || inFactory)
                     return;
 
                 FarmFactory factory = Module<FarmFactoryMgr>.Self.GetFactory(1000);
