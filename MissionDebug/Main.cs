@@ -101,6 +101,7 @@ namespace MissionDebug
                 if (GUILayout.Button(mi.MissionId+" x", new GUILayoutOption[0]))
                 {
                     Module<MissionManager>.Self.RemoveActiveMission(mi.MissionId);
+                    break;
                 }
             }
             GUILayout.EndVertical();
@@ -113,7 +114,7 @@ namespace MissionDebug
                 if (GUILayout.Button(mi.MissionId + " x", new GUILayoutOption[0]))
                 {
                     AccessTools.FieldRefAccess<MissionManager, List<Mission>>(Module<MissionManager>.Self, "m_missions_Running").RemoveAll((Mission it) =>  it.InstanceID == mi.InstanceID);
-                    
+                    break;
                 }
             }
             GUILayout.EndVertical();
@@ -126,7 +127,7 @@ namespace MissionDebug
                 if (GUILayout.Button(mi.MissionId + " x", new GUILayoutOption[0]))
                 {
                     AccessTools.FieldRefAccess<MissionManager, List<Mission>>(Module<MissionManager>.Self, "m_missions_End").RemoveAll((Mission it) => it.InstanceID == mi.InstanceID);
-
+                    break;
                 }
             }
             GUILayout.EndVertical();
