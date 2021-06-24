@@ -12,6 +12,7 @@ namespace StorageAnywhere
         public string NextStorageKey { get; set; } = "s";
         public string PrevPageKey { get; set; } = "a";
         public string NextPageKey { get; set; } = "d";
+        public int FactoryStorageSize { get; set; } = 300;
 
         public override void Save(UnityModManager.ModEntry modEntry)
         {

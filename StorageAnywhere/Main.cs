@@ -43,7 +43,6 @@ namespace StorageAnywhere
             var harmony = HarmonyInstance.Create(modEntry.Info.Id);
             harmony.PatchAll(Assembly.GetExecutingAssembly());
 
-            return;
         }
 
         // Called when the mod is turned to on/off.
@@ -61,27 +60,27 @@ namespace StorageAnywhere
         {
             GUILayout.Label("<b>Itembar Switch Key:</b>", new GUILayoutOption[0]);
             settings.ItemBarSwitchKey = GUILayout.TextField(settings.ItemBarSwitchKey, new GUILayoutOption[0]);
-            GUILayout.Space(20);
+            GUILayout.Space(10);
             GUILayout.Label("<b>Open Storage Key:</b>", new GUILayoutOption[0]);
             settings.OpenStorageKey = GUILayout.TextField(settings.OpenStorageKey, new GUILayoutOption[0]);
-            GUILayout.Space(20);
+            GUILayout.Space(10);
             GUILayout.Label("<b>Open Factory Storage Key:</b>", new GUILayoutOption[0]);
             settings.OpenFactoryKey = GUILayout.TextField(settings.OpenFactoryKey, new GUILayoutOption[0]);
-            GUILayout.Space(20);
+            GUILayout.Space(10);
             GUILayout.Label("<b>Switch to Prev Storage Key:</b>", new GUILayoutOption[0]);
             settings.PrevStorageKey = GUILayout.TextField(settings.PrevStorageKey, new GUILayoutOption[0]);
-            GUILayout.Space(20);
+            GUILayout.Space(10);
             GUILayout.Label("<b>Switch to Next Storage Key:</b>", new GUILayoutOption[0]);
             settings.NextStorageKey = GUILayout.TextField(settings.NextStorageKey, new GUILayoutOption[0]);
-            GUILayout.Space(20);
+            GUILayout.Space(10);
             GUILayout.Label("<b>Last Page Key:</b>", new GUILayoutOption[0]);
             settings.PrevPageKey = GUILayout.TextField(settings.PrevPageKey, new GUILayoutOption[0]);
             GUILayout.Label("Use shift to change storage page", new GUILayoutOption[0]);
-            GUILayout.Space(20);
+            GUILayout.Space(10);
             GUILayout.Label("<b>Next Page Key:</b>", new GUILayoutOption[0]);
             settings.NextPageKey = GUILayout.TextField(settings.NextPageKey, new GUILayoutOption[0]);
             GUILayout.Label("Use shift to change storage page", new GUILayoutOption[0]);
-
+            GUILayout.Space(20);
         }
         static bool KeyDown(string key)
         {
