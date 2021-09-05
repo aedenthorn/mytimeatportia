@@ -37,6 +37,7 @@ namespace CustomMerch
                     return;
                 foreach(StoreItem item in storeItems)
                 {
+                    Dbgl("product "+item?.productId+"");
                     StoreProductData spdata = new StoreProductData()
                     {
                         productId = item.productId,

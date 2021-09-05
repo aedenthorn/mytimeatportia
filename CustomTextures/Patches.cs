@@ -127,6 +127,27 @@ namespace CustomTextures
                             Dbgl($"Changing _Mask texture for {name}");
                             units[i].Smr.material.SetTexture("_Mask", customTexturesMisc[$"{name}_Mask"]);
                         }
+                        if(units[i].Smr.materials?.Length > 1)
+                        {
+                            for(int j = 0; j < units[i].Smr.materials.Length; j++)
+                            {
+                                if (units[i].Smr.materials[j].HasProperty("_MainTex") && customTexturesMisc.ContainsKey(name+"_"+j))
+                                {
+                                    Dbgl($"Changing texture for {name}_{j}");
+                                    units[i].Smr.materials[j].mainTexture = customTexturesMisc[name + "_" + j];
+                                }
+                                if (units[i].Smr.materials[j].HasProperty("_Brightness") && customTexturesMisc.ContainsKey($"{name}_{j}_Brightness"))
+                                {
+                                    Dbgl($"Changing _Brightness texture for {name}_{j}");
+                                    units[i].Smr.materials[j].SetTexture("_Brightness", customTexturesMisc[$"{name}_{j}_Brightness"]);
+                                }
+                                if (units[i].Smr.materials[j].HasProperty("_Mask") && customTexturesMisc.ContainsKey($"{name}_{j}_Mask"))
+                                {
+                                    Dbgl($"Changing _Mask texture for {name}_{j}");
+                                    units[i].Smr.materials[j].SetTexture("_Mask", customTexturesMisc[$"{name}_{j}_Mask"]);
+                                }
+                            }
+                        }
                     }
                 }
             }

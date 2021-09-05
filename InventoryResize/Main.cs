@@ -86,5 +86,6 @@ namespace InventoryResize
                 Module<Player>.Self.bag.UnlockSlotByRow(500, false);
             }
         }
+
     }
 }

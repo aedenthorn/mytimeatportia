@@ -339,7 +339,22 @@ namespace CustomTextures
 
                 foreach (MeshRenderer mr in mrs)
                 {
-                    if (mr.material && mr.material.HasProperty("_MainTex") && mr.material.mainTexture != null)
+                    if (mr.materials?.Length > 1)
+                    {
+                        for(int i = 0; i < mr.materials.Length; i++)
+                        {
+                            if(mr.materials[i] && mr.material.HasProperty("_MainTex") && mr.material.mainTexture != null)
+                            {
+                                string mt = $"mesh name: {mr.name} material {i} texture name: {mr.materials[i].mainTexture.name}";
+                                if (!meshTextures.Contains(mt))
+                                {
+                                    meshTextures.Add(mt);
+                                }
+                            }
+                        }
+
+                    }
+                    else if (mr.material && mr.material.HasProperty("_MainTex") && mr.material.mainTexture != null)
                     {
                         string mt = $"mesh name: {mr.name} texture name: {mr.material.mainTexture.name}";
                         if (!meshTextures.Contains(mt))
@@ -354,7 +369,22 @@ namespace CustomTextures
 
                 foreach (SkinnedMeshRenderer mr in smrs)
                 {
-                    if (mr.material && mr.material.HasProperty("_MainTex") && mr.material.mainTexture != null)
+                    if (mr.materials?.Length > 1)
+                    {
+                        for (int i = 0; i < mr.materials.Length; i++)
+                        {
+                            if (mr.materials[i] && mr.material.HasProperty("_MainTex") && mr.material.mainTexture != null)
+                            {
+                                string mt = $"mesh name: {mr.name} material {i} texture name: {mr.materials[i].mainTexture.name}";
+                                if (!meshTextures.Contains(mt))
+                                {
+                                    meshTextures.Add(mt);
+                                }
+                            }
+                        }
+
+                    }
+                    else if (mr.material && mr.material.HasProperty("_MainTex") && mr.material.mainTexture != null)
                     {
                         string mt = $"smesh name: {mr.name} texture name: {mr.material.mainTexture.name}";
                         if (!meshTextures.Contains(mt))

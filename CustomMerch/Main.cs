@@ -13,11 +13,11 @@ namespace CustomMerch
 {
     public partial class Main
     {
-        private static bool isDebug = false;
+        private static bool isDebug = true;
 
         public static void Dbgl(string str = "", bool pref = true)
         {
-            if (isDebug)
+            if (settings.isDebug)
                 Debug.Log((pref ? "CustomMerch " : "") + str);
         }
         public static bool enabled;
@@ -102,6 +102,8 @@ namespace CustomMerch
 
         private static void OnGUI(UnityModManager.ModEntry modEntry)
         {
+            settings.isDebug = GUILayout.Toggle(settings.isDebug, "Enable debug logs", new GUILayoutOption[0]);
+
         }
 
         // Called when the mod is turned to on/off.
