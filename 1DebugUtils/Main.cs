@@ -9,7 +9,7 @@ using System.Threading;
 using UnityEngine;
 using UnityModManagerNet;
 
-namespace DebugUtils
+namespace FieldOfView
 {
     public class Main
     {

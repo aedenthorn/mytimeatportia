@@ -1,6 +1,6 @@
 ﻿using UnityModManagerNet;
 
-namespace DebugUtils
+namespace FieldOfView
 {
     public class Settings : UnityModManager.ModSettings
     {

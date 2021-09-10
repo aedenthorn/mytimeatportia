@@ -5,6 +5,7 @@ using Pathea;
 using Pathea.ActorNs;
 using Pathea.AppearNs;
 using Pathea.BlackBoardNs;
+using Pathea.CameraSystemNs;
 using Pathea.ConfigNs;
 using Pathea.DungeonModuleNs;
 using Pathea.FavorSystemNs;
@@ -132,6 +133,7 @@ namespace Cheats
             component.transform.rotation = point.rotation;
             return component;
         }
+        private static float fov = 45;
         private static void OnUpdate(UnityModManager.ModEntry arg1, float arg2)
         {
             if (Input.GetKeyDown(","))

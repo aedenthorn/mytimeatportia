@@ -149,7 +149,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Chests", "Chests\Chests.csp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EnhancedRomanceChance", "EnhancedRomanceChance\EnhancedRomanceChance.csproj", "{3DCE8512-F3D8-4745-9CE1-09302B366369}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FactoryStorageSize", "FactoryStorageSize\FactoryStorageSize.csproj", "{DABF37E7-DE0A-4FD6-8D01-A0AD2459F445}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FactoryStorageSize", "FactoryStorageSize\FactoryStorageSize.csproj", "{DABF37E7-DE0A-4FD6-8D01-A0AD2459F445}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FieldOfView", "FieldOfView\FieldOfView.csproj", "{78A794C6-0D3E-4ECA-98DD-4D0F65F46DBA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -453,6 +455,10 @@ Global
 		{DABF37E7-DE0A-4FD6-8D01-A0AD2459F445}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DABF37E7-DE0A-4FD6-8D01-A0AD2459F445}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DABF37E7-DE0A-4FD6-8D01-A0AD2459F445}.Release|Any CPU.Build.0 = Release|Any CPU
+		{78A794C6-0D3E-4ECA-98DD-4D0F65F46DBA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{78A794C6-0D3E-4ECA-98DD-4D0F65F46DBA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{78A794C6-0D3E-4ECA-98DD-4D0F65F46DBA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{78A794C6-0D3E-4ECA-98DD-4D0F65F46DBA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
