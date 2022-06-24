@@ -61,19 +61,33 @@ namespace YourTime
                 }
                 else if (KeyDown(settings.SubtractTimeKey))
                 {
-                    GameDateTime dt = TimeManager.Self.DateTime.AddSeconds(-60 * 60);
-                    GameTimeSpan t = dt - TimeManager.Self.DateTime;
+                    GameDateTime dt;
+                    if (KeyHeld(settings.DayModKey))
+                        dt = TimeManager.Self.DateTime.AddDays(-1);
+                    else if (KeyHeld(settings.MonthModKey))
+                        dt = TimeManager.Self.DateTime.AddMonths(-1);
+                    else if (KeyHeld(settings.YearModKey))
+                        dt = TimeManager.Self.DateTime.AddYears(-1);
+                    else
+                        dt = TimeManager.Self.DateTime.AddSeconds(-60 * 60);
                     TimeManager.Self.SetDateTime(dt, true, TimeManager.JumpingType.Max);
                 }
                 else if (KeyDown(settings.AdvanceTimeKey))
                 {
-                    TimeManager.Self.JumpTimeByGameTime(60 * 60);
+                    if (KeyHeld(settings.DayModKey))
+                        TimeManager.Self.JumpTimeByGameTime(60 * 60 * 24);
+                    else if (KeyHeld(settings.MonthModKey))
+                        TimeManager.Self.JumpTimeByGameTime(60 * 60 * 24 * 28);
+                    else if (KeyHeld(settings.YearModKey))
+                        TimeManager.Self.JumpTimeByGameTime(60 * 60 * 24 * 28 * 4);
+                    else
+                        TimeManager.Self.JumpTimeByGameTime(60 * 60);
                 }
                 else if (KeyDown(settings.SlowTimeKey))
                 {
                     if (settings.TimeScaleModifier > 0.1f)
                     {
-                        if (Input.GetKey("left shift"))
+                        if (KeyHeld(settings.SpeedModKey))
                         {
                             settings.TimeScaleModifier = Math.Max(0.1f,(float)Math.Round(settings.TimeScaleModifier - 1f));
                         }
@@ -93,7 +107,7 @@ namespace YourTime
                 {
                     if (settings.TimeScaleModifier < 10.0f)
                     {
-                        if (Input.GetKey("left shift"))
+                        if (KeyHeld(settings.SpeedModKey))
                         {
                             settings.TimeScaleModifier = Math.Min(10f, (float)Math.Round(settings.TimeScaleModifier + 1f));
                         }
