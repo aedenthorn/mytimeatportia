@@ -4,3 +4,4 @@ Properties/
 /copyDll.bat
 /external3
 /solution_private.targets
+.fake
