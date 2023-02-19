@@ -5,10 +5,6 @@ namespace YourTime
     public class Settings : UnityModManager.ModSettings
     {
         public float TimeScaleModifier { get; set; } = 0.5f;
-        public string SpeedModKey { get; set; } = "left shift";
-        public string DayModKey { get; set; } = "left shift";
-        public string MonthModKey { get; set; } = "left ctrl";
-        public string YearModKey { get; set; } = "left alt";
         public string StopTimeKey { get; set; } = "\\";
         public string SubtractTimeKey { get; set; } = "-";
         public string AdvanceTimeKey { get; set; } = "=";

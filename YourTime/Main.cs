@@ -50,18 +50,6 @@ namespace YourTime
             GUILayout.Label(string.Format("Key to Go Forward One Hour"), new GUILayoutOption[0]);
             settings.AdvanceTimeKey = GUILayout.TextField(settings.AdvanceTimeKey, new GUILayoutOption[0]);
             GUILayout.Space(20);
-            GUILayout.Label(string.Format("Mod Key for quicker time speed adjustment"), new GUILayoutOption[0]);
-            settings.SpeedModKey = GUILayout.TextField(settings.SpeedModKey, new GUILayoutOption[0]);
-            GUILayout.Space(20);
-            GUILayout.Label(string.Format("Mod Key to switch to days"), new GUILayoutOption[0]);
-            settings.DayModKey = GUILayout.TextField(settings.DayModKey, new GUILayoutOption[0]);
-            GUILayout.Space(20);
-            GUILayout.Label(string.Format("Mod Key to switch to months"), new GUILayoutOption[0]);
-            settings.MonthModKey = GUILayout.TextField(settings.MonthModKey, new GUILayoutOption[0]);
-            GUILayout.Space(20);
-            GUILayout.Label(string.Format("Mod Key to switch to years"), new GUILayoutOption[0]);
-            settings.YearModKey = GUILayout.TextField(settings.YearModKey, new GUILayoutOption[0]);
-            GUILayout.Space(20);
 
         }
 
@@ -77,17 +65,6 @@ namespace YourTime
             try
             {
                 return (Input.GetKeyDown(key));
-            }
-            catch{
-                return false;
-            }
-        }
-
-        static bool KeyHeld(string key)
-        {
-            try
-            {
-                return (Input.GetKey(key));
             }
             catch{
                 return false;
