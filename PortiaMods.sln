@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29806.167
+# Visual Studio Version 17
+VisualStudioVersion = 17.6.33723.286
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InstantActions", "InstantActions\InstantActions.csproj", "{A7866CDF-C252-4823-9F06-73B08DC9F04C}"
 EndProject
@@ -77,7 +77,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomMerch", "CustomMerch\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenDungeons", "OpenDungeons\OpenDungeons.csproj", "{EE0D6BD7-1FA5-46E5-AF10-E4225E88BE3A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PostProcessing", "PostProcessing\PostProcessing.csproj", "{5AD3331E-8F85-4E91-96F0-C65972137ADA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PostProcessing", "PostProcessing\PostProcessing.csproj", "{5AD3331E-8F85-4E91-96F0-C65972137ADA}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomQuests", "CustomQuests\CustomQuests.csproj", "{06F79FB4-D84F-4C73-B804-D3D4A4813BE3}"
 EndProject
@@ -152,6 +152,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FactoryStorageSize", "FactoryStorageSize\FactoryStorageSize.csproj", "{DABF37E7-DE0A-4FD6-8D01-A0AD2459F445}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FieldOfView", "FieldOfView\FieldOfView.csproj", "{78A794C6-0D3E-4ECA-98DD-4D0F65F46DBA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProductionTimeMod", "ProductionTimeMod\ProductionTimeMod.csproj", "{249E17F2-2DAB-4585-B515-BFDBC53187F9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -459,6 +461,10 @@ Global
 		{78A794C6-0D3E-4ECA-98DD-4D0F65F46DBA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{78A794C6-0D3E-4ECA-98DD-4D0F65F46DBA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{78A794C6-0D3E-4ECA-98DD-4D0F65F46DBA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{249E17F2-2DAB-4585-B515-BFDBC53187F9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{249E17F2-2DAB-4585-B515-BFDBC53187F9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{249E17F2-2DAB-4585-B515-BFDBC53187F9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{249E17F2-2DAB-4585-B515-BFDBC53187F9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

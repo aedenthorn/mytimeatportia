@@ -1,0 +1,10 @@
+﻿{
+  "Id": "ProductionTimeMod",
+  "DisplayName": "Production Time Mod",
+  "Author": "aedenthorn",
+  "Version": "0.1.0",
+  "AssemblyName": "ProductionTimeMod.dll",
+  "EntryMethod": "ProductionTimeMod.Main.Load",
+  "HomePage": "https://www.nexusmods.com/mytimeatportia/mods/168",
+  "Repository": "https://raw.githubusercontent.com/aedenthorn/mytimeatportia/master/repository.json"
+}
