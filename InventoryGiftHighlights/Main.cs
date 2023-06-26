@@ -35,7 +35,8 @@ namespace InventoryGiftHighlights
         private static Sprite likes;
         private static Sprite loves;
         private static Sprite bkgs;
-
+        private static Sprite highlightedSprite;
+        private static Sprite pressedSprite;
         private static readonly bool isDebug = true;
 
         public static void Dbgl(string str = "", bool pref = true)
@@ -444,11 +445,12 @@ namespace InventoryGiftHighlights
 
                 gridIconWithNum.selectableBg.image.sprite = ___normalBg;
                 SpriteState ss = gridIconWithNum.selectableBg.spriteState;
-                ss.highlightedSprite = bkgs;
-                ss.pressedSprite = bkgs;
+                ss.highlightedSprite = highlightedSprite;
+                ss.pressedSprite = pressedSprite;
                 gridIconWithNum.selectableBg.spriteState = ss;
             }
         }
+
         static void Update_Gifts(ref GridPage ___page, List<ItemObject> ___allGiftItem, Actor ___targetActor, Sprite ___normalBg, Sprite ___wantedBg, int ___curItemIndex, WishItemData ___wishData)
         {
             ReloadTextures();
@@ -461,26 +463,32 @@ namespace InventoryGiftHighlights
                 int num2 = i + num;
                 GridIconWithNum gridIconWithNum = ___page.allIcons[i] as GridIconWithNum;
                 SpriteState ss = gridIconWithNum.selectableBg.spriteState;
+                if (highlightedSprite is null)
+                {
+                    highlightedSprite = ss.highlightedSprite;
+                    pressedSprite = ss.pressedSprite;
+                }
                 if (num2 < ___allGiftItem.Count)
                 {
                     if (___wishData != null && ___wishData.ItemId == ___allGiftItem[num2].ItemDataId)
                     {
-                        Sprite sprite = ___wantedBg;
-                        gridIconWithNum.selectableBg.image.sprite = sprite;
+                        gridIconWithNum.selectableBg.image.sprite = ___wantedBg;
                         gridIconWithNum.Enable();
                         continue;
                     }
+                    //Dbgl($"num2 {num2} curItemIndex {___curItemIndex} i {i}");
 
                     if ((settings.ShowOnlyKnown && !giftHistory.Contains(___allGiftItem[num2].ItemBase.ID)))
                     {
-                        ss.highlightedSprite = ___normalBg;
-                        ss.pressedSprite = ___normalBg;
+                        gridIconWithNum.selectableBg.image.sprite = ___normalBg;
+                        ss.highlightedSprite = highlightedSprite;
+                        ss.pressedSprite = pressedSprite;
+                        gridIconWithNum.selectableBg.spriteState = ss;
                         continue;
                     }
 
                     GiveGiftResult result = FavorUtility.GetFavorBehaviorInfo(___targetActor.InstanceId, ___allGiftItem[num2].ItemBase.ID);
 
-                    //Dbgl($"num2 {num2} curItemIndex {___curItemIndex} i {i}");
 
                     switch (result.FeeLevel)
                     {
@@ -533,8 +541,8 @@ namespace InventoryGiftHighlights
                 }
                 else
                 {
-                    ss.highlightedSprite = ___normalBg;
-                    ss.pressedSprite = ___normalBg;
+                    ss.highlightedSprite = highlightedSprite;
+                    ss.pressedSprite = pressedSprite;
                 }
                 gridIconWithNum.selectableBg.spriteState = ss;
             }
