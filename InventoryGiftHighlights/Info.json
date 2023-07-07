@@ -2,7 +2,7 @@
   "Id": "InventoryGiftHighlights",
   "DisplayName": "Inventory Gift Highlights",
   "Author": "aedenthorn",
-  "Version": "0.4.4",
+  "Version": "0.4.5",
   "AssemblyName": "InventoryGiftHighlights.dll",
   "EntryMethod": "InventoryGiftHighlights.Main.Load",
   "HomePage": "https://www.nexusmods.com/mytimeatportia/mods/108",
