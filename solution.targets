@@ -200,9 +200,9 @@
       <AllFiles Include="$(TargetDir)**\*.*" Exclude="$(TargetDir)**\*.pdb" />
     </ItemGroup>
     <Copy SourceFiles="@(AllFiles)" DestinationFolder="$(GamePath)\Mods\$(TargetName)\%(RecursiveDir)"></Copy>
-    <Copy SourceFiles="$(GamePath)\Mods\$(TargetName)\Info.json" DestinationFolder="$(TargetDir)..\Release\"></Copy>
+    <Copy SourceFiles="$(GamePath)\Mods\$(TargetName)\Info.json" DestinationFolder="$(TargetDir)..\Release\$(TargetName)\"></Copy>
     <Delete Files="$(ProjectDir)\bin\$(TargetName).zip" />
-    <Copy SourceFiles="@(AllFiles)" DestinationFolder="$(TargetDir)..\Release\%(RecursiveDir)"></Copy>
+    <Copy SourceFiles="@(AllFiles)" DestinationFolder="$(TargetDir)..\Release\$(TargetName)\%(RecursiveDir)"></Copy>
     <ZipDirectory SourceDirectory="$(TargetDir)..\Release" DestinationFile="$(ProjectDir)\bin\$(TargetName).zip" />
     <RemoveDir Directories="$(TargetDir)..\Release" />
   </Target>

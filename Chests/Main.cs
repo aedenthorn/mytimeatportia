@@ -178,7 +178,7 @@ namespace Chests
             string prefabPath;
             int rewardId = GetRewardId(r, r2, out scale, out prefabPath, level);
 
-            bool playActorAnim = Settings.PlayAnimation;
+            bool playActorAnim = settings.PlayAnimation;
 
             GameObject gameObject = Singleton<ResMgr>.Instance.LoadSyncByType<GameObject>(AssetType.Mission, prefabPath);
             if (gameObject == null)

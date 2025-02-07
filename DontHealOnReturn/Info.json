@@ -1,0 +1,10 @@
+﻿{
+  "Id": "DontHealOnReturn",
+  "DisplayName": "Dont Heal On Return",
+  "Author": "aedenthorn",
+  "Version": "0.1.0",
+  "AssemblyName": "DontHealOnReturn.dll",
+  "EntryMethod": "DontHealOnReturn.Main.Load",
+  "HomePage": "https://www.nexusmods.com/mytimeatportia/mods/",
+  "Repository": "https://raw.githubusercontent.com/aedenthorn/mytimeatportia/master/repository.json"
+}

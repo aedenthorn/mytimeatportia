@@ -1,0 +1,10 @@
+﻿{
+  "Id": "GameManager",
+  "DisplayName": "Game Manager",
+  "Author": "aedenthorn",
+  "Version": "0.1.0",
+  "AssemblyName": "GameManager.dll",
+  "EntryMethod": "GameManager.Main.Load",
+  "HomePage": "https://www.nexusmods.com/mytimeatportia/mods/106",
+  "Repository": "https://raw.githubusercontent.com/aedenthorn/mytimeatportia/master/repository.json"
+}

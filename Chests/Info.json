@@ -1,0 +1,10 @@
+﻿{
+  "Id": "Chests",
+  "DisplayName": "Chests",
+  "Author": "aedenthorn",
+  "Version": "0.1.0",
+  "AssemblyName": "Chests.dll",
+  "EntryMethod": "Chests.Main.Load",
+  "HomePage": "https://www.nexusmods.com/mytimeatportia/mods/123",
+  "Repository": "https://raw.githubusercontent.com/aedenthorn/mytimeatportia/master/repository.json"
+}
