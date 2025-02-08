@@ -72,20 +72,22 @@ namespace AssembleFromInventory
                 return false;
             }
         }
-
+        
         [HarmonyPatch(typeof(CreationPart), nameof(CreationPart.CanTrySetItem))]
         static class CreationPart_CanTrySetItem_Patch
         {
             static bool Prefix(CreationPart __instance, CPartOperation ___operationState, int ___curMaterialItemId, CreationPartData ___refData, bool ___lockInteract, ref bool __result)
             {
-                if (!enabled || ___operationState > CPartOperation.Set || ___lockInteract)
+                if (!enabled || ___operationState == CPartOperation.Replace_GetBack || ___operationState == CPartOperation.GetBack)
                     return true;
+                if (___lockInteract)
+                    return false;
                 var curMaterialItem = ___refData.materials.Find((CreationMaterialItem it) => it.id == ___curMaterialItemId);
                 foreach (CreationMaterialItem material in ___refData.materials)
                 {
-                    if (material.itemList != null && material != curMaterialItem && Module<Player>.Self.bag.CanRemoveItemList(material.itemList))
+
+                    if (Module<Player>.Self.bag.CanRemoveItemList(material.itemList))
                     {
-                        Dbgl("Allowed to try setting");
                         __result = true;
                         return false;
                     }
@@ -98,9 +100,8 @@ namespace AssembleFromInventory
         {
             static bool Prefix(CreationPart __instance, CPartOperation ___operationState, CreationPartData ___refData, ref bool __result)
             {
-                if (!enabled || ___operationState > CPartOperation.Set)
-                    return true;
-                Dbgl("Checking for setting");
+                if (!enabled || ___operationState == CPartOperation.Replace_GetBack || ___operationState == CPartOperation.GetBack)
+                    return Module<Player>.Self.HandItem != null;
                 List<CreationMaterialItem> list = ___refData?.materials;
                 if (list != null && list.Count > 0)
                 {
@@ -109,7 +110,6 @@ namespace AssembleFromInventory
                         if (list[0] != null && Module<Player>.Self.bag.CanRemoveItemList(list[0].itemList))
                         {
                             __result = (bool)AccessTools.Method(typeof(CreationPart), "SetPrefab").Invoke(__instance, new object[] { list[0] });
-                            Dbgl($"setting 1");
                             return false;
                         }
                     }
@@ -120,13 +120,12 @@ namespace AssembleFromInventory
                             if (creationMaterialItem != null && Module<Player>.Self.bag.CanRemoveItemList(creationMaterialItem.itemList))
                             {
                                 __result = (bool)AccessTools.Method(typeof(CreationPart), "SetPrefab").Invoke(__instance, new object[] { creationMaterialItem });
-                                Dbgl($"setting 2");
                                 return false;
                             }
                         }
                     }
                 }
-                return true;
+                return Module<Player>.Self.HandItem != null;
             }
         }
 

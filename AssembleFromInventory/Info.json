@@ -2,7 +2,7 @@
   "Id": "AssembleFromInventory",
   "DisplayName": "Assemble From Inventory",
   "Author": "aedenthorn",
-  "Version": "0.1.0",
+  "Version": "0.1.3",
   "AssemblyName": "AssembleFromInventory.dll",
   "EntryMethod": "AssembleFromInventory.Main.Load",
   "HomePage": "https://www.nexusmods.com/mytimeatportia/mods/175",

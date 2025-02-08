@@ -10,6 +10,7 @@ using Pathea.RiderNs;
 using Pathea.ScenarioNs;
 using Pathea.StoreNs;
 using Pathea.SummaryNs;
+using Pathea.TipsNs;
 using Pathea.WeatherNs;
 using System;
 using System.Collections.Generic;
@@ -157,6 +158,8 @@ namespace SaveAnyTime
             DoBuildSaveList();
             isSaving = false;
             resetLastSave();
+            Singleton<TipsMgr>.Instance.SendImageTip($"Game saved!", MessageUITipImageAssets.ImageType.NewCreationInBook, 0);
+
         }
     }
 }

@@ -20,7 +20,7 @@ using UnityEngine;
 using UnityModManagerNet;
 using static Harmony12.AccessTools;
 
-namespace QuickStore
+namespace FarmLayoutAnywhere
 {
     public class Main
     {
@@ -59,8 +59,8 @@ namespace QuickStore
 
         private static void OnGUI(UnityModManager.ModEntry modEntry)
         {
-            GUILayout.Label("<b>Store Key:</b>", new GUILayoutOption[0]);
-            settings.StoreKey = GUILayout.TextField(settings.StoreKey, new GUILayoutOption[0]);
+            GUILayout.Label("<b>Menu Key:</b>", new GUILayoutOption[0]);
+            settings.MenuKey = GUILayout.TextField(settings.MenuKey, new GUILayoutOption[0]);
             GUILayout.Space(20);
         }
         static bool KeyDown(string key)
@@ -78,46 +78,20 @@ namespace QuickStore
         private static bool isSorting;
 
         [HarmonyPatch(typeof(PlayerItemBarCtr), "Update")]
-        static class ItemBar_Patch
+        static class PlayerItemBarCtr_Update_Patch
         {
 
-            static void Prefix(PlayerItemBarCtr __instance)
+            static void Prefix()
             {
                 if (!enabled)
                     return;
-                if (KeyDown(settings.StoreKey) && UIStateMgr.Instance.currentState.type == UIStateMgr.StateType.Play)
+                if (KeyDown(settings.MenuKey) && UIStateMgr.Instance.currentState.type == UIStateMgr.StateType.Play)
                 {
-                    isSorting = true;
-                    StorageUnit.SortBagToStorageAsync();
-                    isSorting = false;
+                    UIStateMgr.Instance.ChangeStateByType(UIStateMgr.StateType.FarmBuilding, false, new object[] { null });
+
                 }
             }
         }
-        
-        [HarmonyPatch(typeof(ItemBag), nameof(ItemBag.RemoveItem), new Type[] { typeof(int), typeof(int), typeof(bool), typeof(bool) })]
-        static class ItemBag_RemoveItem_Patch
-        {
 
-            static void Prefix(ref bool showTips)
-            {
-                if (!enabled || !isSorting)
-                    return;
-                showTips = true;
-            }
-        }
-
-
-        [HarmonyPatch(typeof(StoreageUICtr), nameof(StoreageUICtr.SortBagToStorageCheck))]
-        static class StoreageUICtr_SortBagToStorageCheck_Patch
-        {
-            static bool Prefix(StoreageUICtr __instance)
-            {
-                if (!enabled || !settings.SkipConfirm)
-                    return true;
-                __instance.SortBagToStorage();
-                return false;
-
-            }
-        }
     }
 }

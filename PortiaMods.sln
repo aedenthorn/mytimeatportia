@@ -166,6 +166,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AssembleFromInventory", "As
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DontHealOnReturn", "DontHealOnReturn\DontHealOnReturn.csproj", "{45E0F42C-4D25-4ABF-871B-C8F463FE5438}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BetterSecretRooms", "BetterSecretRooms\BetterSecretRooms.csproj", "{3E3AF956-59A2-4443-942C-40314AA645B1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FarmLayoutAnywhere", "FarmLayoutAnywhere\FarmLayoutAnywhere.csproj", "{52FF94C9-6D94-45F4-AE7B-611208195771}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -488,6 +492,14 @@ Global
 		{45E0F42C-4D25-4ABF-871B-C8F463FE5438}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{45E0F42C-4D25-4ABF-871B-C8F463FE5438}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{45E0F42C-4D25-4ABF-871B-C8F463FE5438}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3E3AF956-59A2-4443-942C-40314AA645B1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3E3AF956-59A2-4443-942C-40314AA645B1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3E3AF956-59A2-4443-942C-40314AA645B1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3E3AF956-59A2-4443-942C-40314AA645B1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{52FF94C9-6D94-45F4-AE7B-611208195771}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{52FF94C9-6D94-45F4-AE7B-611208195771}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{52FF94C9-6D94-45F4-AE7B-611208195771}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{52FF94C9-6D94-45F4-AE7B-611208195771}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

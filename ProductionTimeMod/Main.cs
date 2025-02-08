@@ -37,7 +37,7 @@ namespace ProductionTimeMod
 
         private static void OnGUI(UnityModManager.ModEntry modEntry)
         {
-            settings.RealTime = GUILayout.Toggle(settings.RealTime, "Randomize commerce mission level (experimental)", new GUILayoutOption[0]);
+            settings.RealTime = GUILayout.Toggle(settings.RealTime, "Use real time to calculate craft speed", new GUILayoutOption[0]);
             GUILayout.Space(20);
             GUILayout.Label(string.Format("Speed Mult: <b>{0:F1}</b>", settings.SpeedMult), new GUILayoutOption[0]);
             settings.SpeedMult = (int)GUILayout.HorizontalSlider((float)settings.SpeedMult * 10, 1f, 1000f, new GUILayoutOption[0]) / 10f;
