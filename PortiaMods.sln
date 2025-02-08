@@ -160,6 +160,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{9E25E7B8-4BCA-4073-92BD-5104FC8B4E84}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
+		repository.json = repository.json
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AssembleFromInventory", "AssembleFromInventory\AssembleFromInventory.csproj", "{EE68A0EA-8A80-4400-9CCD-B619D73B63EC}"

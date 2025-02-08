@@ -2,7 +2,7 @@
     "Releases":
     [
 		{"Id": "AlwaysOpen", "Version": "0.1.0"},
-		{"Id": "AssembleFromInventory", "Version": "0.1.0"},
+		{"Id": "AssembleFromInventory", "Version": "0.1.3"},
 		{"Id": "BuildAnywhere", "Version": "0.3.0"},
 		{"Id": "ChangeClothes", "Version": "0.2.6"},
 		{"Id": "Chests", "Version": "0.1.0"},
