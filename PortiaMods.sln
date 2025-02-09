@@ -161,6 +161,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
 		repository.json = repository.json
+		solution.targets = solution.targets
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AssembleFromInventory", "AssembleFromInventory\AssembleFromInventory.csproj", "{EE68A0EA-8A80-4400-9CCD-B619D73B63EC}"
@@ -169,7 +170,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DontHealOnReturn", "DontHea
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BetterSecretRooms", "BetterSecretRooms\BetterSecretRooms.csproj", "{3E3AF956-59A2-4443-942C-40314AA645B1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FarmLayoutAnywhere", "FarmLayoutAnywhere\FarmLayoutAnywhere.csproj", "{52FF94C9-6D94-45F4-AE7B-611208195771}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WorkshopEditAnywhere", "WorkshopEditAnywhere\WorkshopEditAnywhere.csproj", "{9A7A4F3F-EC31-47E9-A502-6464439B87ED}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InventoryUIAddons", "InventoryUIAddons\InventoryUIAddons.csproj", "{9553FC16-FD7A-49AF-8DB7-7B3A11BB1F50}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -497,10 +500,14 @@ Global
 		{3E3AF956-59A2-4443-942C-40314AA645B1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3E3AF956-59A2-4443-942C-40314AA645B1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3E3AF956-59A2-4443-942C-40314AA645B1}.Release|Any CPU.Build.0 = Release|Any CPU
-		{52FF94C9-6D94-45F4-AE7B-611208195771}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{52FF94C9-6D94-45F4-AE7B-611208195771}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{52FF94C9-6D94-45F4-AE7B-611208195771}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{52FF94C9-6D94-45F4-AE7B-611208195771}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9A7A4F3F-EC31-47E9-A502-6464439B87ED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9A7A4F3F-EC31-47E9-A502-6464439B87ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9A7A4F3F-EC31-47E9-A502-6464439B87ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9A7A4F3F-EC31-47E9-A502-6464439B87ED}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9553FC16-FD7A-49AF-8DB7-7B3A11BB1F50}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9553FC16-FD7A-49AF-8DB7-7B3A11BB1F50}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9553FC16-FD7A-49AF-8DB7-7B3A11BB1F50}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9553FC16-FD7A-49AF-8DB7-7B3A11BB1F50}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
