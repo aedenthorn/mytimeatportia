@@ -1,0 +1,10 @@
+﻿{
+  "Id": "FishBowlMod",
+  "DisplayName": "Fish Bowl Mod",
+  "Author": "aedenthorn",
+  "Version": "0.4.0",
+  "AssemblyName": "FishBowlMod.dll",
+  "EntryMethod": "FishBowlMod.Main.Load",
+  "HomePage": "https://www.nexusmods.com/mytimeatportia/mods/106",
+  "Repository": "https://raw.githubusercontent.com/aedenthorn/mytimeatportia/master/repository.json"
+}

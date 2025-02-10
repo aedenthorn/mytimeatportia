@@ -142,13 +142,11 @@ namespace GameManager
         [HarmonyPatch(typeof(BallonGenerator), "Initiazation")]
         static class BallonGenerator_Initiazation_Patch
         {
-            static void Prefix(ref BalloonObject balloon)
+            static void Postfix(ref BalloonObject balloon)
             {
                 Dbgl("Balloon Generator Initiazation");
 
-                balloon.scaleMin = (float)Math.Round(balloon.scaleMin * settings.BalloonScaleMult);
-                balloon.scaleMax = (float)Math.Round(balloon.scaleMax * settings.BalloonScaleMult);
-
+                balloon.scaleFactor *= settings.BalloonScaleMult;
             }
         }
 
