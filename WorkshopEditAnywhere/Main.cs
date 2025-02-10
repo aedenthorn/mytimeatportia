@@ -17,6 +17,7 @@ using Pathea.SpawnNs;
 using Pathea.UISystemNs;
 using Pathea.UISystemNs.UIBase;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityModManagerNet;
 using static Harmony12.AccessTools;
 
@@ -87,6 +88,11 @@ namespace WorkshopEditAnywhere
                     return;
                 if (KeyDown(settings.MenuKey) && UIStateMgr.Instance.currentState.type == UIStateMgr.StateType.Play)
                 {
+                    if (SceneManager.GetActiveScene().name != "Main")
+                    {
+                        Dbgl("Not in main scene!");
+                        return;
+                    }
                     UIStateMgr.Instance.ChangeStateByType(UIStateMgr.StateType.FarmBuilding, false, new object[] { null });
 
                 }

@@ -2,7 +2,7 @@
   "Id": "WorkshopEditAnywhere",
   "DisplayName": "Workshop Edit Anywhere",
   "Author": "aedenthorn",
-  "Version": "0.1.1",
+  "Version": "0.1.2",
   "AssemblyName": "WorkshopEditAnywhere.dll",
   "EntryMethod": "WorkshopEditAnywhere.Main.Load",
   "HomePage": "https://www.nexusmods.com/mytimeatportia/mods/176",

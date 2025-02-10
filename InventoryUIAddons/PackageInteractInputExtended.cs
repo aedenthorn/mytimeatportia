@@ -13,13 +13,17 @@ namespace InventoryUIAddons
             this.packageEquip.AddDefaultBinding(InputControlType.Action1);
             this.packageSplitMouse.AddDefaultBinding(new Key[] { Key.LeftShift });
             this.action4.AddDefaultBinding(InputControlType.Action4);
+
             this.packageSplitOne = base.CreatePlayerAction("packageSplitOne");
             this.packageSplitOne.AddDefaultBinding(new Key[] { (Key)Enum.Parse(typeof(Key), Main.settings.GrabOneModKey) });
             this.packageSplitHalf = base.CreatePlayerAction("packageSplitHalf");
             this.packageSplitHalf.AddDefaultBinding(new Key[] { (Key)Enum.Parse(typeof(Key), Main.settings.GrabHalfModKey) });
+            this.packageUseItem = base.CreatePlayerAction("packageUseItem");
+            this.packageUseItem.AddDefaultBinding(new Key[] { (Key)Enum.Parse(typeof(Key), Main.settings.ForceUseModKey) });
         }
         public PlayerAction packageSplitOne;
         public PlayerAction packageSplitHalf;
+        public PlayerAction packageUseItem;
 
     }
 }

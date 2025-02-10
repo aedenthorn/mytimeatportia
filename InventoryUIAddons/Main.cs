@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -6,11 +7,15 @@ using System.Text;
 using Harmony12;
 using Pathea;
 using Pathea.AchievementNs;
+using Pathea.AudioNs;
+using Pathea.CompoundSystem;
+using Pathea.EffectNs;
 using Pathea.FarmFactoryNs;
 using Pathea.HomeNs;
 using Pathea.HomeViewerNs;
 using Pathea.InputSolutionNs;
 using Pathea.ItemBoxNs;
+using Pathea.ItemDropNs;
 using Pathea.ItemSystem;
 using Pathea.MessageSystem;
 using Pathea.ModuleNs;
@@ -38,13 +43,19 @@ namespace InventoryUIAddons
             if (isDebug)
                 Debug.Log($"{(pref ? typeof(Main).Namespace : "")} {str}");
         }
+
+        public static UnityModManager.ModEntry context;
+
         public static Settings settings { get; private set; }
         public static bool enabled;
+
         public static bool IsSplitHalf;
         public static bool IsSplitOne;
+        public static bool IsUseForced;
 
         private static void Load(UnityModManager.ModEntry modEntry)
         {
+            context = modEntry;
             settings = Settings.Load<Settings>(modEntry);
 
             modEntry.OnGUI = OnGUI;
@@ -54,16 +65,6 @@ namespace InventoryUIAddons
             var harmony = HarmonyInstance.Create(modEntry.Info.Id);
             harmony.PatchAll(Assembly.GetExecutingAssembly());
 
-        }
-
-        private static void MouseSplitHalf(object[] obj)
-        {
-            IsSplitHalf = (bool)obj[0];
-        }
-
-        private static void MouseSplitOne(object[] obj)
-        {
-            IsSplitOne = (bool)obj[0];
         }
 
         // Called when the mod is turned to on/off.
@@ -112,6 +113,10 @@ namespace InventoryUIAddons
                     return true;
 
                 int amountLeft = item.Number;
+
+                
+                // bag add to stack
+
                 for (int l = 0; l < ___itemTables.Length; l++)
                 {
                     amountLeft = ___itemTables[l].AddItemCount(item.ItemBase.ID, amountLeft);
@@ -122,6 +127,21 @@ namespace InventoryUIAddons
                     }
                     item.DeleteNumber(item.Number - amountLeft);
                 }
+
+
+                // bar add to stack
+
+                amountLeft = __instance.itemBar.AddItemCount(item.ItemBase.ID, amountLeft);
+                if (amountLeft == 0)
+                {
+                    __result = true;
+                    return false;
+                }
+                item.DeleteNumber(item.Number - amountLeft);
+
+
+                // bag add new
+
                 for (int m = 0; m < ___itemTables.Length; m++)
                 {
                     bool flag3 = ___itemTables[m].AddItemObject(item);
@@ -131,13 +151,10 @@ namespace InventoryUIAddons
                         return false;
                     }
                 }
-                amountLeft = __instance.itemBar.AddItemCount(item.ItemBase.ID, amountLeft);
-                if (amountLeft == 0)
-                {
-                    __result = true;
-                    return false;
-                }
-                item.DeleteNumber(item.Number - amountLeft);
+
+
+                // bar add new
+
                 List<int> free2 = __instance.itemBar.GetFree();
                 if (free2.Count > 0)
                 {
@@ -145,6 +162,7 @@ namespace InventoryUIAddons
                     __result = true;
                     return false;
                 }
+
                 AccessTools.Method(typeof(ItemBag), "DropOverFlowItem").Invoke(__instance, new object[] { item });
                 return false;
             }
@@ -170,16 +188,6 @@ namespace InventoryUIAddons
             }
         }
 
-        [HarmonyPatch(typeof(PlayerItemBarCtr), "OnEnable")]
-        public static class PlayerItemBarCtr_OnEnable_Patch
-        {
-            public static void Postfix(ref Image ___dragItem)
-            {
-                if (!enabled)
-                    return;
-            }
-        }
-
         [HarmonyPatch(typeof(PackageUIBase), "OnEnable")]
         public static class PackageUIBase_OnEnable_Patch
         {
@@ -189,6 +197,7 @@ namespace InventoryUIAddons
                     return; 
                 MessageManager.Instance.Subscribe("UIOtherPackageSplitOne", new Action<object[]>(MouseSplitOne));
                 MessageManager.Instance.Subscribe("UIOtherPackageSplitHalf", new Action<object[]>(MouseSplitHalf));
+                MessageManager.Instance.Subscribe("UIOtherPackageUseItem", new Action<object[]>(MouseUseItem));
             }
         }
         [HarmonyPatch(typeof(PackageUIBase), "OnDisable")]
@@ -200,6 +209,7 @@ namespace InventoryUIAddons
                     return;
                 MessageManager.Instance.Unsubscribe("UIOtherPackageSplitOne", new Action<object[]>(MouseSplitOne));
                 MessageManager.Instance.Unsubscribe("UIOtherPackageSplitHalf", new Action<object[]>(MouseSplitHalf));
+                MessageManager.Instance.Unsubscribe("UIOtherPackageUseItem", new Action<object[]>(MouseUseItem));
             }
         }
         [HarmonyPatch(typeof(PackageUISolution), "Update")]
@@ -207,10 +217,11 @@ namespace InventoryUIAddons
         {
             public static void Postfix(PackageInteractInput ___packageInteract)
             {
-                if (!enabled)
+                if (!enabled || Module<InputSolutionModule>.Self.CurSolutionType == SolutionType.ColorConfig)
                     return;
                 MessageManager.Instance.Dispatch("UIOtherPackageSplitOne", new object[] { (___packageInteract as PackageInteractInputExtended).packageSplitOne.IsPressed }, DispatchType.IMME, 2f);
                 MessageManager.Instance.Dispatch("UIOtherPackageSplitHalf", new object[] { (___packageInteract as PackageInteractInputExtended).packageSplitHalf.IsPressed }, DispatchType.IMME, 2f);
+                MessageManager.Instance.Dispatch("UIOtherPackageUseItem", new object[] { (___packageInteract as PackageInteractInputExtended).packageUseItem.IsPressed }, DispatchType.IMME, 2f);
             }
         }
         [HarmonyPatch(typeof(PackageUI_NotMain_Solution), "Update")]
@@ -218,10 +229,11 @@ namespace InventoryUIAddons
         {
             public static void Postfix(PackageInteractInput ___packageInteract)
             {
-                if (!enabled)
+                if (!enabled || Module<InputSolutionModule>.Self.CurSolutionType == SolutionType.ColorConfig)
                     return;
                 MessageManager.Instance.Dispatch("UIOtherPackageSplitOne", new object[] { (___packageInteract as PackageInteractInputExtended).packageSplitOne.IsPressed }, DispatchType.IMME, 2f);
                 MessageManager.Instance.Dispatch("UIOtherPackageSplitHalf", new object[] { (___packageInteract as PackageInteractInputExtended).packageSplitHalf.IsPressed }, DispatchType.IMME, 2f);
+                MessageManager.Instance.Dispatch("UIOtherPackageUseItem", new object[] { (___packageInteract as PackageInteractInputExtended).packageUseItem.IsPressed }, DispatchType.IMME, 2f);
             }
         }
         [HarmonyPatch(typeof(PackageInteractInput), nameof(PackageInteractInput.CreateWithDefaultBindings))]
@@ -232,6 +244,11 @@ namespace InventoryUIAddons
                 __result = new PackageInteractInputExtended();
             }
         }
+
+
+        // CLICKING
+
+
         [HarmonyPatch(typeof(PackageExchangeUICtr), "StoreageClick")]
         public static class PackageExchangeUICtr_StoreageClick_Patch
         {
@@ -343,6 +360,249 @@ namespace InventoryUIAddons
                 return true;
             }
         }
+
+
+        // RIGHT CLICK
+
+
+        [HarmonyPatch(typeof(StoreageUIBase), "RightClickStoreage")]
+        public static class StoreageUIBase_RightClickStoreage_Patch
+        {
+            public static bool Prefix(StoreageUIBase __instance, int index)
+            {
+                if (!enabled)
+                    return true;
+
+                var itemObj = __instance.Storeage.GetItemObj(index);
+                if (itemObj == null)
+                    return true;
+                if ((IsSplitHalf || IsSplitOne) && itemObj.Number > 1)
+                {
+                    int numTrans = IsSplitHalf ? Mathf.CeilToInt(itemObj.Number / 2f) : 1;
+                    int numLeft = Module<Player>.Self.bag.GetItems(__instance.BagIndex).AddItemCount(itemObj.ItemDataId, numTrans);
+                    numLeft = Module<Player>.Self.bag.itemBar.AddItemCount(itemObj.ItemDataId, numLeft);
+                    itemObj.ChangeNumber(numLeft - numTrans);
+                    if (numLeft > 0 && Module<Player>.Self.bag.GetFreeSlotCount(true) > 0)
+                    {
+                        ItemObject itemObjectNew = ItemObject.CreateItem(itemObj.ItemDataId, numLeft);
+                        itemObj.ChangeNumber(-numLeft);
+                        Module<Player>.Self.bag.AddItem(itemObjectNew, false, AddItemMode.Default);
+                    }
+                    __instance.FreshCurpageItem();
+                    __instance.playerItemBar.FreshItem();
+                    __instance.FreshStoreage();
+                    __instance.storeageGrid.allIcons[index - __instance.storeageGrid.allIcons.Count * __instance.storeageGrid.curPage].SelectBg(true);
+                    return false;
+                }
+                if (IsUseForced)
+                {
+                    __instance.storeageGrid.allIcons[index - __instance.storeageGrid.allIcons.Count * __instance.storeageGrid.curPage].SelectBg(true);
+                    UseItem(__instance, itemObj);
+                    __instance.FreshStoreageInfo(itemObj, index);
+                    return false;
+                }
+                return true;
+            }
+        }
+        [HarmonyPatch(typeof(StoreageUIBase), "RightClickPackage")]
+        public static class StoreageUIBase_RightClickPackage_Patch
+        {
+            public static bool Prefix(StoreageUIBase __instance, int index)
+            {
+                if (!enabled)
+                    return true;
+
+                var itemObj = Module<Player>.Self.bag.GetItem(__instance.BagIndex, index);
+                if (itemObj == null)
+                    return true;
+
+                if ((IsSplitHalf || IsSplitOne) && itemObj.Number > 1)
+                {
+                    int numTrans = IsSplitHalf ? Mathf.CeilToInt(itemObj.Number / 2f) : 1;
+                    int numLeft = __instance.Storeage.AddItemCount(itemObj.ItemDataId, numTrans);
+                    itemObj.ChangeNumber(numLeft - numTrans);
+                    if (numLeft > 0 && __instance.Storeage.GetVacancyCount() > 0)
+                    {
+                        ItemObject itemObjectNew = ItemObject.CreateItem(itemObj.ItemDataId, numLeft);
+                        itemObj.ChangeNumber(-numLeft);
+                        __instance.Storeage.AddItemObject(itemObjectNew);
+                    }
+                    __instance.FreshCurpageItem();
+                    __instance.playerItemBar.FreshItem();
+                    __instance.FreshStoreage();
+                    __instance.packageGrid.allIcons[index - __instance.packageGrid.allIcons.Count * __instance.packageGrid.curPage].SelectBg(true);
+                    return false;
+                }
+                if (IsUseForced)
+                {
+                    __instance.packageGrid.allIcons[index - __instance.packageGrid.allIcons.Count * __instance.packageGrid.curPage].SelectBg(true);
+                    UseItem(__instance, itemObj);
+                    __instance.FreshItemInfo(itemObj, index);
+                    return false;
+                }
+                return true;
+            }
+        }
+        [HarmonyPatch(typeof(StoreageUIBase), "RightClickItemBar")]
+        public static class StoreageUIBase_RightClickItemBar_Patch
+        {
+            public static bool Prefix(StoreageUIBase __instance, int index)
+            {
+                if (!enabled)
+                    return true;
+
+                var itemObj = Module<Player>.Self.bag.itemBar.itemBarItems[index];
+                if (itemObj == null)
+                    return true;
+
+                if ((IsSplitHalf || IsSplitOne) && itemObj.Number > 1)
+                {
+                    int numTrans = IsSplitHalf ? Mathf.CeilToInt(itemObj.Number / 2f) : 1;
+                    int numLeft = __instance.Storeage.AddItemCount(itemObj.ItemDataId, numTrans);
+                    itemObj.ChangeNumber(numLeft - numTrans);
+                    if (numLeft > 0 && __instance.Storeage.GetVacancyCount() > 0)
+                    {
+                        ItemObject itemObjectNew = ItemObject.CreateItem(itemObj.ItemDataId, numLeft);
+                        itemObj.ChangeNumber(-numLeft);
+                        __instance.Storeage.AddItemObject(itemObjectNew);
+                    }
+                    __instance.FreshCurpageItem();
+                    __instance.playerItemBar.FreshItem();
+                    __instance.FreshStoreage();
+                    return false;
+                }
+                if (IsUseForced)
+                {
+                    __instance.playerItemBar.SelectBgDirect(index);
+                    UseItem(__instance, itemObj);
+                    __instance.playerItemBar.FreshItem();
+                    return false;
+                }
+                return true;
+            }
+        }
+
+        [HarmonyPatch(typeof(PackageExchangeUICtr), "RightClickStoreage")]
+        public static class PackageExchangeUICtr_RightClickStoreage_Patch
+        {
+            public static bool Prefix(PackageExchangeUICtr __instance, int index)
+            {
+                if (!enabled)
+                    return true;
+
+                var itemObj = __instance.Storeage.GetItemObj(index);
+                if (itemObj == null)
+                    return true;
+                if ((IsSplitHalf || IsSplitOne) && itemObj.Number > 1)
+                {
+                    int numTrans = IsSplitHalf ? Mathf.CeilToInt(itemObj.Number / 2f) : 1;
+                    int numLeft = Module<Player>.Self.bag.GetItems(__instance.BagIndex).AddItemCount(itemObj.ItemDataId, numTrans);
+                    numLeft = Module<Player>.Self.bag.itemBar.AddItemCount(itemObj.ItemDataId, numLeft);
+                    itemObj.ChangeNumber(numLeft - numTrans);
+                    if (numLeft > 0 && Module<Player>.Self.bag.GetFreeSlotCount(true) > 0)
+                    {
+                        ItemObject itemObjectNew = ItemObject.CreateItem(itemObj.ItemDataId, numLeft);
+                        itemObj.ChangeNumber(-numLeft);
+                        Module<Player>.Self.bag.AddItem(itemObjectNew, false, AddItemMode.Default);
+                    }
+                    __instance.FreshCurpageItem();
+                    __instance.playerItemBar.FreshItem();
+                    __instance.FreshStoreage();
+                    __instance.storeageGrid.allIcons[index - __instance.storeageGrid.allIcons.Count * __instance.storeageGrid.curPage].SelectBg(true);
+                    return false;
+                }
+                if (IsUseForced)
+                {
+                    __instance.storeageGrid.allIcons[index - __instance.storeageGrid.allIcons.Count * __instance.storeageGrid.curPage].SelectBg(true);
+                    UseItem(__instance, itemObj);
+                    __instance.FreshStoreageInfo(itemObj, index);
+                    return false;
+                }
+                return true;
+            }
+        }
+
+        [HarmonyPatch(typeof(PackageExchangeUICtr), "RightClickPackage")]
+        public static class SPackageExchangeUICtr_RightClickPackage_Patch
+        {
+            public static bool Prefix(PackageExchangeUICtr __instance, int index)
+            {
+                if (!enabled)
+                    return true;
+
+                var itemObj = Module<Player>.Self.bag.GetItem(__instance.BagIndex, index);
+                if (itemObj == null)
+                    return true;
+
+                if ((IsSplitHalf || IsSplitOne) && itemObj.Number > 1)
+                {
+                    int numTrans = IsSplitHalf ? Mathf.CeilToInt(itemObj.Number / 2f) : 1;
+                    int numLeft = __instance.Storeage.AddItemCount(itemObj.ItemDataId, numTrans);
+                    itemObj.ChangeNumber(numLeft - numTrans);
+                    if (numLeft > 0 && __instance.Storeage.GetVacancyCount() > 0)
+                    {
+                        ItemObject itemObjectNew = ItemObject.CreateItem(itemObj.ItemDataId, numLeft);
+                        itemObj.ChangeNumber(-numLeft);
+                        __instance.Storeage.AddItemObject(itemObjectNew);
+                    }
+                    __instance.FreshCurpageItem();
+                    __instance.playerItemBar.FreshItem();
+                    __instance.FreshStoreage();
+                    __instance.packageGrid.allIcons[index - __instance.packageGrid.allIcons.Count * __instance.packageGrid.curPage].SelectBg(true);
+                    return false;
+                }
+                if (IsUseForced)
+                {
+                    __instance.packageGrid.allIcons[index - __instance.packageGrid.allIcons.Count * __instance.packageGrid.curPage].SelectBg(true);
+                    UseItem(__instance, itemObj);
+                    __instance.FreshItemInfo(itemObj, index);
+                    return false;
+                }
+                return true;
+            }
+        }
+        [HarmonyPatch(typeof(PackageExchangeUICtr), "RightClickItemBar")]
+        public static class PackageExchangeUICtr_RightClickItemBar_Patch
+        {
+            public static bool Prefix(StoreageUIBase __instance, int index)
+            {
+                if (!enabled)
+                    return true;
+
+                var itemObj = Module<Player>.Self.bag.itemBar.itemBarItems[index];
+                if (itemObj == null)
+                    return true;
+
+                if ((IsSplitHalf || IsSplitOne) && itemObj.Number > 1)
+                {
+                    int numTrans = IsSplitHalf ? Mathf.CeilToInt(itemObj.Number / 2f) : 1;
+                    int numLeft = __instance.Storeage.AddItemCount(itemObj.ItemDataId, numTrans);
+                    itemObj.ChangeNumber(numLeft - numTrans);
+                    if (numLeft > 0 && __instance.Storeage.GetVacancyCount() > 0)
+                    {
+                        ItemObject itemObjectNew = ItemObject.CreateItem(itemObj.ItemDataId, numLeft);
+                        itemObj.ChangeNumber(-numLeft);
+                        __instance.Storeage.AddItemObject(itemObjectNew);
+                    }
+                    __instance.FreshCurpageItem();
+                    __instance.playerItemBar.FreshItem();
+                    __instance.FreshStoreage();
+                    return false;
+                }
+                if (IsUseForced)
+                {
+                    __instance.playerItemBar.SelectBgDirect(index);
+                    UseItem(__instance, itemObj);
+                    __instance.playerItemBar.FreshItem();
+                    return false;
+                }
+                return true;
+            }
+        }
+
+
+        // DRAGGING
+
 
         public static bool draggingPart = false;
         public static bool draggingOne = false;
@@ -1004,6 +1264,181 @@ namespace InventoryUIAddons
                 return ItemObject.CreateItem(itemObjectSrc.ItemDataId, splitNum);
             }
             return null;
+        }
+
+        private static void MouseSplitHalf(object[] obj)
+        {
+            IsSplitHalf = (bool)obj[0];
+        }
+
+        private static void MouseSplitOne(object[] obj)
+        {
+            IsSplitOne = (bool)obj[0];
+        }
+
+        private static void MouseUseItem(object[] obj)
+        {
+            IsUseForced = (bool)obj[0];
+        }
+
+        public static void UseItem(PackageUIBase instance, ItemObject item)
+        {
+            if (item == null)
+            {
+                return;
+            }
+            Debug.Log("使用物品:\t" + item.ItemBase.Name);
+            for (int i = 0; i < item.ItemBase.ItemType.Length; i++)
+            {
+                ItemType itemType = item.ItemBase.ItemType[i];
+                switch (itemType)
+                {
+                    case ItemType.Equipment:
+                        CheckEquipOnConfirm(item);
+                        instance.FreshCurpageItem();
+                        break;
+                    default:
+                        if (itemType != ItemType.BoxItem)
+                        {
+                            if (itemType != ItemType.CreationBook)
+                            {
+                                Debug.Log("背包使用");
+                            }
+                            else
+                            {
+                                Module<Player>.Self.UseCreationBook(item, true);
+                            }
+                        }
+                        else
+                        {
+                            int gold;
+                            ItemObject[] dropItems = Module<ItemDropManager>.Self.GetDropItemList(item.GetComponent<ItemBoxItemCmpt>().DropListID, out gold);
+                            Module<Player>.Self.bag.RemoveItem(item, 1, true, true);
+
+                            GameObject gameObject = GameUtils.AddChildToTransform(instance.transform, "Prefabs/ReceiveItemViewer", false, AssetType.UiSystem);
+                            (gameObject.transform as RectTransform).sizeDelta = Vector2.zero;
+                            ReceiveItemViewer viewer = gameObject.GetComponent<ReceiveItemViewer>();
+                            AccessTools.FieldRefAccess<ReceiveItemViewer, Vector3>(viewer, "targetWorldPos") = viewer.transform.position;
+                            viewer.ShowReceive(dropItems, gold);
+                            viewer.EndShow += delegate
+                            {
+                                foreach (ItemObject itemObject in dropItems)
+                                {
+                                    Module<Player>.Self.bag.AddItem(itemObject, true, AddItemMode.Default);
+                                }
+                                Module<Player>.Self.bag.ChangeMoney(gold, true, 0);
+                                global::UnityEngine.Object.Destroy(viewer.gameObject);
+                            };
+                        }
+                        break;
+                    case ItemType.Food:
+                        Debug.Log("hp" + Module<Player>.Self.actor.intHp);
+                        Debug.Log("cp" + Module<Player>.Self.actor.intCp);
+                        if (Module<Player>.Self.actor == null)
+                        {
+                            Debug.Log("curActor = null");
+                        }
+                        else if (PackageManager.CheckLevel(item, false) && Module<Player>.Self.Use(item, true))
+                        {
+                            StartUseItemAnim(instance, item, "Eat", null, 0.45f);
+                        }
+                        break;
+                    case ItemType.ProductionBook:
+                        Debug.Log("技能书使用:" + item.ItemBase.ID);
+                        if (Module<CompoundManager>.Self.UnLockBook(item.ItemBase.ID, true, true))
+                        {
+                            Module<Player>.Self.bag.RemoveItem(item, 1, false, true);
+                            string text = item.ItemBase.Name + " : " + TextMgr.GetStr(201382, -1);
+                            UIUtils.ShowTips(0, text, 1.5f, false, null);
+                            Module<AudioModule>.Self.PlayEffect2D(33, false, true, false);
+                        }
+                        else
+                        {
+                            string text2 = item.ItemBase.Name + " : " + TextMgr.GetStr(100160, -1);
+                            UIUtils.ShowTips(0, text2, 1.5f, false, null);
+                        }
+                        break;
+                }
+            }
+            instance.FreshCurpageItem();
+            instance.playerItemBar.FreshItem();
+        }
+        public static bool CheckEquipOnConfirm(ItemObject item)
+        {
+            ItemEquipmentCmpt component = item.GetComponent<ItemEquipmentCmpt>();
+            if (component == null)
+            {
+                return false;
+            }
+            if (component.EquipType == ItemEquipType.Helmet || component.EquipType == ItemEquipType.Cloth || component.EquipType == ItemEquipType.Shoe || component.EquipType == ItemEquipType.Accessory)
+            {
+                EquipOn(item, PackageManager.GetEquipPos(item));
+                return true;
+            }
+            return false;
+        }
+        public static bool EquipOn(ItemObject obj, ActorEquip.EEquipSlot slot)
+        {
+            if (!PackageManager.CheckActor(obj, true))
+            {
+                return false;
+            }
+            if (!PackageManager.CheckLevel(obj, true))
+            {
+                return false;
+            }
+            ItemObject itemObject = ItemObject.CreateItem(obj.ItemDataId, 0);
+            if (Module<Player>.Self.bag.EquipSlot.SetTableSlot(slot, itemObject))
+            {
+                Module<Player>.Self.bag.RemoveItem(obj, 1, false, true);
+                return true;
+            }
+            UIUtils.ShowTips(0, TextMgr.GetStr(101333, -1), 1f, false, null);
+            return false;
+        }
+        public static bool lockItem;
+        private static Coroutine curCoroutine;
+
+        public static void StartUseItemAnim(PackageUIBase instance, ItemObject item, string animName, Action endCb = null, float intervalTime = -1f)
+        {
+            if (lockItem)
+            {
+                Module<Player>.Self.ShowHoldItem();
+            }
+            lockItem = true;
+            Module<Player>.Self.HideHoldItem(false, true);
+            if (curCoroutine != null)
+            {
+                instance.StopCoroutine(curCoroutine);
+            }
+            curCoroutine = instance.StartCoroutine(UseItemAnim(animName, endCb, item, intervalTime));
+        }
+        public static IEnumerator UseItemAnim(string animName, Action endCb, ItemObject item, float intervalTime)
+        {
+            yield return null;
+            if (intervalTime > 0f)
+            {
+                yield return new WaitForSecondsRealtime(intervalTime);
+                EndAnim(endCb);
+            }
+            else
+            {
+                yield return new WaitForSecondsRealtime(1.1f);
+                EndAnim(endCb);
+            }
+            yield break;
+        }
+        public static void EndAnim(Action endCb)
+        {
+            if (lockItem)
+            {
+                lockItem = false;
+                Module<Player>.Self.ShowHoldItem();
+            }
+            if (endCb != null)
+            {
+                endCb();
+            }
         }
     }
 }
