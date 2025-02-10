@@ -7,7 +7,7 @@ namespace ProductionTimeMod
 {
     public partial class Main
     {
-        public static bool enabled;
+        public static bool enabled; 
         private static UnityModManager.ModEntry myModEntry;
 
         public static Settings settings { get; private set; }

@@ -173,7 +173,7 @@ namespace InventoryUIAddons
         {
             public static void Postfix(PackageUIBase __instance)
             {
-                if (!enabled || !(__instance is StoreageUIBase) || !KeyDown(settings.TakeAllKey))
+                if (!enabled || !(__instance is StoreageUIBase) || !KeyDown(settings.TakeAllKey) || Module<InputSolutionModule>.Self.CurSolutionType == SolutionType.ColorConfig)
                     return;
                 StoreageUIBase ui = __instance as StoreageUIBase;
                 var m = AccessTools.Method(typeof(StoreageUIBase), "BackFromStorage");
