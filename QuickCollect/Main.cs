@@ -6,6 +6,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using Harmony12;
 using Pathea;
+using Pathea.AudioNs;
 using Pathea.FarmFactoryNs;
 using Pathea.HomeNs;
 using Pathea.HomeViewerNs;
@@ -19,12 +20,13 @@ using Pathea.UISystemNs.UIBase;
 using UnityEngine;
 using UnityModManagerNet;
 using static Harmony12.AccessTools;
+using static Pathea.UISystemNs.ResPath;
 
-namespace QuickStore
+namespace QuickCollect
 {
     public class Main
     {
-        private static readonly bool isDebug = false;
+        private static readonly bool isDebug = true;
 
         public static void Dbgl(string str = "", bool pref = true)
         {
@@ -59,8 +61,8 @@ namespace QuickStore
 
         private static void OnGUI(UnityModManager.ModEntry modEntry)
         {
-            GUILayout.Label("<b>Store Key:</b>", new GUILayoutOption[0]);
-            settings.StoreKey = GUILayout.TextField(settings.StoreKey, new GUILayoutOption[0]);
+            GUILayout.Label("<b>Collect Key:</b>", new GUILayoutOption[0]);
+            settings.CollectKey = GUILayout.TextField(settings.CollectKey, new GUILayoutOption[0]);
             GUILayout.Space(20);
         }
         static bool KeyDown(string key)
@@ -78,45 +80,34 @@ namespace QuickStore
         private static bool isSorting;
 
         [HarmonyPatch(typeof(PlayerItemBarCtr), "Update")]
-        static class ItemBar_Patch
+        static class PlayerItemBarCtr_Update_Patch
         {
 
             static void Prefix(PlayerItemBarCtr __instance)
             {
                 if (!enabled)
                     return;
-                if (KeyDown(settings.StoreKey) && UIStateMgr.Instance.currentState.type == UIStateMgr.StateType.Play)
+
+                if (KeyDown(settings.CollectKey) && UIStateMgr.Instance.currentState.type == UIStateMgr.StateType.Play)
                 {
-                    isSorting = true;
-                    StorageUnit.SortBagToStorageAsync();
-                    isSorting = false;
+                    Dbgl($"pressed collect key");
+                    foreach(var amp in GameObject.FindObjectsOfType<AutomataMachiePlace>())
+                    {
+                        var machine = AccessTools.FieldRefAccess<AutomataMachiePlace, AutomataMachineData>(amp, "machine");
+                        if (machine is null)
+                            continue;
+                        List<IdCount> itemList = Module<AutomataMgr>.Self.FetchItems(machine.machineId);
+                        Dbgl($"got machine {machine.machineId}, {itemList?.Count} items");
+                        if (itemList == null || itemList.Count == 0)
+                        {
+                            continue;
+                        }
+                        Module<AudioModule>.Self.PlayEffect2D(17, false, true, false);
+                        Module<Player>.Self.bag.AddItemList(itemList, true, AddItemMode.Default);
+                        machine.ClearFinished(false);
+                        AccessTools.Method(typeof(AutomataMachiePlace), "FreshItemShow", new Type[] { typeof(int) }).Invoke(amp, new object[] { machine.machineId });
+                    }
                 }
-            }
-        }
-        
-        [HarmonyPatch(typeof(ItemBag), nameof(ItemBag.RemoveItem), new Type[] { typeof(int), typeof(int), typeof(bool), typeof(bool) })]
-        static class ItemBag_RemoveItem_Patch
-        {
-
-            static void Prefix(ref bool showTips, int count)
-            {
-                if (!enabled || !isSorting)
-                    return;
-                showTips = count != 0;
-            }
-        }
-
-
-        [HarmonyPatch(typeof(StoreageUICtr), nameof(StoreageUICtr.SortBagToStorageCheck))]
-        static class StoreageUICtr_SortBagToStorageCheck_Patch
-        {
-            static bool Prefix(StoreageUICtr __instance)
-            {
-                if (!enabled || !settings.SkipConfirm)
-                    return true;
-                __instance.SortBagToStorage();
-                return false;
-
             }
         }
     }

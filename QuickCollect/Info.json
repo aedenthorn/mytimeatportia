@@ -1,0 +1,10 @@
+﻿{
+  "Id": "QuickCollect",
+  "DisplayName": "Quick Collect",
+  "Author": "aedenthorn",
+  "Version": "0.1.0",
+  "AssemblyName": "QuickCollect.dll",
+  "EntryMethod": "QuickCollect.Main.Load",
+  "HomePage": "https://www.nexusmods.com/mytimeatportia/mods/179",
+  "Repository": "https://raw.githubusercontent.com/aedenthorn/mytimeatportia/master/repository.json"
+}

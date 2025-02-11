@@ -228,7 +228,7 @@ namespace ChangeClothes
             if (!enabled)
                 return;
 
-            if(Module<Player>.Self.actor != null)
+            if(Module<Player>.Self?.actor != null)
             {
                 Module<Player>.Self.actor.ApplyCloth(false);
             }
@@ -236,7 +236,7 @@ namespace ChangeClothes
 
             for (int i = 0; i < clothesChangers.Count; i++)
             {
-                Actor actor = Module<ActorMgr>.Self.Get(clothesChangers[i].id);
+                Actor actor = Module<ActorMgr>.Self?.Get(clothesChangers[i].id);
                 if (actor == null)
                 {
                     continue;
