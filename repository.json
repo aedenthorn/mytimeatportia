@@ -20,6 +20,7 @@
 		{"Id": "Environment", "Version": "0.3.3"},
 		{"Id": "ExpMultiplier", "Version": "0.1.1"},
 		{"Id": "FactoryStorageSize", "Version": "0.1.0"},
+		{"Id": "FactoryMod", "Version": "0.1.0"},
 		{"Id": "FarmAnimals", "Version": "0.1.0"},
 		{"Id": "FasterPiggy", "Version": "0.1.0"},
 		{"Id": "FishBowlMod", "Version": "0.4.0"},

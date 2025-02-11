@@ -1,0 +1,10 @@
+﻿{
+  "Id": "FactoryStorageSize",
+  "DisplayName": "Factory Storage Size",
+  "Author": "aedenthorn",
+  "Version": "0.1.0",
+  "AssemblyName": "FactoryStorageSize.dll",
+  "EntryMethod": "FactoryStorageSize.Main.Load",
+  "HomePage": "https://www.nexusmods.com/mytimeatportia/mods/",
+  "Repository": "https://raw.githubusercontent.com/aedenthorn/mytimeatportia/master/repository.json"
+}

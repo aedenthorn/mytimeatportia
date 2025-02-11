@@ -1,0 +1,10 @@
+﻿{
+  "Id": "FactoryWorktableDiscount",
+  "DisplayName": "Factory Worktable Discount",
+  "Author": "aedenthorn",
+  "Version": "0.1.0",
+  "AssemblyName": "FactoryWorktableDiscount.dll",
+  "EntryMethod": "FactoryWorktableDiscount.Main.Load",
+  "HomePage": "https://www.nexusmods.com/mytimeatportia/mods/",
+  "Repository": "https://raw.githubusercontent.com/aedenthorn/mytimeatportia/master/repository.json"
+}

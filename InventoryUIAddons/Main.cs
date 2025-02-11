@@ -7,10 +7,12 @@ using System.Text;
 using Harmony12;
 using Pathea;
 using Pathea.AchievementNs;
+using Pathea.ActorNs;
 using Pathea.AudioNs;
 using Pathea.CompoundSystem;
 using Pathea.EffectNs;
 using Pathea.FarmFactoryNs;
+using Pathea.FeatureNs;
 using Pathea.HomeNs;
 using Pathea.HomeViewerNs;
 using Pathea.InputSolutionNs;
@@ -19,6 +21,8 @@ using Pathea.ItemDropNs;
 using Pathea.ItemSystem;
 using Pathea.MessageSystem;
 using Pathea.ModuleNs;
+using Pathea.NotebookSystem;
+using Pathea.RecognizeNs;
 using Pathea.SpawnNs;
 using Pathea.TagNs;
 using Pathea.UISystemNs;
@@ -397,8 +401,8 @@ namespace InventoryUIAddons
                 if (IsUseForced)
                 {
                     __instance.storeageGrid.allIcons[index - __instance.storeageGrid.allIcons.Count * __instance.storeageGrid.curPage].SelectBg(true);
-                    UseItem(__instance, itemObj);
-                    __instance.FreshStoreageInfo(itemObj, index);
+                    UseItemStorage(__instance, __instance.Storeage, itemObj);
+                    __instance.FreshStoreage();
                     return false;
                 }
                 return true;
@@ -514,8 +518,8 @@ namespace InventoryUIAddons
                 if (IsUseForced)
                 {
                     __instance.storeageGrid.allIcons[index - __instance.storeageGrid.allIcons.Count * __instance.storeageGrid.curPage].SelectBg(true);
-                    UseItem(__instance, itemObj);
-                    __instance.FreshStoreageInfo(itemObj, index);
+                    UseItemStorage(__instance, __instance.Storeage, itemObj);
+                    __instance.FreshStoreage();
                     return false;
                 }
                 return true;
@@ -1294,8 +1298,10 @@ namespace InventoryUIAddons
                 switch (itemType)
                 {
                     case ItemType.Equipment:
-                        CheckEquipOnConfirm(item);
-                        instance.FreshCurpageItem();
+                        if (CheckEquipOnConfirm(item))
+                        {
+                            Module<Player>.Self.bag.RemoveItem(item, 1);
+                        }
                         break;
                     default:
                         if (itemType != ItemType.BoxItem)
@@ -1363,6 +1369,99 @@ namespace InventoryUIAddons
             instance.FreshCurpageItem();
             instance.playerItemBar.FreshItem();
         }
+        public static void UseItemStorage(PackageUIBase instance, ItemTable Storeage, ItemObject item)
+        {
+            if (item == null)
+            {
+                return;
+            }
+            Debug.Log("使用物品:\t" + item.ItemBase.Name);
+            for (int i = 0; i < item.ItemBase.ItemType.Length; i++)
+            {
+                ItemType itemType = item.ItemBase.ItemType[i];
+                switch (itemType)
+                {
+                    case ItemType.Equipment:
+                        if (CheckEquipOnConfirm(item))
+                        {
+                            Storeage.RemoveItem(item, 1);
+                        }
+                        break;
+                    default:
+                        if (itemType != ItemType.BoxItem)
+                        {
+                            if (itemType != ItemType.CreationBook)
+                            {
+                                Debug.Log("背包使用");
+                            }
+                            else
+                            {
+                                if (Module<NotebookManager>.Self.LearnBlueprintByItem(item.ItemDataId))
+                                {
+                                    Storeage.RemoveItem(item, 1);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            int gold;
+                            ItemObject[] dropItems = Module<ItemDropManager>.Self.GetDropItemList(item.GetComponent<ItemBoxItemCmpt>().DropListID, out gold);
+                            Storeage.RemoveItem(item, 1);
+
+                            GameObject gameObject = GameUtils.AddChildToTransform(instance.transform, "Prefabs/ReceiveItemViewer", false, AssetType.UiSystem);
+                            (gameObject.transform as RectTransform).sizeDelta = Vector2.zero;
+                            ReceiveItemViewer viewer = gameObject.GetComponent<ReceiveItemViewer>();
+                            AccessTools.FieldRefAccess<ReceiveItemViewer, Vector3>(viewer, "targetWorldPos") = viewer.transform.position;
+                            viewer.ShowReceive(dropItems, gold);
+                            viewer.EndShow += delegate
+                            {
+                                foreach (ItemObject itemObject in dropItems)
+                                {
+                                    Module<Player>.Self.bag.AddItem(itemObject, true, AddItemMode.Default);
+                                }
+                                Module<Player>.Self.bag.ChangeMoney(gold, true, 0);
+                                global::UnityEngine.Object.Destroy(viewer.gameObject);
+                            };
+                        }
+                        break;
+                    case ItemType.Food:
+                        Debug.Log("hp" + Module<Player>.Self.actor.intHp);
+                        Debug.Log("cp" + Module<Player>.Self.actor.intCp);
+                        if (Module<Player>.Self.actor == null)
+                        {
+                            Debug.Log("curActor = null");
+                        }
+                        else if (PackageManager.CheckLevel(item, false))
+                        {
+                            float scale = 1f + Module<FeatureModule>.Self.ModifyFloat(FeatureType.EatFood, 1f);
+                            float buffScale = 1f + Module<FeatureModule>.Self.ModifyFloat(FeatureType.EatBuffTime, 1f);
+                            if (Module<Player>.Self.actor.Eat(item, scale, buffScale, true))
+                            {
+                                Storeage.RemoveItem(item, 1);
+                                StartUseItemAnim(instance, item, "Eat", null, 0.45f);
+                            }
+                        }
+                        break;
+                    case ItemType.ProductionBook:
+                        Debug.Log("技能书使用:" + item.ItemBase.ID);
+                        if (Module<CompoundManager>.Self.UnLockBook(item.ItemBase.ID, true, true))
+                        {
+                            Storeage.RemoveItem(item, 1);
+                            string text = item.ItemBase.Name + " : " + TextMgr.GetStr(201382, -1);
+                            UIUtils.ShowTips(0, text, 1.5f, false, null);
+                            Module<AudioModule>.Self.PlayEffect2D(33, false, true, false);
+                        }
+                        else
+                        {
+                            string text2 = item.ItemBase.Name + " : " + TextMgr.GetStr(100160, -1);
+                            UIUtils.ShowTips(0, text2, 1.5f, false, null);
+                        }
+                        break;
+                }
+            }
+            instance.FreshCurpageItem();
+            instance.playerItemBar.FreshItem();
+        }
         public static bool CheckEquipOnConfirm(ItemObject item)
         {
             ItemEquipmentCmpt component = item.GetComponent<ItemEquipmentCmpt>();
@@ -1372,8 +1471,7 @@ namespace InventoryUIAddons
             }
             if (component.EquipType == ItemEquipType.Helmet || component.EquipType == ItemEquipType.Cloth || component.EquipType == ItemEquipType.Shoe || component.EquipType == ItemEquipType.Accessory)
             {
-                EquipOn(item, PackageManager.GetEquipPos(item));
-                return true;
+                return EquipOn(item, PackageManager.GetEquipPos(item));
             }
             return false;
         }
@@ -1390,7 +1488,6 @@ namespace InventoryUIAddons
             ItemObject itemObject = ItemObject.CreateItem(obj.ItemDataId, 0);
             if (Module<Player>.Self.bag.EquipSlot.SetTableSlot(slot, itemObject))
             {
-                Module<Player>.Self.bag.RemoveItem(obj, 1, false, true);
                 return true;
             }
             UIUtils.ShowTips(0, TextMgr.GetStr(101333, -1), 1f, false, null);

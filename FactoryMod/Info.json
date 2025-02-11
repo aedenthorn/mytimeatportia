@@ -1,0 +1,10 @@
+﻿{
+  "Id": "FactoryMod",
+  "DisplayName": "Factory Mod",
+  "Author": "aedenthorn",
+  "Version": "0.1.0",
+  "AssemblyName": "FactoryMod.dll",
+  "EntryMethod": "FactoryMod.Main.Load",
+  "HomePage": "https://www.nexusmods.com/mytimeatportia/mods/106",
+  "Repository": "https://raw.githubusercontent.com/aedenthorn/mytimeatportia/master/repository.json"
+}

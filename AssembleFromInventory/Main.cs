@@ -62,6 +62,9 @@ namespace AssembleFromInventory
 
         private static void OnGUI(UnityModManager.ModEntry modEntry)
         {
+            settings.PullFromStorage = GUILayout.Toggle(settings.PullFromStorage, "Pull From Storage", new GUILayoutOption[0]);
+            GUILayout.Space(20);
+
         }
         static bool KeyDown(string key)
         {

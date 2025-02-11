@@ -66,12 +66,14 @@ namespace BuildAnywhere
         }
 
 
-        //[HarmonyPatch(typeof(RegionViewer), "CreateGameObj", new Type[] { typeof(string), typeof(Area), typeof(ItemPutInfo), typeof(bool) })]
+        [HarmonyPatch(typeof(RegionViewer), "CreateGameObj", new Type[] { typeof(string), typeof(Area), typeof(ItemPutInfo), typeof(bool) })]
         static class RegionViewer_CreateGameObj_Patch
         {
             static bool Prefix(RegionViewer __instance, string path, Area area, ItemPutInfo info, ref GameObject __result, bool isFloorLayer)
             {
 
+                Dbgl($"path {path}, ");
+                return true;
                 if (!enabled || Module<ScenarioModule>.Self.CurrentScenarioName != "Main" || !outsideUnits.ContainsKey(info.cellIndex))
                     return true;
 
