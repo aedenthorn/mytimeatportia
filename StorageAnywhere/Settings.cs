@@ -7,7 +7,8 @@ namespace StorageAnywhere
         public string ItemBarSwitchKey { get; set; } = "tab";
         public string OpenStorageKey { get; set; } = "b";
         public bool RememberLastStorageUnit { get; set; } = true;
-        public string OpenFactoryKey { get; set; } = "n";
+        public string OpenFactoryModKey { get; set; } = "left ctrl";
+        public string OpenFactoryProductModKey { get; set; } = "left shift";
         public string PrevStorageKey { get; set; } = "w";
         public string NextStorageKey { get; set; } = "s";
         public string PrevPageKey { get; set; } = "a";

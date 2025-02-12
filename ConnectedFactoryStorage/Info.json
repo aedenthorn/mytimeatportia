@@ -1,0 +1,10 @@
+﻿{
+  "Id": "ConnectedFactoryStorage",
+  "DisplayName": "Connected Factory Storage",
+  "Author": "aedenthorn",
+  "Version": "0.1.1",
+  "AssemblyName": "ConnectedFactoryStorage.dll",
+  "EntryMethod": "ConnectedFactoryStorage.Main.Load",
+  "HomePage": "https://www.nexusmods.com/mytimeatportia/mods/107",
+  "Repository": "https://raw.githubusercontent.com/aedenthorn/mytimeatportia/master/repository.json"
+}

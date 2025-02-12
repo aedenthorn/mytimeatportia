@@ -2,7 +2,7 @@
   "Id": "InventoryUIAddons",
   "DisplayName": "Inventory UI Addons",
   "Author": "aedenthorn",
-  "Version": "0.1.0",
+  "Version": "0.1.1",
   "AssemblyName": "InventoryUIAddons.dll",
   "EntryMethod": "InventoryUIAddons.Main.Load",
   "HomePage": "https://www.nexusmods.com/mytimeatportia/mods/",

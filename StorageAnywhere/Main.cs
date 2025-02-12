@@ -64,8 +64,11 @@ namespace StorageAnywhere
             GUILayout.Label("<b>Open Storage Key:</b>", new GUILayoutOption[0]);
             settings.OpenStorageKey = GUILayout.TextField(settings.OpenStorageKey, new GUILayoutOption[0]);
             GUILayout.Space(10);
-            GUILayout.Label("<b>Open Factory Storage Key:</b>", new GUILayoutOption[0]);
-            settings.OpenFactoryKey = GUILayout.TextField(settings.OpenFactoryKey, new GUILayoutOption[0]);
+            GUILayout.Label("<b>Open Factory Storage Modifier Key:</b>", new GUILayoutOption[0]);
+            settings.OpenFactoryModKey = GUILayout.TextField(settings.OpenFactoryModKey, new GUILayoutOption[0]);
+            GUILayout.Space(10);
+            GUILayout.Label("<b>Open Factory Product Modifier Key:</b>", new GUILayoutOption[0]);
+            settings.OpenFactoryProductModKey = GUILayout.TextField(settings.OpenFactoryProductModKey, new GUILayoutOption[0]);
             GUILayout.Space(10);
             GUILayout.Label("<b>Switch to Prev Storage Key:</b>", new GUILayoutOption[0]);
             settings.PrevStorageKey = GUILayout.TextField(settings.PrevStorageKey, new GUILayoutOption[0]);
@@ -87,6 +90,18 @@ namespace StorageAnywhere
             try
             {
                 return (Input.GetKeyDown(key));
+            }
+            catch
+            {
+                return false;
+            }
+        }
+        
+        static bool KeyHeld(string key)
+        {
+            try
+            {
+                return (Input.GetKey(key));
             }
             catch
             {
@@ -116,36 +131,53 @@ namespace StorageAnywhere
                 }
                 else if (KeyDown(settings.OpenStorageKey) && UIStateMgr.Instance.currentState.type == UIStateMgr.StateType.Play)
                 {
-                    StorageViewer sv = new StorageViewer();
-                    FieldRef<StorageViewer, StorageUnit> suRef = FieldRefAccess<StorageViewer, StorageUnit>("storageUnit");
-                    suRef(sv) = StorageUnit.GetStorageByGlobalIndex(lastStorageIndex);
-
-                    MethodInfo dynMethod = sv.GetType().GetMethod("InteractStorage", BindingFlags.NonPublic | BindingFlags.Instance);
-                    dynMethod.Invoke(sv, new object[] { });
-                }
-                else if (KeyDown(settings.OpenFactoryKey) && UIStateMgr.Instance.currentState.type == UIStateMgr.StateType.Play)
-                {
-
-                    FarmFactory[] factorys = Module<FarmFactoryMgr>.Self.GetAllFactorys();
-
-                    if (factorys.Length == 0)
-                        return;
-                    FarmFactory factory = factorys[0];
-
-                    Action<List<IdCount>> action = delegate (List<IdCount> ls)
+                    if (KeyHeld(settings.OpenFactoryModKey) && UIStateMgr.Instance.currentState.type == UIStateMgr.StateType.Play)
                     {
-                        factory.SetMatList(ls);
-                    };
-                    UIStateMgr.Instance.ChangeStateByType(UIStateMgr.StateType.PackageExchangeState, true, new object[]
-                    {
+
+                        FarmFactory[] factorys = Module<FarmFactoryMgr>.Self.GetAllFactorys();
+
+                        if (factorys.Length == 0)
+                            return;
+                        FarmFactory factory = factorys[0];
+
+                        Action<List<IdCount>> action = delegate (List<IdCount> ls)
+                        {
+                            factory.SetMatList(ls);
+                        };
+                        UIStateMgr.Instance.ChangeStateByType(UIStateMgr.StateType.PackageExchangeState, true, new object[]
+                        {
                         factory.MatList,
                         TextMgr.GetStr(103440, -1),
                         true,
                         action,
                         103521,
                         300
-                    });
+                        });
 
+                    }
+                    else if (KeyHeld(settings.OpenFactoryProductModKey) && UIStateMgr.Instance.currentState.type == UIStateMgr.StateType.Play)
+                    {
+                        FarmFactory[] factorys = Module<FarmFactoryMgr>.Self.GetAllFactorys();
+
+                        if (factorys.Length == 0)
+                            return;
+                        FarmFactory factory = factorys[0];
+                        UIStateMgr.Instance.ChangeStateByType(UIStateMgr.StateType.FarmFactory, false, new object[]
+                        {
+                            FarmFactoryState.UIType.FinishProduct,
+                            factory.FactoryId
+                        });
+                    }
+                    else
+                    {
+
+                        StorageViewer sv = new StorageViewer();
+                        FieldRef<StorageViewer, StorageUnit> suRef = FieldRefAccess<StorageViewer, StorageUnit>("storageUnit");
+                        suRef(sv) = StorageUnit.GetStorageByGlobalIndex(lastStorageIndex);
+
+                        MethodInfo dynMethod = sv.GetType().GetMethod("InteractStorage", BindingFlags.NonPublic | BindingFlags.Instance);
+                        dynMethod.Invoke(sv, new object[] { });
+                    }
                 }
             }
         }

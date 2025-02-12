@@ -39,9 +39,9 @@ namespace AssembleFromInventory
         private static void Load(UnityModManager.ModEntry modEntry)
         {
             settings = Settings.Load<Settings>(modEntry);
-
-            //modEntry.OnGUI = OnGUI;
-           // modEntry.OnSaveGUI = OnSaveGUI;
+            
+            modEntry.OnGUI = OnGUI;
+            modEntry.OnSaveGUI = OnSaveGUI;
             modEntry.OnToggle = OnToggle;
 
             var harmony = HarmonyInstance.Create(modEntry.Info.Id);
