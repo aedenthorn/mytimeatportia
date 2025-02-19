@@ -56,7 +56,7 @@
 		{"Id": "PlantMod", "Version": "0.3.0"},
 		{"Id": "PostProcessing", "Version": "0.2.0"},
 		{"Id": "ProductionTimeMod", "Version": "0.1.0"},
-		{"Id": "QuickCollect", "Version": "0.1.1"},
+		{"Id": "QuickCollect", "Version": "0.1.0"},
 		{"Id": "QuickStore", "Version": "0.2.0"},
 		{"Id": "Regeneration", "Version": "0.1.0"},
 		{"Id": "RelationManager", "Version": "0.2.0"},
