@@ -87,10 +87,22 @@ namespace BuildAnywhere
         {
             static void Prefix(Region __instance, Unit unit, ItemPutInfo info, ItemObject item, bool immobile, HomeRegionType ___regionType, int fromArchive = -1)
             {
-                if (!enabled || ___regionType != HomeRegionType.Farm || __instance.IsValidCell(info.cellIndex))
+                if (!enabled || ___regionType != HomeRegionType.Farm)
                     return;
                 ItemHomeSystemUnitCmpt component = item.GetComponent<ItemHomeSystemUnitCmpt>();
                 Area area = Module<UnitFactory>.Self.GetArea(info.cellIndex, info.areaRot, component, component.Rotate > 0, fromArchive);
+
+                bool outside = false;
+                for (int i = 0; i < area.Length; i++)
+                {
+                    if (!__instance.IsValidCell(area[i]))
+                    {
+                        outside = true;
+                        break;
+                    }
+                }
+                if (!outside)
+                    return;
 
                 Slot slot = new Slot
                 {

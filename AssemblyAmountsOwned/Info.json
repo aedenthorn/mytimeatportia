@@ -1,0 +1,10 @@
+﻿{
+  "Id": "AssembleFromInventory",
+  "DisplayName": "Assemble From Inventory",
+  "Author": "aedenthorn",
+  "Version": "0.2.1",
+  "AssemblyName": "AssembleFromInventory.dll",
+  "EntryMethod": "AssembleFromInventory.Main.Load",
+  "HomePage": "https://www.nexusmods.com/mytimeatportia/mods/175",
+  "Repository": "https://raw.githubusercontent.com/aedenthorn/mytimeatportia/master/repository.json"
+}

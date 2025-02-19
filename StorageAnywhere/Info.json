@@ -3,8 +3,8 @@
   "DisplayName": "Storage Anywhere",
   "Author": "aedenthorn",
   "Version": "0.7.0",
-  "AssemblyName": "WorkshopEditAnywhere.dll",
-  "EntryMethod": "WorkshopEditAnywhere.Main.Load",
+  "AssemblyName": "StorageAnywhere.dll",
+  "EntryMethod": "StorageAnywhere.Main.Load",
   "HomePage": "https://www.nexusmods.com/mytimeatportia/mods/40",
   "Repository": "https://raw.githubusercontent.com/aedenthorn/mytimeatportia/master/repository.json"
 }

@@ -2,7 +2,7 @@
   "Id": "QuickStore",
   "DisplayName": "Quick Store",
   "Author": "aedenthorn",
-  "Version": "0.1.1",
+  "Version": "0.2.0",
   "AssemblyName": "QuickStore.dll",
   "EntryMethod": "QuickStore.Main.Load",
   "HomePage": "https://www.nexusmods.com/mytimeatportia/mods/177",

@@ -20,12 +20,11 @@ using Pathea.TagNs;
 using Pathea.UISystemNs;
 using Pathea.UISystemNs.UIBase;
 using PatheaScriptExt;
-using TMPro;
 using UnityEngine;
 using UnityModManagerNet;
 using static Harmony12.AccessTools;
 
-namespace AssembleFromInventory
+namespace AssemblyAmountsOwned
 {
     public class Main
     {
@@ -61,81 +60,14 @@ namespace AssembleFromInventory
         {
             settings.Save(modEntry);
         }
-
-        private static void OnGUI(UnityModManager.ModEntry modEntry)
-        {
-            GUILayout.Label("<b>Owned Text:</b>", new GUILayoutOption[0]);
-            settings.OwnedText = GUILayout.TextField(settings.OwnedText, new GUILayoutOption[0]);
-            GUILayout.Space(10);
-            settings.PullFromStorage = GUILayout.Toggle(settings.PullFromStorage, "Pull From Storage", new GUILayoutOption[0]);
-            GUILayout.Space(20);
-
-        }
-        static bool KeyDown(string key)
-        {
-            try
-            {
-                return (Input.GetKeyDown(key));
-            }
-            catch
-            {
-                return false;
-            }
-        }
         
-        [HarmonyPatch(typeof(CreationPart), nameof(CreationPart.CanTrySetItem))]
-        static class CreationPart_CanTrySetItem_Patch
+        [HarmonyPatch(typeof(CreationBoardUICtr), "Fresh")]
+        static class CreationBoardUICtr_Fresh_Patch
         {
-            static bool Prefix(CreationPart __instance, CPartOperation ___operationState, int ___curMaterialItemId, CreationPartData ___refData, bool ___lockInteract, ref bool __result)
+            static void Postfix(CreationBoardUICtr __instance, CreationStateDesc ___curInformation)
             {
-                if (!enabled || ___operationState == CPartOperation.Replace_GetBack || ___operationState == CPartOperation.GetBack)
-                    return true;
-                if (___lockInteract)
-                    return false;
-                var curMaterialItem = ___refData.materials.Find((CreationMaterialItem it) => it.id == ___curMaterialItemId);
-                foreach (CreationMaterialItem material in ___refData.materials)
-                {
-
-                    if (CanRemoveItemList(material.itemList))
-                    {
-                        __result = true;
-                        return false;
-                    }
-                }
-                return true;
-            }
-        }
-        [HarmonyPatch(typeof(CreationPart), "DoSet")]
-        static class CreationPart_DoSet_Patch
-        {
-            static bool Prefix(CreationPart __instance, CPartOperation ___operationState, CreationPartData ___refData, ref bool __result)
-            {
-                if (!enabled || ___operationState == CPartOperation.Replace_GetBack || ___operationState == CPartOperation.GetBack)
-                    return Module<Player>.Self.HandItem != null;
-                List<CreationMaterialItem> list = ___refData?.materials;
-                if (list != null && list.Count > 0)
-                {
-                    if (list.Count == 1)
-                    {
-                        if (list[0] != null && CanRemoveItemList(list[0].itemList))
-                        {
-                            __result = (bool)AccessTools.Method(typeof(CreationPart), "SetPrefab").Invoke(__instance, new object[] { list[0] });
-                            return false;
-                        }
-                    }
-                    else
-                    {
-                        foreach (CreationMaterialItem creationMaterialItem in list)
-                        {
-                            if (creationMaterialItem != null && Module<Player>.Self.bag.CanRemoveItemList(creationMaterialItem.itemList))
-                            {
-                                __result = (bool)AccessTools.Method(typeof(CreationPart), "SetPrefab").Invoke(__instance, new object[] { creationMaterialItem });
-                                return false;
-                            }
-                        }
-                    }
-                }
-                return Module<Player>.Self.HandItem != null;
+                if (!enabled)
+                    return;
             }
         }
 
@@ -190,15 +122,6 @@ namespace AssembleFromInventory
                                     goto next;
                             }    
                         }
-                        for (int j = factorys[f].MatList.Count - 1; j >= 0; j--)
-                        {
-                            if(factorys[f].MatList[j].id == idCount.id)
-                            {
-                                remaining -= factorys[f].MatList[j].count;
-                                if (remaining <= 0)
-                                    goto next;
-                            }    
-                        }
                     }
                 }
                 return false;
@@ -206,63 +129,6 @@ namespace AssembleFromInventory
                 continue;
             }
             return true;
-        }
-
-
-        [HarmonyPatch(typeof(CreationPart), nameof(CreationPart.MaterialShow))]
-        [HarmonyPatch(MethodType.Getter)]
-        static class CreationPart_MaterialShow_Patch
-        {
-            static void Postfix(CreationPart __instance, ref string __result)
-            {
-                if (!enabled)
-                    return;
-
-                Dbgl("1");
-                var idCount = __instance.Material;
-                var itemCount = Module<Player>.Self.bag.GetItemCount(idCount.id);
-                if (settings.PullFromStorage)
-                {
-
-                    List<StorageUnit> globalStorages = (List<StorageUnit>)AccessTools.Field(typeof(StorageUnit), "globalStorages").GetValue(null);
-                    for (int i = 0; i < globalStorages.Count; i++)
-                    {
-                        for (int j = 0; j < globalStorages[i].Storeage.UnlockedCount; j++)
-                        {
-                            ItemObject itemObj = globalStorages[i].Storeage.GetItemObj(j);
-                            if (itemObj == null || itemObj.ItemDataId != idCount.id)
-                            {
-                                continue;
-                            }
-                            itemCount += itemObj.Number;
-                        }
-                    }
-                    FarmFactory[] factorys = Module<FarmFactoryMgr>.Self.GetAllFactorys();
-
-                    if (factorys.Length > 0)
-                    {
-                        for (var f = 0; f < factorys.Length; f++)
-                        {
-
-                            for (int j = factorys[f].FinishedList.Count - 1; j >= 0; j--)
-                            {
-                                if (factorys[f].FinishedList[j].id == idCount.id)
-                                {
-                                    itemCount += factorys[f].FinishedList[j].count;
-                                }
-                            }
-                            for (int j = factorys[f].MatList.Count - 1; j >= 0; j--)
-                            {
-                                if (factorys[f].MatList[j].id == idCount.id)
-                                {
-                                    itemCount += factorys[f].MatList[j].count;
-                                }
-                            }
-                        }
-                    }
-                }
-                __result += String.Format(settings.OwnedText, itemCount);
-            }
         }
 
         [HarmonyPatch(typeof(CreationPart), "SetPrefab")]
@@ -373,22 +239,6 @@ namespace AssembleFromInventory
                                 if(factorys[f].FinishedList[j].count <= 0)
                                 {
                                     factorys[f].FinishedList.RemoveAt(j);
-                                }
-                                if (remaining <= 0)
-                                    goto next;
-                            }
-                        }
-                        for (int j = factorys[f].MatList.Count - 1; j >= 0; j--)
-                        {
-                            if (factorys[f].MatList[j].id == idCount.id)
-                            {
-                                int take = Math.Min(factorys[f].MatList[j].count, remaining);
-
-                                remaining -= take;
-                                factorys[f].MatList[j].count -= take;
-                                if(factorys[f].MatList[j].count <= 0)
-                                {
-                                    factorys[f].MatList.RemoveAt(j);
                                 }
                                 if (remaining <= 0)
                                     goto next;

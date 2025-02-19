@@ -71,9 +71,6 @@ namespace BuildAnywhere
         {
             static bool Prefix(RegionViewer __instance, string path, Area area, ItemPutInfo info, ref GameObject __result, bool isFloorLayer)
             {
-
-                Dbgl($"path {path}, ");
-                return true;
                 if (!enabled || Module<ScenarioModule>.Self.CurrentScenarioName != "Main" || !outsideUnits.ContainsKey(info.cellIndex))
                     return true;
 

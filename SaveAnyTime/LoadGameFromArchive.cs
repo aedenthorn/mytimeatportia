@@ -228,7 +228,7 @@ namespace SaveAnyTime
                         if (co != null)
                         {
                             Dbgl("Got NpcsRidableManager");
-                            (co as NpcsRidableManager).DestoryAllRidable();
+                            //(co as NpcsRidableManager).DestoryAllRidable();
                             AccessTools.FieldRefAccess<RidableFences, Dictionary<IRidable, RidableFence>>((co as NpcsRidableManager), "ridableDic").Clear();
                             typeof(NpcsRidableManager).GetMethod("AfterPlayerWakeUpEvent", BindingFlags.NonPublic | BindingFlags.Instance).Invoke(co as NpcsRidableManager, new object[] { });
                         }

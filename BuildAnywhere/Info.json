@@ -1,0 +1,10 @@
+﻿{
+  "Id": "BuildAnywhere",
+  "DisplayName": "BuildAnywhere",
+  "Author": "aedenthorn",
+  "Version": "0.4.0",
+  "AssemblyName": "BuildAnywhere.dll",
+  "EntryMethod": "BuildAnywhere.Main.Load",
+  "HomePage": "https://www.nexusmods.com/mytimeatportia/mods/70",
+  "Repository": "https://raw.githubusercontent.com/aedenthorn/mytimeatportia/master/repository.json"
+}

@@ -46,14 +46,6 @@ namespace FactoryStorageSize
         {
             settings.Save(modEntry);
         }
-
-        private static string storageSizeTemp;
-
-
-        private static void OnShowGUI(UnityModManager.ModEntry modEntry)
-        {
-            storageSizeTemp = settings.FactoryStorageSize + "";
-        }
         private static void OnGUI(UnityModManager.ModEntry modEntry)
         {
             GUILayout.Label(string.Format("Factory Storage Size: <b>{0}</b>", settings.FactoryStorageSize), new GUILayoutOption[0]);
