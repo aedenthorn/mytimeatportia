@@ -117,7 +117,7 @@ namespace DialogueEdit
             var lines = File.ReadAllLines(path);
             for (var i = 0; i < lines.Length; i += 1)
             {
-                string[] line = lines[i].Split('=');
+                string[] line = lines[i].Split(new[] { '=' }, 2); // Makes sure the input string is split only once so tags like <color> work properly
                 if (line.Length < 2)
                     continue;
                 var text = new string[line.Length - 1];
