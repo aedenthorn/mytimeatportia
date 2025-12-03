@@ -325,7 +325,7 @@ namespace Teleport
             RaycastHit[] hits = new RaycastHit[4];
             ray.origin = pos + Vector3.up * 1000f;
             ray.direction = Vector3.down;
-            int num = Physics.RaycastNonAlloc(ray, hits, 999f, 256);
+            int num = Physics.RaycastNonAlloc(ray, hits, 2000f, 65792);
             for (int i = 0; i < num; i++)
             {
                 RaycastHit raycastHit = hits[i];

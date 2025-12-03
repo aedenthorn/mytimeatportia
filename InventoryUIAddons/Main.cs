@@ -643,7 +643,14 @@ namespace InventoryUIAddons
                     ___dragItem.sprite = ___slots[index].clickIcon.sprite;
                     tmp.text = num.ToString();
                     ___slots[index].num.text = (item.Number - num).ToString();
-                    AccessTools.FieldRefAccess<PlayerItemBarSlot, int>(___slots[index], "curNumber") = item.Number - num;
+                    if (item.Number - num > 0)
+                    {
+                        AccessTools.FieldRefAccess<PlayerItemBarSlot, int>(___slots[index], "curNumber") = item.Number - num;
+                    }
+                    else
+                    {
+                        ___slots[index].Disable();
+                    }
                     draggingPart = true;
                     draggingOne = IsSplitOne;
                 }
@@ -692,7 +699,7 @@ namespace InventoryUIAddons
                 {
                     ItemObject itemObjectDest = Module<Player>.Self.bag.GetItems(___package.BagIndex).GetItemObj(num);
 
-                    ItemObject itemObject = TransferItems(itemObjectSrc, itemObjectDest);
+                    ItemObject itemObject = TransferItems(itemObjectSrc, itemObjectDest, Module<Player>.Self.bag.GetItems(___package.BagIndex), num);
                     if (itemObject != null)
                     {
                         Module<Player>.Self.bag.GetItems(___package.BagIndex).SetItemObj(num, itemObject);
@@ -726,7 +733,7 @@ namespace InventoryUIAddons
                             {
                                 ItemObject itemObjectDest = storeageUIBase.Storeage.GetItemObj(num3);
 
-                                ItemObject itemObject = TransferItems(itemObjectSrc, itemObjectDest);
+                                ItemObject itemObject = TransferItems(itemObjectSrc, itemObjectDest, Module<Player>.Self.bag.GetItems(___package.BagIndex), index);
                                 if (itemObject != null)
                                 {
                                     storeageUIBase.Storeage.SetItemObj(num3, itemObject);
@@ -749,7 +756,7 @@ namespace InventoryUIAddons
                             if (num5 < packageExchangeUICtr.storeageSize)
                             {
                                 ItemObject itemObjectDest = packageExchangeUICtr.Storeage.GetItemObj(num5);
-                                ItemObject itemObject = TransferItems(itemObjectSrc, itemObjectDest);
+                                ItemObject itemObject = TransferItems(itemObjectSrc, itemObjectDest, Module<Player>.Self.bag.GetItems(___package.BagIndex), index);
                                 if (itemObject != null)
                                 {
                                     packageExchangeUICtr.Storeage.SetItemObj(num5, itemObject);
@@ -780,7 +787,7 @@ namespace InventoryUIAddons
                         {
                             ItemObject itemObjectSrc = Module<Player>.Self.bag.itemBar.itemBarItems[index];
                             ItemObject itemObjectDest = Module<Player>.Self.bag.itemBar.itemBarItems[i];
-                            ItemObject itemObject = TransferItems(itemObjectSrc, itemObjectDest);
+                            ItemObject itemObject = TransferItems(itemObjectSrc, itemObjectDest, null, index);
                             if (itemObject != null)
                             {
                                 Module<Player>.Self.bag.itemBar.SetItemObject(itemObject, i);
@@ -820,7 +827,15 @@ namespace InventoryUIAddons
                     ___dragItem.gameObject.SetActive(true);
                     ___dragItem.sprite = (__instance.packageGrid.allIcons[index - __instance.packageGrid.allIcons.Count * __instance.packageGrid.curPage] as GridIcon).clickIcon.sprite;
                     tmp.text = num.ToString();
-                    (__instance.packageGrid.allIcons[index - __instance.packageGrid.allIcons.Count * __instance.packageGrid.curPage] as GridPackageIcon).num.text = (item.Number - num).ToString();
+                    if (item.Number - num > 0)
+                    {
+                        (__instance.packageGrid.allIcons[index - __instance.packageGrid.allIcons.Count * __instance.packageGrid.curPage] as GridPackageIcon).num.text = (item.Number - num).ToString();
+                    }
+                    else
+                    {
+                        __instance.packageGrid.allIcons[index - __instance.packageGrid.allIcons.Count * __instance.packageGrid.curPage].Disable();
+                    }
+                   
                     draggingPart = true;
                     draggingOne = IsSplitOne;
                 }
@@ -876,7 +891,7 @@ namespace InventoryUIAddons
                 int indexDest = num + __instance.packageGrid.curPage * __instance.packageGrid.allIcons.Count;
                 ItemObject itemObjectSrc = Module<Player>.Self.bag.GetItems(__instance.BagIndex).GetItemObj(index);
                 ItemObject itemObjectDest = Module<Player>.Self.bag.GetItems(__instance.BagIndex).GetItemObj(indexDest);
-                ItemObject itemObject = TransferItems(itemObjectSrc, itemObjectDest);
+                ItemObject itemObject = TransferItems(itemObjectSrc, itemObjectDest, Module<Player>.Self.bag.GetItems(__instance.BagIndex), index);
                 if (itemObject != null)
                 {
                     Module<Player>.Self.bag.GetItems(__instance.BagIndex).SetItemObj(indexDest, itemObject);
@@ -896,7 +911,7 @@ namespace InventoryUIAddons
 
                 ItemObject itemObjectSrc = Module<Player>.Self.bag.GetItems(___bagIndex).GetItemObj(slotIndex);
                 ItemObject itemObjectDest = Module<Player>.Self.bag.itemBar.itemBarItems[barIndex];
-                ItemObject itemObject = TransferItems(itemObjectSrc, itemObjectDest);
+                ItemObject itemObject = TransferItems(itemObjectSrc, itemObjectDest, Module<Player>.Self.bag.GetItems(___bagIndex), slotIndex);
                 if (itemObject != null)
                 {
                     Module<Player>.Self.bag.itemBar.SetItemObject(itemObject, barIndex);
@@ -930,7 +945,17 @@ namespace InventoryUIAddons
                 ___dragItem.gameObject.SetActive(true);
                 ___dragItem.sprite = (__instance.storeageGrid.allIcons[index - __instance.storeageGrid.allIcons.Count * __instance.storeageGrid.curPage] as GridIcon).clickIcon.sprite;
                 tmp.text = num.ToString();
-                (__instance.storeageGrid.allIcons[index - __instance.storeageGrid.allIcons.Count * __instance.storeageGrid.curPage] as GridPackageIcon).num.text = (item.Number - num).ToString();
+
+                if (item.Number - num > 0)
+                {
+                    (__instance.storeageGrid.allIcons[index - __instance.storeageGrid.allIcons.Count * __instance.storeageGrid.curPage] as GridPackageIcon).num.text = (item.Number - num).ToString();
+                }
+                else
+                {
+                    __instance.storeageGrid.allIcons[index - __instance.storeageGrid.allIcons.Count * __instance.storeageGrid.curPage].Disable();
+                }
+
+
                 draggingPart = true;
                 draggingOne = IsSplitOne;
                 return false;
@@ -972,7 +997,7 @@ namespace InventoryUIAddons
 
                 ItemObject itemObjectSrc = __instance.Storeage.GetItemObj(fromIndex);
                 ItemObject itemObjectDest = Module<Player>.Self.bag.itemBar.itemBarItems[toIndex];
-                ItemObject itemObject = TransferItems(itemObjectSrc, itemObjectDest);
+                ItemObject itemObject = TransferItems(itemObjectSrc, itemObjectDest, __instance.Storeage, fromIndex);
                 if (itemObject != null)
                 {
                     Module<Player>.Self.bag.itemBar.SetItemObject(itemObject, toIndex);
@@ -992,7 +1017,7 @@ namespace InventoryUIAddons
 
                 ItemObject itemObjectSrc = Module<Player>.Self.bag.GetItems(__instance.BagIndex).GetItemObj(index);
                 ItemObject itemObjectDest = Module<Player>.Self.bag.GetItems(__instance.BagIndex).GetItemObj(toIndex);
-                ItemObject itemObject = TransferItems(itemObjectSrc, itemObjectDest);
+                ItemObject itemObject = TransferItems(itemObjectSrc, itemObjectDest, Module<Player>.Self.bag.GetItems(__instance.BagIndex), index);
                 if (itemObject != null)
                 {
                     Module<Player>.Self.bag.GetItems(__instance.BagIndex).SetItemObj(toIndex, itemObject);
@@ -1011,7 +1036,7 @@ namespace InventoryUIAddons
 
                 ItemObject itemObjectSrc = __instance.Storeage.GetItemObj(index);
                 ItemObject itemObjectDest = Module<Player>.Self.bag.GetItems(__instance.BagIndex).GetItemObj(curPackageIndex);
-                ItemObject itemObject = TransferItems(itemObjectSrc, itemObjectDest);
+                ItemObject itemObject = TransferItems(itemObjectSrc, itemObjectDest, __instance.Storeage, index);
                 if (itemObject != null)
                 {
                     Module<Player>.Self.bag.GetItems(__instance.BagIndex).SetItemObj(curPackageIndex, itemObject);
@@ -1029,7 +1054,7 @@ namespace InventoryUIAddons
 
                 ItemObject itemObjectSrc = Module<Player>.Self.bag.GetItems(__instance.BagIndex).GetItemObj(index);
                 ItemObject itemObjectDest = __instance.Storeage.GetItemObj(curStorageIndex);
-                ItemObject itemObject = TransferItems(itemObjectSrc, itemObjectDest);
+                ItemObject itemObject = TransferItems(itemObjectSrc, itemObjectDest, Module<Player>.Self.bag.GetItems(__instance.BagIndex), index);
                 if (itemObject != null)
                 {
                     __instance.Storeage.SetItemObj(curStorageIndex, itemObject);
@@ -1047,7 +1072,7 @@ namespace InventoryUIAddons
 
                 ItemObject itemObjectSrc = __instance.Storeage.GetItemObj(index);
                 ItemObject itemObjectDest = __instance.Storeage.GetItemObj(curStorageIndex);
-                ItemObject itemObject = TransferItems(itemObjectSrc, itemObjectDest);
+                ItemObject itemObject = TransferItems(itemObjectSrc, itemObjectDest, __instance.Storeage, index);
                 if (itemObject != null)
                 {
                     __instance.Storeage.SetItemObj(curStorageIndex, itemObject);
@@ -1081,7 +1106,15 @@ namespace InventoryUIAddons
                 ___dragItem.gameObject.SetActive(true);
                 ___dragItem.sprite = (__instance.storeageGrid.allIcons[index - __instance.storeageGrid.allIcons.Count * __instance.storeageGrid.curPage] as GridIcon).clickIcon.sprite;
                 tmp.text = num.ToString();
-                (__instance.storeageGrid.allIcons[index - __instance.storeageGrid.allIcons.Count * __instance.storeageGrid.curPage] as GridPackageIcon).num.text = (item.Number - num).ToString();
+
+                if (item.Number - num > 0)
+                {
+                    (__instance.storeageGrid.allIcons[index - __instance.storeageGrid.allIcons.Count * __instance.storeageGrid.curPage] as GridPackageIcon).num.text = (item.Number - num).ToString();
+                }
+                else
+                {
+                    __instance.storeageGrid.allIcons[index - __instance.storeageGrid.allIcons.Count * __instance.storeageGrid.curPage].Disable();
+                }
                 draggingPart = true;
                 draggingOne = IsSplitOne;
                 return false;
@@ -1131,7 +1164,7 @@ namespace InventoryUIAddons
                         {
                             ItemObject itemObjectSrc = Module<Player>.Self.bag.GetItems(__instance.BagIndex).GetItemObj(index);
                             ItemObject itemObjectDest = Module<Player>.Self.bag.itemBar.itemBarItems[i];
-                            ItemObject itemObject = TransferItems(itemObjectSrc, itemObjectDest);
+                            ItemObject itemObject = TransferItems(itemObjectSrc, itemObjectDest, Module<Player>.Self.bag.GetItems(__instance.BagIndex), index);
                             if (itemObject != null)
                             {
                                 Module<Player>.Self.bag.itemBar.SetItemObject(itemObject, i);
@@ -1141,7 +1174,7 @@ namespace InventoryUIAddons
                         {
                             ItemObject itemObjectSrc = __instance.Storeage.GetItemObj(index);
                             ItemObject itemObjectDest = Module<Player>.Self.bag.itemBar.itemBarItems[i];
-                            ItemObject itemObject = TransferItems(itemObjectSrc, itemObjectDest);
+                            ItemObject itemObject = TransferItems(itemObjectSrc, itemObjectDest, __instance.Storeage, index);
                             if (itemObject != null)
                             {
                                 Module<Player>.Self.bag.itemBar.SetItemObject(itemObject, i);
@@ -1163,20 +1196,24 @@ namespace InventoryUIAddons
             {
                 if (!draggingPart)
                     return true;
+                Dbgl($"check slot change");
 
                 for (int i = 0; i < __instance.packageGrid.allIcons.Count; i++)
                 {
                     int num = i + __instance.packageGrid.allIcons.Count * __instance.packageGrid.curPage;
                     if (___dragItemCol.bounds.Intersects(__instance.packageGrid.allIcons[i].GetComponent<Collider2D>().bounds))
                     {
+                        Dbgl($"drag to package");
+
                         if (fromArea == PackageArea.Bag)
                         {
                             if (index != num)
                             {
+                                Dbgl($"from: {index}, to {num}");
                                 ItemObject itemObjectSrc = Module<Player>.Self.bag.GetItems(__instance.BagIndex).GetItemObj(index);
                                 ItemObject itemObjectDest = Module<Player>.Self.bag.GetItems(__instance.BagIndex).GetItemObj(num);
 
-                                ItemObject itemObject = TransferItems(itemObjectSrc, itemObjectDest);
+                                ItemObject itemObject = TransferItems(itemObjectSrc, itemObjectDest, Module<Player>.Self.bag.GetItems(__instance.BagIndex), index);
                                 if (itemObject != null)
                                 {
                                     Module<Player>.Self.bag.GetItems(__instance.BagIndex).SetItemObj(num, itemObject);
@@ -1193,7 +1230,7 @@ namespace InventoryUIAddons
                                 ItemObject itemObjectSrc = __instance.Storeage.GetItemObj(index);
                                 ItemObject itemObjectDest = Module<Player>.Self.bag.GetItems(__instance.BagIndex).GetItemObj(num);
 
-                                ItemObject itemObject = TransferItems(itemObjectSrc, itemObjectDest);
+                                ItemObject itemObject = TransferItems(itemObjectSrc, itemObjectDest, __instance.Storeage, index);
                                 if (itemObject != null)
                                 {
                                     Module<Player>.Self.bag.SetItem(__instance.BagIndex, num, itemObject);
@@ -1216,8 +1253,8 @@ namespace InventoryUIAddons
                             if (index != num4)
                             {
                                 ItemObject itemObjectSrc = __instance.Storeage.GetItemObj(index);
-                                ItemObject itemObjectDest = __instance.Storeage.GetItemObj(num4); 
-                                ItemObject itemObject = TransferItems(itemObjectSrc, itemObjectDest);
+                                ItemObject itemObjectDest = __instance.Storeage.GetItemObj(num4);
+                                ItemObject itemObject = TransferItems(itemObjectSrc, itemObjectDest, __instance.Storeage, index);
                                 if (itemObject != null)
                                 {
                                     __instance.Storeage.SetItemObj(num4, itemObject);
@@ -1234,7 +1271,7 @@ namespace InventoryUIAddons
                                 {
                                     ItemObject itemObjectSrc = Module<Player>.Self.bag.GetItems(__instance.BagIndex).GetItemObj(index);
                                     ItemObject itemObjectDest = __instance.Storeage.GetItemObj(num4);
-                                    ItemObject itemObject = TransferItems(itemObjectSrc, itemObjectDest);
+                                    ItemObject itemObject = TransferItems(itemObjectSrc, itemObjectDest, Module<Player>.Self.bag.GetItems(__instance.BagIndex), index);
                                     if (itemObject != null)
                                     {
                                         __instance.Storeage.SetItemObj(num4, itemObject);
@@ -1248,26 +1285,140 @@ namespace InventoryUIAddons
                         }
                     }
                 }
+                Dbgl($"return false");
                 __result = false;
                 return false;
             }
         }
-        public static ItemObject TransferItems(ItemObject itemObjectSrc, ItemObject itemObjectDest)
+        [HarmonyPatch(typeof(StoreageUIBase), "CheckSlotChange", new Type[] { typeof(int), typeof(PackageArea) })]
+        public static class StoreageUIBase_CheckSlotChange_Patch
+        {
+            public static bool Prefix(StoreageUIBase __instance, ref bool __result, Collider2D ___dragItemCol, int index, PackageArea fromArea)
+            {
+                if (!draggingPart)
+                    return true;
+                Dbgl($"check slot change");
+
+                for (int i = 0; i < __instance.packageGrid.allIcons.Count; i++)
+                {
+                    int num = i + __instance.packageGrid.allIcons.Count * __instance.packageGrid.curPage;
+                    if (___dragItemCol.bounds.Intersects(__instance.packageGrid.allIcons[i].GetComponent<Collider2D>().bounds))
+                    {
+                        Dbgl($"drag to package");
+
+                        if (fromArea == PackageArea.Bag)
+                        {
+                            if (index != num)
+                            {
+
+                                Dbgl($"from: {index}, to {num}");
+                                ItemObject itemObjectSrc = Module<Player>.Self.bag.GetItems(__instance.BagIndex).GetItemObj(index);
+                                ItemObject itemObjectDest = Module<Player>.Self.bag.GetItems(__instance.BagIndex).GetItemObj(num);
+
+                                ItemObject itemObject = TransferItems(itemObjectSrc, itemObjectDest, Module<Player>.Self.bag.GetItems(__instance.BagIndex), index);
+                                if (itemObject != null)
+                                {
+                                    Module<Player>.Self.bag.GetItems(__instance.BagIndex).SetItemObj(num, itemObject);
+                                }
+                                __instance.packageGrid.allIcons[i].SelectBg(true);
+                                __result = true;
+                                return false;
+                            }
+                        }
+                        else
+                        {
+                            if (fromArea == PackageArea.Storage && Module<Player>.Self.bag.GetItems(__instance.BagIndex).IsSlotUnlocked(num))
+                            {
+                                ItemObject itemObjectSrc = __instance.Storeage.GetItemObj(index);
+                                ItemObject itemObjectDest = Module<Player>.Self.bag.GetItems(__instance.BagIndex).GetItemObj(num);
+
+                                ItemObject itemObject = TransferItems(itemObjectSrc, itemObjectDest, __instance.Storeage, index);
+                                if (itemObject != null)
+                                {
+                                    Module<Player>.Self.bag.SetItem(__instance.BagIndex, num, itemObject);
+                                }
+                                __instance.packageGrid.allIcons[i].SelectBg(true);
+                                __result = true;
+                                return false;
+                            }
+                            break;
+                        }
+                    }
+                }
+                for (int j = 0; j < __instance.storeageGrid.allIcons.Count; j++)
+                {
+                    int num2 = j + __instance.storeageGrid.allIcons.Count * __instance.storeageGrid.curPage;
+                    if (___dragItemCol.bounds.Intersects(__instance.storeageGrid.allIcons[j].GetComponent<Collider2D>().bounds))
+                    {
+                        if (fromArea == PackageArea.Storage)
+                        {
+                            if (index != num2)
+                            {
+                                ItemObject itemObjectSrc = __instance.Storeage.GetItemObj(index);
+                                ItemObject itemObjectDest = __instance.Storeage.GetItemObj(num2);
+                                ItemObject itemObject = TransferItems(itemObjectSrc, itemObjectDest, __instance.Storeage, index);
+                                if (itemObject != null)
+                                {
+                                    __instance.Storeage.SetItemObj(num2, itemObject);
+                                }
+                                __result = true;
+                                return false;
+                            }
+                        }
+                        else
+                        {
+                            if (fromArea == PackageArea.Bag)
+                            {
+                                if (j < __instance.storeageSize)
+                                {
+                                    ItemObject itemObjectSrc = Module<Player>.Self.bag.GetItems(__instance.BagIndex).GetItemObj(index);
+                                    ItemObject itemObjectDest = __instance.Storeage.GetItemObj(num2);
+                                    ItemObject itemObject = TransferItems(itemObjectSrc, itemObjectDest, Module<Player>.Self.bag.GetItems(__instance.BagIndex), index);
+                                    if (itemObject != null)
+                                    {
+                                        __instance.Storeage.SetItemObj(num2, itemObject);
+                                    }
+                                    __instance.storeageGrid.allIcons[j].SelectBg(true);
+                                }
+                                __result = true;
+                                return false;
+                            }
+                            break;
+                        }
+                    }
+                }
+                Dbgl($"return false");
+                __result = false;
+                return false;
+            }
+        }
+        public static ItemObject TransferItems(ItemObject itemObjectSrc, ItemObject itemObjectDest, ItemTable source, int index)
         {
             int splitNum = !draggingOne ? Mathf.CeilToInt(itemObjectSrc.Number / 2f) : 1;
+            ItemObject newItem = null;
             if (itemObjectDest != null && itemObjectSrc.ItemBase.ID == itemObjectDest.ItemBase.ID && itemObjectDest.RemainCapacity() != 0)
             {
                 int transferNum = Math.Min(splitNum, itemObjectDest.RemainCapacity());
                 itemObjectDest.ChangeNumber(transferNum);
                 itemObjectSrc.ChangeNumber(-transferNum);
-
             }
             else if (itemObjectDest == null)
             {
                 itemObjectSrc.ChangeNumber(-splitNum);
-                return ItemObject.CreateItem(itemObjectSrc.ItemDataId, splitNum);
+                newItem = ItemObject.CreateItem(itemObjectSrc.ItemDataId, splitNum);
             }
-            return null;
+            if (itemObjectSrc.Number <= 0)
+            {
+                if (source == null)
+                {
+                    Module<Player>.Self.bag.itemBar.SetItemObject(null, index);
+                }
+                else
+                {
+                    source.SetItemObj(index, null);
+                }
+            }
+            return newItem;
         }
 
         private static void MouseSplitHalf(object[] obj)

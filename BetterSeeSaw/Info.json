@@ -1,10 +1,10 @@
 ﻿{
-  "Id": "InventoryUIAddons",
-  "DisplayName": "Inventory UI Addons",
+  "Id": "BetterSeeSaw",
+  "DisplayName": "Better See Saw",
   "Author": "aedenthorn",
-  "Version": "0.1.2",
-  "AssemblyName": "InventoryUIAddons.dll",
-  "EntryMethod": "InventoryUIAddons.Main.Load",
+  "Version": "0.1.0",
+  "AssemblyName": "BetterSeeSaw.dll",
+  "EntryMethod": "BetterSeeSaw.Main.Load",
   "HomePage": "https://www.nexusmods.com/mytimeatportia/mods/",
   "Repository": "https://raw.githubusercontent.com/aedenthorn/mytimeatportia/master/repository.json"
 }

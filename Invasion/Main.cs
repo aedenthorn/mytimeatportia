@@ -314,7 +314,7 @@ namespace Invasion
             pos.y = 0;
             ray.origin = pos + Vector3.up * 1000f;
             ray.direction = Vector3.down;
-            int num = Physics.RaycastNonAlloc(ray, hits, 999f, 256);
+            int num = Physics.RaycastNonAlloc(ray, hits, 2000f, 65792);
             if(num == 0)
             {
                 return Vector3.zero;

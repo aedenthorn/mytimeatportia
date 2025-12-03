@@ -64,43 +64,43 @@ namespace DialogueEdit
             switch ((int)Singleton<OptionsMgr>.Instance.LanguageGame)
             {
                 case 0:
-                    lang = ("Chinese");
+                    lang = "Chinese";
                     break;
                 case 1:
-                    lang = ("English");
+                    lang = "English";
                     break;
                 case 2:
-                    lang = ("German");
+                    lang = "German";
                     break;
                 case 3:
-                    lang = ("French");
+                    lang = "French";
                     break;
                 case 4:
-                    lang = ("T_Chinese");
+                    lang = "T_Chinese";
                     break;
                 case 5:
-                    lang = ("Italian");
+                    lang = "Italian";
                     break;
                 case 6:
-                    lang = ("Spanish");
+                    lang = "Spanish";
                     break;
                 case 7:
-                    lang = ("Japanese");
+                    lang = "Japanese";
                     break;
                 case 8:
-                    lang = ("Russian");
+                    lang = "Russian";
                     break;
                 case 9:
-                    lang = ("Turkish");
+                    lang = "Turkish";
                     break;
                 case 10:
-                    lang = ("Korean");
+                    lang = "Korean";
                     break;
                 case 11:
-                    lang = ("Portuguese");
+                    lang = "Portuguese";
                     break;
                 case 12:
-                    lang = ("Vietnamese");
+                    lang = "Vietnamese";
                     break;
             }
             if (lang == "")

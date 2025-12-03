@@ -410,6 +410,9 @@ namespace MarriageMod
 
         private static void TimerCallback(object state)
         {
+            if (!enabled || !settings.SpousesKiss || Module<ScenarioModule>.Self.CurrentScenarioName == "Main" || Module<ScenarioModule>.Self.CurrentScenarioName == "food")
+                return;
+
             double currentTime = Module<TimeManager>.Self.TotalSecond / Module<TimeManager>.Self.TimeScale;
 
             foreach (KeyValuePair<int,double> k in kissingSpouses)
@@ -422,9 +425,6 @@ namespace MarriageMod
                 }
 
             }
-
-            if (!enabled || !settings.SpousesKiss || Module<ScenarioModule>.Self.CurrentScenarioName == "Main" || Module<ScenarioModule>.Self.CurrentScenarioName == "food")
-                return;
 
             double nextKissTime = lastKiss + settings.MinKissingInterval;
 
