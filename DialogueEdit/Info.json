@@ -2,9 +2,9 @@
   "Id": "DialogueEdit",
   "DisplayName": "Dialogue Edit",
   "Author": "aedenthorn",
-  "Version": "0.1.1",
+  "Version": "0.1.2",
   "AssemblyName": "DialogueEdit.dll",
   "EntryMethod": "DialogueEdit.Main.Load",
-  "HomePage": "https://www.nexusmods.com/mytimeatportia/mods/",
+  "HomePage": "https://www.nexusmods.com/mytimeatportia/mods/63",
   "Repository": "https://raw.githubusercontent.com/aedenthorn/mytimeatportia/master/repository.json"
 }
