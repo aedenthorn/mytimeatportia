@@ -1,0 +1,10 @@
+﻿{
+  "Id": "ItemSpawner",
+  "DisplayName": "ItemSpawner",
+  "Author": "aedenthorn",
+  "Version": "0.1.0",
+  "AssemblyName": "ItemSpawner.dll",
+  "EntryMethod": "ItemSpawner.Main.Load",
+  "HomePage": "https://www.nexusmods.com/mytimeatportia/mods/",
+  "Repository": "https://raw.githubusercontent.com/aedenthorn/mytimeatportia/master/repository.json"
+}
